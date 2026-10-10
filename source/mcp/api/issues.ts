@@ -67,7 +67,7 @@ import {
 	batchResult,
 	forEachTarget,
 } from './issue-targets.js';
-import {findWritableIssue, findWritableSwimlane} from './node-targets.js';
+import {findWritableIssue, findWritableSwimlane, resolveIssueId} from './node-targets.js';
 
 type MoveIssueInput = ToolInput &
 	IssueTargets & {
@@ -462,9 +462,11 @@ export const reopenIssue = async (input: ToolInput & {issueId: string}) => {
 	const ready = await bootedWithActorAndState(input.repoRoot);
 	if (isFail(ready)) return ready;
 
-	const issue = ready.value.state.nodes[input.issueId];
+	const issue = ready.value.state.nodes[resolveIssueId(input.issueId)];
 
-	if (!issue || issue.isDeleted) return failed('Issue not found');
+	if (!issue || issue.isDeleted) {
+		return failed('Issue not found — pass the issue id or its 7-character ref');
+	}
 	if (!isTicketNode(issue)) return failed('Target must be an issue');
 
 	if (issue.parentNodeId !== CLOSED_SWIMLANE_ID) {
@@ -649,6 +651,7 @@ export const editIssueDescription = async (
 	const issueResult = findWritableIssue(input.issueId);
 	if (isFail(issueResult)) return issueResult;
 	const issue = issueResult.value;
+	const issueId = issue.id;
 
 	const overLongDescription = tooLong(
 		'Issue description',
@@ -661,8 +664,8 @@ export const editIssueDescription = async (
 
 	if (currentDescription === input.description) {
 		return succeeded('No changes made', {
-			id: input.issueId,
-			ref: nodeRef(input.issueId),
+			id: issueId,
+			ref: nodeRef(issueId),
 			description: currentDescription,
 		});
 	}
@@ -672,7 +675,7 @@ export const editIssueDescription = async (
 		...actorOf(ready.value.actor),
 		action: 'edit.description',
 		payload: {
-			id: input.issueId,
+			id: issueId,
 			md: input.description,
 		},
 	} satisfies AppEvent<'edit.description'>;
@@ -685,8 +688,8 @@ export const editIssueDescription = async (
 	if (isFail(results)) return failed(results.message);
 
 	return succeeded('Edited issue description', {
-		id: input.issueId,
-		ref: nodeRef(input.issueId),
+		id: issueId,
+		ref: nodeRef(issueId),
 		description: input.description,
 	});
 };
@@ -698,6 +701,7 @@ export const editIssueTitle = async (input: EditIssueTitleInput) => {
 	const issueResult = findWritableIssue(input.issueId);
 	if (isFail(issueResult)) return issueResult;
 	const issue = issueResult.value;
+	const issueId = issue.id;
 
 	const title = sanitizeInlineText(input.title);
 
@@ -710,8 +714,8 @@ export const editIssueTitle = async (input: EditIssueTitleInput) => {
 
 	if (issue.title === title) {
 		return succeeded('No changes made', {
-			id: input.issueId,
-			ref: nodeRef(input.issueId),
+			id: issueId,
+			ref: nodeRef(issueId),
 			title,
 		});
 	}
@@ -721,7 +725,7 @@ export const editIssueTitle = async (input: EditIssueTitleInput) => {
 		...actorOf(ready.value.actor),
 		action: 'edit.title',
 		payload: {
-			id: input.issueId,
+			id: issueId,
 			name: title,
 		},
 	} satisfies AppEvent<'edit.title'>;
@@ -734,8 +738,8 @@ export const editIssueTitle = async (input: EditIssueTitleInput) => {
 	if (isFail(results)) return failed(results.message);
 
 	return succeeded('Edited issue title', {
-		id: input.issueId,
-		ref: nodeRef(input.issueId),
+		id: issueId,
+		ref: nodeRef(issueId),
 		title,
 	});
 };

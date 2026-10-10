@@ -34,7 +34,6 @@ import {
 	editIssueTitle,
 	editBoardTitle,
 	editSwimlaneTitle,
-	getOmeState,
 	getIssue,
 	listBoards,
 	listIssues,
@@ -46,16 +45,11 @@ import {
 	reopenIssue,
 	sync,
 } from './ome-api.js';
-import {
-	linkContributorEmail,
-	listContributorEmails,
-	suggestOwnEmails,
-	unlinkContributorEmail,
-} from './api/emails.js';
 import {initProjectTool} from './ome-init.js';
 import {getIssueStats} from './ome-issue-stats.js';
 import {installSkill} from './ome-skill.js';
 import {runExclusive} from './ome-time-travel.js';
+import {OME_VERSION} from '../version.js';
 
 export const resultJson = <T>(result: Result<T>) => ({
 	isError: isFail(result),
@@ -81,20 +75,12 @@ const exclusiveTool =
 export const createMcpServer = () => {
 	const server = new McpServer({
 		name: 'ome',
-		version: '0.2.30',
+		version: OME_VERSION,
 	});
 
-	server.registerTool(
-		'ome_state_get',
-		{
-			description:
-				'Get the full current OME state, including nodes and event log',
-			inputSchema: z.object({
-				repoRoot: z.string().optional(),
-			}),
-		},
-		exclusiveTool(getOmeState),
-	);
+	// `ome_state_get` is deliberately not registered: it dumps the whole board
+	// plus the event log, and agents use `ome_issue_list`/`ome_issue_get`. The
+	// GUI websocket still calls the underlying function, so it stays exported.
 
 	server.registerTool(
 		'ome_issue_list',
@@ -119,7 +105,7 @@ export const createMcpServer = () => {
 		'ome_issue_get',
 		{
 			description:
-				'Get one OME issue by its full id or its 7-character ref, with its comments in log order. Use this rather than listing the whole board when you already know which issue you want, and rather than ome_state_get to read a thread.',
+				'Get one OME issue by its full id or its 7-character ref, with its comments in log order. Use this rather than listing the whole board when you already know which issue you want.',
 			inputSchema: z.object({
 				idOrRef: z.string().min(1),
 				repoRoot: z.string().optional(),
@@ -326,12 +312,18 @@ export const createMcpServer = () => {
 	server.registerTool(
 		'ome_issue_tag_remove',
 		{
-			description: 'Remove a tag from an OME issue',
-			inputSchema: z.object({
-				issueId: z.string().min(1),
-				tagId: z.string().min(1),
-				repoRoot: z.string().optional(),
-			}),
+			description:
+				'Remove a tag from an OME issue. Accepts the tag by id or by name — pass whichever you have.',
+			inputSchema: z
+				.object({
+					issueId: z.string().min(1),
+					tagId: z.string().min(1).optional(),
+					tagName: z.string().min(1).max(MAX_TAG_NAME_LENGTH).optional(),
+					repoRoot: z.string().optional(),
+				})
+				.refine(v => Boolean(v.tagId ?? v.tagName), {
+					message: 'Pass tagId or tagName',
+				}),
 		},
 		exclusiveTool(removeIssueTag),
 	);
@@ -558,53 +550,9 @@ export const createMcpServer = () => {
 		exclusiveTool(assumeActor),
 	);
 
-	server.registerTool(
-		'ome_contributor_email_link',
-		{
-			description:
-				"Bind a git author address to a contributor, so their commits and their board activity read as one person. Defaults to you; pass contributorId to link a colleague who does not use ome, whose commits otherwise never resolve. The address the repository's git is configured with links itself on your first write, so this is for older addresses and for other people. An address two contributors claim resolves to neither, and the reply says so.",
-			inputSchema: z.object({
-				email: z.string().min(1).max(254),
-				contributorId: z.string().min(1).optional(),
-				repoRoot: z.string().optional(),
-			}),
-		},
-		exclusiveTool(linkContributorEmail),
-	);
-
-	server.registerTool(
-		'ome_contributor_email_unlink',
-		{
-			description:
-				'Retract a link between a git address and a contributor. Allowed only to whoever wrote the link and to the contributor it names, so nobody can strip links that are neither theirs nor about them. Forward-only: the address stops resolving and the event stays in the log.',
-			inputSchema: z.object({
-				email: z.string().min(1).max(254),
-				contributorId: z.string().min(1).optional(),
-				repoRoot: z.string().optional(),
-			}),
-		},
-		exclusiveTool(unlinkContributorEmail),
-	);
-
-	server.registerTool(
-		'ome_contributor_email_suggest',
-		{
-			description:
-				"Addresses in this repository's history that look like yours and nobody has claimed, for the user to confirm. Run it once after this feature reaches a board with history: the address git is configured with links itself, but older ones do not, and until they are linked those commits show a raw git name. Show the list and link only what the user confirms — each link is permanent and replicates to every clone.",
-			inputSchema: z.object({repoRoot: z.string().optional()}),
-		},
-		exclusiveTool(suggestOwnEmails),
-	);
-
-	server.registerTool(
-		'ome_contributor_email_list',
-		{
-			description:
-				'Every git address the board has bound to a contributor, and who holds it. An address with more than one claimant is flagged contested and resolves to none of them, which is the state nothing else reports.',
-			inputSchema: z.object({repoRoot: z.string().optional()}),
-		},
-		exclusiveTool(listContributorEmails),
-	);
+	// `ome_contributor_email_*` is deliberately not registered: agents never
+	// call it (zero uses mined from session logs), the operator's GUI does. The
+	// functions stay exported from api/emails.js for the websocket.
 
 	server.registerTool(
 		'ome_project_init',

@@ -5,7 +5,17 @@ import React from 'react';
 import {startGui} from './gui/init.js';
 import OmeApp from './lib/components/OmeApp.js';
 import {applyActorNameArgument} from './lib/config/actor-env.js';
-import {failed, isFail, Result, succeeded} from './lib/model/result-types.js';
+import {
+	migrateEpiqProject,
+	resolveClosestLegacyProjectRoot,
+} from './lib/migration/migrate-epiq.js';
+import {
+	failed,
+	isFail,
+	isSuccess,
+	Result,
+	succeeded,
+} from './lib/model/result-types.js';
 import {initUiState} from './lib/state/ux-state.js';
 import {formatUnknownError} from './lib/utils/logger.utils.js';
 import {OME_VERSION} from './version.js';
@@ -22,6 +32,12 @@ ${chalk.dim('Boot in directory:')}
 ${chalk.dim('Launch GUI:')}
   ${chalk.cyan('$ ome gui')}
   ${chalk.cyan('$ ome gui --no-open')}  ${chalk.dim('no browser')}
+
+${chalk.dim('Migrate an Epiq board to OME:')}
+  ${chalk.cyan('$ ome migrate')}            ${chalk.dim(
+	'plan only, changes nothing',
+)}
+  ${chalk.cyan('$ ome migrate --apply')}    ${chalk.dim('do it')}
 
 ${chalk.dim('Act as somebody other than the configured user:')}
   ${chalk.cyan('$ ome --as claude')}
@@ -42,11 +58,15 @@ const cli = meow(helpText, {
 			type: 'boolean',
 			default: true,
 		},
+		apply: {
+			type: 'boolean',
+			default: false,
+		},
 	},
 });
 
 const command = cli.input[0];
-if (command && command !== 'gui') {
+if (command && command !== 'gui' && command !== 'migrate') {
 	console.error(chalk.red(`Unknown command: ${command}`));
 	process.exit(1);
 }
@@ -95,7 +115,51 @@ process.stdout.on('resize', () => {
 	}
 });
 
-if (command === 'gui') {
+if (command === 'migrate') {
+	const legacyRoot = resolveClosestLegacyProjectRoot(process.cwd());
+	const repoRoot = isSuccess(legacyRoot) ? legacyRoot.value : null;
+
+	const migrateResult = await migrateEpiqProject({
+		repoRoot,
+		dryRun: !cli.flags.apply,
+	});
+
+	if (isFail(migrateResult)) {
+		console.error(chalk.red(migrateResult.message));
+		process.exitCode = 1;
+	} else {
+		const {plan, warnings} = migrateResult.value;
+
+		if (plan.actions.length === 0) {
+			console.log('Nothing to migrate.');
+		} else {
+			console.log(
+				chalk.bold(
+					cli.flags.apply
+						? `Migrated ${plan.projectId ?? 'the global directory'} to OME`
+						: 'Migration plan (dry run; nothing changed)',
+				),
+			);
+
+			for (const action of plan.actions) {
+				const path = action.from
+					? chalk.dim(`\n      ${action.from} → ${action.to ?? ''}`)
+					: '';
+				console.log(`  ${chalk.cyan('•')} ${action.description}${path}`);
+			}
+
+			if (!cli.flags.apply) {
+				console.log(chalk.dim('\nRe-run with --apply to carry it out.'));
+			}
+		}
+
+		for (const warning of warnings) {
+			console.error(chalk.yellow(warning));
+		}
+	}
+
+	process.exit(process.exitCode ?? 0);
+} else if (command === 'gui') {
 	const guiResult = await startGui({
 		repoRoot: process.cwd(),
 		open: cli.flags.open,

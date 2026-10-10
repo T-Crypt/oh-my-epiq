@@ -27,6 +27,10 @@ export const addIssueComment = async (input: AddIssueCommentInput) => {
 	const issueResult = findWritableIssue(input.issueId);
 	if (isFail(issueResult)) return issueResult;
 
+	// The resolved id, not the token the caller passed: a ref is a valid way to
+	// name a ticket but only the full id belongs in the log.
+	const issueId = issueResult.value.id;
+
 	const body = input.body.trim();
 
 	if (!body) {
@@ -48,7 +52,7 @@ export const addIssueComment = async (input: AddIssueCommentInput) => {
 		action: 'add.issue.comment',
 		payload: {
 			id: commentId,
-			issue: input.issueId,
+			issue: issueId,
 			md: body,
 			author: ready.value.actor.userId,
 		},
@@ -63,7 +67,7 @@ export const addIssueComment = async (input: AddIssueCommentInput) => {
 
 	return succeeded('Added issue comment', {
 		id: commentId,
-		issueId: input.issueId,
+		issueId,
 		body,
 	});
 };

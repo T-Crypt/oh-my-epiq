@@ -191,8 +191,10 @@ describe('git.commit pathspec', () => {
 
 		expect(isFail(result)).toBe(false);
 		expect(filesInHead(repo).sort()).toEqual([
-			'.ome/project.json',
+			// Lexicographic: `.gitignore` sorts before `.ome/…`, which upstream's
+			// `.epiq/…` did not.
 			'.gitignore',
+			'.ome/project.json',
 		]);
 		expect(stagedFiles(repo)).toEqual(['secret.txt']);
 	});

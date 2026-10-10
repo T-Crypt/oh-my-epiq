@@ -8,6 +8,7 @@ import {
 	succeeded,
 } from '../../lib/model/result-types.js';
 import {nodeRepo} from '../../lib/repository/node-repo.js';
+import {isTicketNode} from '../../lib/model/context.model.js';
 import {MAX_TAG_NAME_LENGTH, tooLong} from '../../lib/utils/text.limits.js';
 import {nodeRef} from '../../lib/utils/node-ref.js';
 import {sanitizeInlineText} from '../../lib/utils/string.utils.js';
@@ -17,6 +18,7 @@ import {
 	bootLocal,
 	bootedWithActorAndState,
 	getActor,
+	getStateResult,
 } from './boot.js';
 import {
 	IssueTargets,
@@ -34,7 +36,8 @@ type AddIssueTagInput = ToolInput &
 
 type RemoveIssueTagInput = ToolInput & {
 	issueId: string;
-	tagId: string;
+	tagId?: string;
+	tagName?: string;
 };
 
 type TagRef = {tag: {id: string; name: string}};
@@ -79,6 +82,20 @@ export async function addIssueTag(
 
 	const tagId = existingTag?.id ?? ulid();
 
+	// Adding a tag a ticket already carries is a no-op, not an error. Agents
+	// re-run setup on re-opened tickets and across repeated sessions, and a
+	// hard failure here aborted a whole batch with "tag already assigned".
+	const stateResult = getStateResult();
+	const alreadyTagged = (id: string): boolean => {
+		if (!existingTag) return false;
+		const node = isFail(stateResult) ? undefined : stateResult.value.nodes[id];
+		return Boolean(
+			node && isTicketNode(node) && (node.props.tags ?? []).includes(tagId),
+		);
+	};
+
+	const toTag = outcome.done.filter(({id}) => !alreadyTagged(id));
+
 	const events = [
 		...(existingTag
 			? []
@@ -93,7 +110,7 @@ export async function addIssueTag(
 						},
 					} satisfies AppEvent<'create.tag'>,
 			  ]),
-		...outcome.done.map(
+		...toTag.map(
 			({id}) =>
 				({
 					id: ulid(),
@@ -107,17 +124,23 @@ export async function addIssueTag(
 		),
 	];
 
-	const results = materializeAndPersistAll(
-		events,
-		bootResult.value.stateBranchRoot,
-	);
+	if (events.length > 0) {
+		const results = materializeAndPersistAll(
+			events,
+			bootResult.value.stateBranchRoot,
+		);
 
-	if (isFail(results)) return failed(results.message);
+		if (isFail(results)) return failed(results.message);
+	}
 
 	const tag = {id: tagId, name: tagName};
 
 	if (!input.issueIds) {
-		return succeeded('Added issue tag', {...outcome.done[0]!, tag});
+		const target = outcome.done[0]!;
+		return succeeded(
+			alreadyTagged(target.id) ? 'Tag already on issue' : 'Added issue tag',
+			{...target, tag},
+		);
 	}
 
 	const batch = batchResult('Tagged', outcome);
@@ -198,18 +221,23 @@ export const removeIssueTag = async (input: RemoveIssueTagInput) => {
 
 	const issueResult = findWritableIssue(input.issueId);
 	if (isFail(issueResult)) return issueResult;
+	const issueId = issueResult.value.id;
 
-	if (!ready.value.state.tags[input.tagId]) {
-		return failed('Tag not found');
-	}
+	// Accept the tag by id or by name: `ome_issue_tag_add` names a tag, so an
+	// agent that just added one reaches for the same word to remove it.
+	const tag =
+		(input.tagId ? ready.value.state.tags[input.tagId] : undefined) ??
+		nodeRepo.findTagByName(sanitizeInlineText(input.tagName ?? '').trim());
+
+	if (!tag) return failed('Tag not found');
 
 	const event = {
 		id: ulid(),
 		...actorOf(ready.value.actor),
 		action: 'remove.issue.tag',
 		payload: {
-			id: input.issueId,
-			tag: input.tagId,
+			id: issueId,
+			tag: tag.id,
 		},
 	} satisfies AppEvent<'remove.issue.tag'>;
 
@@ -221,8 +249,8 @@ export const removeIssueTag = async (input: RemoveIssueTagInput) => {
 	if (isFail(results)) return failed(results.message);
 
 	return succeeded('Removed issue tag', {
-		id: input.issueId,
-		ref: nodeRef(input.issueId),
-		tagId: input.tagId,
+		id: issueId,
+		ref: nodeRef(issueId),
+		tagId: tag.id,
 	});
 };

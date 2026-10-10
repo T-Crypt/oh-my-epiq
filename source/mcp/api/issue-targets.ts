@@ -6,6 +6,7 @@ import {
 } from '../../lib/model/result-types.js';
 import {ApiBatchOutcome} from '../api-state.model.js';
 import {nodeRef} from '../../lib/utils/node-ref.js';
+import {resolveIssueId} from './node-targets.js';
 
 // One ticket or many. issueIds asks for a per-ticket outcome; issueId alone
 // keeps the single answer.
@@ -14,12 +15,16 @@ export type IssueTargets = {
 	issueIds?: string[];
 };
 
+// Targets may be named by id or by ref; resolving here is what lets every
+// batch-capable write accept either without each one repeating the lookup.
 export const targetIds = (input: IssueTargets): Result<string[]> => {
 	const ids = [
-		...new Set([
-			...(input.issueIds ?? []),
-			...(input.issueId ? [input.issueId] : []),
-		]),
+		...new Set(
+			[
+				...(input.issueIds ?? []),
+				...(input.issueId ? [input.issueId] : []),
+			].map(resolveIssueId),
+		),
 	];
 
 	return ids.length

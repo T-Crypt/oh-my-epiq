@@ -638,8 +638,13 @@ export const nodeRepo = {
 
 		const assignees = target.props.assignees ?? [];
 
+		// Adding an assignee a ticket already has is a no-op, not an error:
+		// agents replay the same call after a retry, and a second failure is
+		// indistinguishable from the first.
 		if (assignees.includes(contributorId)) {
-			return failed('Contributor already assigned');
+			return succeeded('Contributor already assigned', {
+				assignee: contributorId,
+			});
 		}
 
 		const updatedNode = {
@@ -703,8 +708,9 @@ export const nodeRepo = {
 		if (!isTicketNode(target)) return failed('Target is not an issue');
 		const tags = target.props.tags ?? [];
 
+		// Same as assign: duplicate adds are idempotent.
 		if (tags.includes(tagId)) {
-			return failed('Tag already assigned');
+			return succeeded('Tag already added', {tag: tagId});
 		}
 
 		const updatedNode = {

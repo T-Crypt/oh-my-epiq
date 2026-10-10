@@ -112,6 +112,8 @@ export const addIssueAssignee = async (input: AddIssueAssigneeInput) => {
 	const issueResult = findWritableIssue(input.issueId);
 	if (isFail(issueResult)) return issueResult;
 
+	const issueId = issueResult.value.id;
+
 	const targetId = input.self ? ready.value.actor.userId : input.assigneeId;
 
 	// An id names a specific person, so an unknown one is an error rather than
@@ -145,7 +147,7 @@ export const addIssueAssignee = async (input: AddIssueAssigneeInput) => {
 				id: ulid(),
 				...actorOf(ready.value.actor),
 				action: 'add.issue.assignee',
-				payload: {id: input.issueId, assignee: assignee.id},
+				payload: {id: issueId, assignee: assignee.id},
 			} satisfies AppEvent<'add.issue.assignee'>,
 		];
 
@@ -157,8 +159,8 @@ export const addIssueAssignee = async (input: AddIssueAssigneeInput) => {
 		if (isFail(assignResults)) return failed(assignResults.message);
 
 		return succeeded('Added issue assignee', {
-			id: input.issueId,
-			ref: nodeRef(input.issueId),
+			id: issueId,
+			ref: nodeRef(issueId),
 			assignee: {id: assignee.id, name: assignee.name},
 		});
 	}
@@ -227,7 +229,7 @@ export const addIssueAssignee = async (input: AddIssueAssigneeInput) => {
 			...actorOf(ready.value.actor),
 			action: 'add.issue.assignee',
 			payload: {
-				id: input.issueId,
+				id: issueId,
 				assignee: assigneeId,
 			},
 		} satisfies AppEvent<'add.issue.assignee'>,
@@ -241,8 +243,8 @@ export const addIssueAssignee = async (input: AddIssueAssigneeInput) => {
 	if (isFail(results)) return failed(results.message);
 
 	return succeeded('Added issue assignee', {
-		id: input.issueId,
-		ref: nodeRef(input.issueId),
+		id: issueId,
+		ref: nodeRef(issueId),
 		assignee: {id: assigneeId, name: resolvedName},
 	});
 };
@@ -426,6 +428,8 @@ export const removeIssueAssignee = async (input: RemoveIssueAssigneeInput) => {
 	const issueResult = findWritableIssue(input.issueId);
 	if (isFail(issueResult)) return issueResult;
 
+	const issueId = issueResult.value.id;
+
 	if (!ready.value.state.contributors[input.assigneeId]) {
 		return failed('Assignee not found');
 	}
@@ -435,7 +439,7 @@ export const removeIssueAssignee = async (input: RemoveIssueAssigneeInput) => {
 		...actorOf(ready.value.actor),
 		action: 'remove.issue.assignee',
 		payload: {
-			id: input.issueId,
+			id: issueId,
 			assignee: input.assigneeId,
 		},
 	} satisfies AppEvent<'remove.issue.assignee'>;
@@ -448,8 +452,8 @@ export const removeIssueAssignee = async (input: RemoveIssueAssigneeInput) => {
 	if (isFail(results)) return failed(results.message);
 
 	return succeeded('Removed issue assignee', {
-		id: input.issueId,
-		ref: nodeRef(input.issueId),
+		id: issueId,
+		ref: nodeRef(issueId),
 		assigneeId: input.assigneeId,
 	});
 };

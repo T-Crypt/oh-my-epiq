@@ -12,6 +12,10 @@ coverage
 .ome/log/
 .DS_Store
 
+# [ome]: operator-only docs, local and never committed
+docs/VISION.md
+docs/PROMPT.md
+
 # playwright
 test-results
 playwright-report

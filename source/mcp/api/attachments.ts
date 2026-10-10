@@ -79,6 +79,8 @@ export const addIssueAttachment = async (input: AddIssueAttachmentInput) => {
 	const issueResult = findWritableIssue(input.issueId);
 	if (isFail(issueResult)) return issueResult;
 
+	const issueId = issueResult.value.id;
+
 	const bytesResult = readAttachmentBytes(input);
 	if (isFail(bytesResult)) return bytesResult;
 
@@ -98,7 +100,7 @@ export const addIssueAttachment = async (input: AddIssueAttachmentInput) => {
 		action: 'add.issue.attachment',
 		payload: {
 			id: attachmentId,
-			issue: input.issueId,
+			issue: issueId,
 			author: ready.value.actor.userId,
 			hash: written.value.hash,
 			ext: written.value.ext,
@@ -118,7 +120,7 @@ export const addIssueAttachment = async (input: AddIssueAttachmentInput) => {
 
 	return succeeded('Added issue attachment', {
 		id: attachmentId,
-		issueId: input.issueId,
+		issueId,
 		fileName,
 		bytes: written.value.bytes,
 		markdown: getAttachmentMarkdown(name, fileName),

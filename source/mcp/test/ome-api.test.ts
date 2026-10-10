@@ -1425,7 +1425,7 @@ describe('mcp tools', () => {
 				{
 					id: fixtureId('nope'),
 					ref: nodeRef(fixtureId('nope')),
-					reason: 'Issue not found',
+					reason: 'Issue not found — pass the issue id or its 7-character ref',
 				},
 			]);
 			expect(persistModule.materializeAndPersistAll).toHaveBeenCalledTimes(2);
@@ -1646,20 +1646,15 @@ describe('mcp tools', () => {
 			tagName: 'bug',
 		});
 
+		// Idempotent: the tag is already on the ticket, so nothing is written
+		// and the reply says so rather than failing.
 		expect(isFail(result)).toBe(false);
 		if (!isFail(result)) {
+			expect(result.message).toBe('Tag already on issue');
 			expect(result.value.tag).toEqual({id: 'tag-1', name: 'bug'});
 		}
 
-		const calls = (
-			persistModule.materializeAndPersistAll as ReturnType<typeof vi.fn>
-		).mock.calls[0]?.[0];
-		expect(calls).toEqual([
-			expect.objectContaining({
-				action: 'add.issue.tag',
-				payload: {id: fixtureId('issue-1'), tag: 'tag-1'},
-			}),
-		]);
+		expect(persistModule.materializeAndPersistAll).not.toHaveBeenCalled();
 	});
 
 	it('removes a tag from an issue', async () => {
