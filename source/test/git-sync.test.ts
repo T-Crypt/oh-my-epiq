@@ -168,6 +168,66 @@ describe('unpushed commits', () => {
 
 		expect(remoteRefResult.value.stdout).toContain(head);
 	});
+
+	// An Epiq migration renames the state branch, so the remote has no branch
+	// of that name and the local one has no upstream. "Not ahead of an upstream
+	// it does not have" used to read as nothing to push, so every later sync
+	// reported success and the board never reached the remote.
+	it('pushes and sets the upstream when the remote has no state branch yet', async () => {
+		const {repoRoot} = await setupRepo();
+		const ownEventFileName = 'u1.alice.jsonl';
+
+		const bootResult = await syncOmeWithRemote({
+			cwd: repoRoot,
+			ownEventFileName,
+		});
+		if (isFail(bootResult)) throw new Error(bootResult.message);
+
+		const {stateBranchRoot} = bootResult.value;
+
+		writeFile(
+			getEventsFile({root: stateBranchRoot, fileName: ownEventFileName}),
+			eventLine('01H00000000000000000000001'),
+		);
+		for (const args of [
+			['add', getRelativeEventFilePath(ownEventFileName)],
+			['commit', '-m', 'migrated'],
+			['branch', '--unset-upstream'],
+			['push', 'origin', '--delete', 'ome/state'],
+		]) {
+			const step = await execGit({args, cwd: stateBranchRoot});
+			if (isFail(step)) throw new Error(step.message);
+		}
+
+		const headResult = await execGit({
+			args: ['rev-parse', 'HEAD'],
+			cwd: stateBranchRoot,
+		});
+		if (isFail(headResult)) throw new Error(headResult.message);
+		const head = headResult.value.stdout.trim();
+
+		const syncResult = await syncOmeWithRemote({
+			cwd: repoRoot,
+			ownEventFileName,
+		});
+		if (isFail(syncResult)) throw new Error(syncResult.message);
+
+		expect(syncResult.value.pushed).toBe(true);
+
+		const remoteRefResult = await execGit({
+			args: ['ls-remote', 'origin', 'refs/heads/ome/state'],
+			cwd: stateBranchRoot,
+		});
+		if (isFail(remoteRefResult)) throw new Error(remoteRefResult.message);
+		expect(remoteRefResult.value.stdout).toContain(head);
+
+		const upstreamResult = await execGit({
+			args: ['rev-parse', '--abbrev-ref', '@{u}'],
+			cwd: stateBranchRoot,
+		});
+		if (isFail(upstreamResult)) throw new Error(upstreamResult.message);
+		expect(upstreamResult.value.stdout.trim()).toBe('origin/ome/state');
+	});
 });
 
 describe('sync commit scope', () => {
