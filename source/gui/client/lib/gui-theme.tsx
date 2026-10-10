@@ -101,6 +101,23 @@ export const EVENT_CATEGORY_COLORS = {
 // thing.
 export const BOARD_CONTRIBUTOR_COLOR = '#7fd8c4';
 
+// The mark's own gradient: the three stops the favicon draws, cyan → violet →
+// magenta. Worn by anything that names OME in a heading — the header's `:ome`
+// and the init screen's kicker — so the wordmark and the favicon are one mark,
+// which is what the theme asks for.
+export const OME_GRADIENT =
+	'linear-gradient(100deg, #00dbe4 0%, #9362f4 52%, #f84fcc 100%)';
+
+// The style a span takes to wear `OME_GRADIENT`. `background-clip: text` shows
+// the gradient through the glyphs only while the text colour is transparent,
+// and the `-webkit-` spelling is the one that shipped everywhere.
+export const OME_MARK_STYLE = {
+	background: OME_GRADIENT,
+	WebkitBackgroundClip: 'text',
+	backgroundClip: 'text',
+	color: 'transparent',
+} as const;
+
 export const getContrastTextColor = (backgroundColor: string): string => {
 	const hex = backgroundColor.replace('#', '');
 

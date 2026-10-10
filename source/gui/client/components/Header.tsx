@@ -2,7 +2,7 @@ import {useLayoutEffect, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {GuiState} from '../lib/gui-state.model';
 import {useDismissOnOutsideClick} from '../lib/use-dismiss-on-outside-click';
-import {GUI_THEME} from '../lib/gui-theme';
+import {GUI_THEME, OME_MARK_STYLE} from '../lib/gui-theme';
 import {SyncStatus} from '../lib/gui-sync-statusmodel';
 import {Button} from './Button';
 import {CommandPaletteHint} from './CommandPaletteHint';
@@ -123,9 +123,12 @@ export const Header = ({
 				}}
 			>
 				<div style={{display: 'flex', alignItems: 'center', gap: 14}}>
+					{/* The wordmark wears the mark's gradient, the same three stops the
+					    favicon draws, so the two read as one mark rather than a title
+					    in accent. */}
 					<div
 						style={{
-							color: GUI_THEME.accent,
+							...OME_MARK_STYLE,
 							fontSize: 12,
 							fontWeight: 700,
 						}}

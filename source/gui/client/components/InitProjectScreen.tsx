@@ -1,6 +1,6 @@
 import {Button} from './Button';
 import {Panel} from './Panel';
-import {GUI_THEME, UI_FONT} from '../lib/gui-theme';
+import {GUI_THEME, OME_MARK_STYLE, UI_FONT} from '../lib/gui-theme';
 
 // Mirrors the server's view of the recent-projects registry; the client cannot
 // import the Node-side module that defines it.
@@ -61,7 +61,7 @@ export const InitProjectScreen = ({
 			>
 				<div
 					style={{
-						color: GUI_THEME.accent,
+						...OME_MARK_STYLE,
 						fontSize: 10,
 						letterSpacing: 1,
 						textTransform: 'uppercase',
