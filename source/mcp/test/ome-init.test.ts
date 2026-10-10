@@ -4,7 +4,8 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {ACTOR_NAME_ENV} from '../../lib/config/actor-env.js';
 import {getOmeConfigPath, readOmeConfig} from '../../lib/config/user-config.js';
 import {isFail} from '../../lib/model/result-types.js';
-import {listBoards} from '../ome-api.js';
+import {listBoards, listSwimlanes} from '../ome-api.js';
+import {forgetProjectRoot} from '../api/boot.js';
 import {initProjectTool} from '../ome-init.js';
 import {
 	cloneRepo,
@@ -29,6 +30,7 @@ afterEach(() => {
 	process.env['OME_GLOBAL_DIR'] = originalGlobalDir;
 	delete process.env[ACTOR_NAME_ENV];
 	vi.restoreAllMocks();
+	forgetProjectRoot();
 });
 
 const setupPlainRepo = async () => {
@@ -118,7 +120,51 @@ describe('ome_project_init', () => {
 
 		const boards = await listBoards({repoRoot});
 		if (isFail(boards)) throw new Error(boards.message);
-		expect(boards.value.map(board => board.title)).toContain('Default');
+		expect(boards.value.map(board => board.title)).toContain(
+			path.basename(fs.realpathSync(repoRoot)),
+		);
+	});
+
+	it('names the board and creates the lanes it is given, in one call', async () => {
+		const {repoRoot} = await setupPlainRepo();
+		const lanes = ['Inbox', 'Next', 'In progress', 'Waiting on review', 'Done'];
+
+		const result = await initProjectTool({
+			repoRoot,
+			...answers,
+			boardTitle: 'Tracer',
+			swimlanes: lanes,
+		});
+		if (isFail(result)) throw new Error(result.message);
+
+		expect(result.value.warnings).toEqual([]);
+		expect(result.value.board.boardTitle).toBe('Tracer');
+		expect(result.value.board.swimlanes.map(l => l.title)).toEqual(lanes);
+
+		const listed = await listSwimlanes({
+			repoRoot,
+			boardId: result.value.board.boardId,
+		});
+		if (isFail(listed)) throw new Error(listed.message);
+		expect(listed.value.map(l => l.title)).toEqual(
+			expect.arrayContaining(lanes),
+		);
+	});
+
+	it('means the new project when a later call leaves repoRoot off', async () => {
+		const {repoRoot} = await setupPlainRepo();
+
+		const result = await initProjectTool({
+			repoRoot,
+			...answers,
+			boardTitle: 'Sticky',
+		});
+		if (isFail(result)) throw new Error(result.message);
+
+		// The test process's cwd is the OME checkout, a different project.
+		const boards = await listBoards();
+		if (isFail(boards)) throw new Error(boards.message);
+		expect(boards.value.map(board => board.title)).toContain('Sticky');
 	});
 
 	it('refuses to change an answer the machine already has', async () => {

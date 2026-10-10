@@ -23,6 +23,7 @@ import {
 	getInProgressGitOperation,
 	hasRemote,
 	hasStagedChanges,
+	hasUpstream,
 	isAheadOfUpstream,
 	isDetachedHead,
 	isNonFastForward,
@@ -535,7 +536,21 @@ const runSync = async (
 	);
 	if (isFail(aheadResult)) return failSync(aheadResult.message);
 
-	if (createdCommit || bootstrapped || aheadResult.value) {
+	// No upstream reads as "not ahead", which left a branch whose tracking was
+	// unset (an Epiq migration does that) reporting success forever without
+	// pushing. pushStateBranch sets the upstream itself; it only has to be asked.
+	const upstreamResult = trace(
+		'hasUpstream',
+		await hasUpstream(stateBranchRoot),
+	);
+	if (isFail(upstreamResult)) return failSync(upstreamResult.message);
+
+	if (
+		createdCommit ||
+		bootstrapped ||
+		aheadResult.value ||
+		!upstreamResult.value
+	) {
 		logger.info('[sync] pushing state branch', {
 			createdCommit,
 			bootstrapped,

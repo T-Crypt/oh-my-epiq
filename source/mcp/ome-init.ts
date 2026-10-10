@@ -1,3 +1,4 @@
+import path from 'node:path';
 import {ulid} from 'ulid';
 import {ACTOR_NAME_ENV} from '../lib/config/actor-env.js';
 import {recordRecentProject} from '../lib/config/recent-projects.js';
@@ -9,6 +10,8 @@ import {
 	InitProjectOutcome,
 } from '../lib/project-setup/init-project.js';
 import {logger} from '../logger.js';
+import {rememberProjectRoot} from './api/boot.js';
+import {createSwimlane, editBoardTitle, listBoards} from './api/boards.js';
 
 // Setting up a board from an agent, without the TUI. The tools here run before
 // a project exists, so unlike the rest of the API they never boot: there is no
@@ -19,6 +22,67 @@ type InitInput = {
 	userName?: string;
 	preferredEditor?: string;
 	autoSync?: boolean;
+	boardTitle?: string;
+	swimlanes?: string[];
+};
+
+type BoardSetup = {
+	boardId?: string;
+	boardTitle?: string;
+	swimlanes: {id: string; title: string}[];
+};
+
+/**
+ * The board an agent sets up next, every time: named after the project rather
+ * than "Default", with the lanes it works in. Done here so it is one call, not
+ * a board listing plus a title edit plus a write per lane, each a chance to
+ * aim at the wrong project. A step that fails is a warning: the project exists
+ * by now, and the rest can be done by hand.
+ */
+const setUpBoard = async (
+	repoRoot: string,
+	input: InitInput,
+	warnings: string[],
+): Promise<BoardSetup> => {
+	const setup: BoardSetup = {swimlanes: []};
+
+	const boards = await listBoards({repoRoot});
+	if (isFail(boards)) {
+		warnings.push(`Board setup skipped: ${boards.message}`);
+		return setup;
+	}
+
+	const board = boards.value.find(b => !b.readonly);
+	if (!board) {
+		warnings.push('Board setup skipped: no writable board after init');
+		return setup;
+	}
+
+	setup.boardId = board.id;
+	setup.boardTitle = board.title;
+
+	const title = (input.boardTitle ?? path.basename(repoRoot)).trim();
+	if (title && title !== board.title) {
+		const renamed = await editBoardTitle({repoRoot, boardId: board.id, title});
+		if (isFail(renamed)) warnings.push(`Board not renamed: ${renamed.message}`);
+		else setup.boardTitle = title;
+	}
+
+	for (const lane of input.swimlanes ?? []) {
+		const created = await createSwimlane({
+			repoRoot,
+			boardId: board.id,
+			title: lane,
+		});
+		if (isFail(created)) {
+			warnings.push(`Swimlane "${lane}" not created: ${created.message}`);
+			continue;
+		}
+
+		setup.swimlanes.push({id: created.value.id, title: created.value.title});
+	}
+
+	return setup;
 };
 
 // What the TUI's setup screen asks for, in its order, with the question the
@@ -57,6 +121,7 @@ export const initProjectTool = async (
 	Result<
 		Omit<InitProjectOutcome, 'defaultEvents'> & {
 			user: {userId: string; userName: string};
+			board: BoardSetup;
 		}
 	>
 > => {
@@ -178,10 +243,16 @@ export const initProjectTool = async (
 	const remembered = recordRecentProject({root: outcome.repoRoot});
 	if (isFail(remembered)) logger.info(remembered.message);
 
-	const message =
-		outcome.warnings.length === 0
-			? 'Project initialized'
-			: `Project initialized, with warnings: ${outcome.warnings.join(' ')}`;
+	// The project the agent just made is the one it means next.
+	rememberProjectRoot(outcome.repoRoot);
 
-	return succeeded(message, {...outcome, user});
+	const warnings = [...outcome.warnings];
+	const board = await setUpBoard(outcome.repoRoot, input, warnings);
+
+	const message =
+		warnings.length === 0
+			? 'Project initialized'
+			: `Project initialized, with warnings: ${warnings.join(' ')}`;
+
+	return succeeded(message, {...outcome, warnings, user, board});
 };

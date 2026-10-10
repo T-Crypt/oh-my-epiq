@@ -44,9 +44,38 @@ export type Actor = {
 	userName: string;
 };
 
+// The project this process was last pointed at by name. An agent that names
+// its project once (or just created it with ome_project_init) and then leaves
+// repoRoot off the next call means that project, not the directory the server
+// happened to be launched in. Measured on the hq router, 2026-10-10: after
+// initialising a board in another repository, five swimlane writes without
+// repoRoot landed on the launch directory's board and failed "Board not found".
+let lastNamedRoot: string | null = null;
+
+export const rememberProjectRoot = (root: string): void => {
+	lastNamedRoot = root;
+};
+
+export const forgetProjectRoot = (): void => {
+	lastNamedRoot = null;
+};
+
 export const resolveRepoRoot = (repoRoot?: string): Result<string> => {
+	if (repoRoot === undefined && lastNamedRoot !== null) {
+		const remembered = resolveClosestOmeProjectRoot(lastNamedRoot);
+		if (!isFail(remembered)) {
+			return succeeded('Resolved OME repo root', remembered.value);
+		}
+
+		// Gone since (deleted, re-initialised elsewhere): back to the launch
+		// directory rather than failing every call that leaves repoRoot off.
+		lastNamedRoot = null;
+	}
+
 	const result = resolveClosestOmeProjectRoot(repoRoot ?? process.cwd());
 	if (isFail(result)) return failed(result.message);
+
+	if (repoRoot !== undefined) lastNamedRoot = result.value;
 
 	return succeeded('Resolved OME repo root', result.value);
 };
