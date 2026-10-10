@@ -45,7 +45,10 @@ export const resolveIssueId = (token: string): string => {
 	const matches = Object.keys(nodes).filter(id => {
 		const node = nodes[id];
 		return Boolean(
-			node && !node.isDeleted && isTicketNode(node) && nodeRefMatches(id, query),
+			node &&
+				!node.isDeleted &&
+				isTicketNode(node) &&
+				nodeRefMatches(id, query),
 		);
 	});
 

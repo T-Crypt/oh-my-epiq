@@ -59,9 +59,7 @@ vi.mock('../lib/state/cmd.state.js', () => ({
 }));
 
 const {execGitAllowFail} = await import('../git/git-utils.js');
-const {readOmeConfig, setConfig} = await import(
-	'../lib/config/user-config.js'
-);
+const {readOmeConfig, setConfig} = await import('../lib/config/user-config.js');
 const {materializeAndPersistAll} = await import('../lib/board/board-log.js');
 const {getCmdState} = await import('../lib/state/cmd.state.js');
 const {setEmailsCommand} = await import(

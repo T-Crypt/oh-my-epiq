@@ -236,8 +236,7 @@ export const setupTui = (
 	options: SetupTuiOptions = {},
 ): TuiSession => {
 	const ownsCwd = options.cwd === undefined;
-	const cwd =
-		options.cwd ?? fs.mkdtempSync(path.join(os.tmpdir(), 'ome-e2e-'));
+	const cwd = options.cwd ?? fs.mkdtempSync(path.join(os.tmpdir(), 'ome-e2e-'));
 	const cliPath = path.resolve(process.cwd(), 'dist/index.js');
 
 	let destroyed = false;

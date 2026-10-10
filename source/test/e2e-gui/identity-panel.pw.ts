@@ -327,9 +327,7 @@ test('claiming an address makes its commits read as you, and unlinking undoes it
 	await expect(
 		page.locator('.ome-log-actor', {hasText: BOARD_NAME.split('/')[1]!}),
 	).not.toHaveCount(0);
-	await expect(page.locator('.ome-log-actor', {hasText: 'e2e'})).toHaveCount(
-		0,
-	);
+	await expect(page.locator('.ome-log-actor', {hasText: 'e2e'})).toHaveCount(0);
 
 	// And back: the address stops resolving, which is all unlinking promises.
 	panel = page.getByTestId('identity-panel');

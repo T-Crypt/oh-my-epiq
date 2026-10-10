@@ -2,10 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {ACTOR_NAME_ENV} from '../../lib/config/actor-env.js';
-import {
-	getOmeConfigPath,
-	readOmeConfig,
-} from '../../lib/config/user-config.js';
+import {getOmeConfigPath, readOmeConfig} from '../../lib/config/user-config.js';
 import {isFail} from '../../lib/model/result-types.js';
 import {listBoards} from '../ome-api.js';
 import {initProjectTool} from '../ome-init.js';

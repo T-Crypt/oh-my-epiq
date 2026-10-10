@@ -35,9 +35,7 @@ vi.mock('../lib/project-setup/project-setup.js', async importOriginal => ({
 		typeof import('../lib/project-setup/project-setup.js')
 	>()),
 	readProjectFile: vi.fn(() =>
-		projectExists
-			? succeeded('Read', {})
-			: failed('Missing .ome/project.json'),
+		projectExists ? succeeded('Read', {}) : failed('Missing .ome/project.json'),
 	),
 }));
 

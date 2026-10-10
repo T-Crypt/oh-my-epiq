@@ -67,7 +67,11 @@ import {
 	batchResult,
 	forEachTarget,
 } from './issue-targets.js';
-import {findWritableIssue, findWritableSwimlane, resolveIssueId} from './node-targets.js';
+import {
+	findWritableIssue,
+	findWritableSwimlane,
+	resolveIssueId,
+} from './node-targets.js';
 
 type MoveIssueInput = ToolInput &
 	IssueTargets & {
