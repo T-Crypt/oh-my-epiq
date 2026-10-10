@@ -33,7 +33,7 @@ const SERVE = process.env['STRESS_SERVE'] !== 'false';
 
 const ROOT =
 	process.env['STRESS_DIR'] ??
-	fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-stress-'));
+	fs.mkdtempSync(path.join(os.tmpdir(), 'ome-stress-'));
 
 // The checkout, remembered before anything changes directory into the scratch
 // project: the GUI server resolves its assets against the working directory,
@@ -68,7 +68,7 @@ fs.rmSync(REPO, {recursive: true, force: true});
 fs.mkdirSync(REPO, {recursive: true});
 fs.mkdirSync(GLOBAL, {recursive: true});
 
-process.env['EPIQ_GLOBAL_DIR'] = GLOBAL;
+process.env['OME_GLOBAL_DIR'] = GLOBAL;
 process.env['IS_LOCAL'] = 'true';
 
 fs.writeFileSync(
@@ -130,7 +130,7 @@ const {setVirtualNodesEnabled} = await import(
 const VIRTUAL = process.env['STRESS_VIRTUAL'] === 'on';
 setVirtualNodesEnabled(VIRTUAL);
 
-const api = await import('../../mcp/epiq-api.js');
+const api = await import('../../mcp/ome-api.js');
 const {getStateBranchRoot} = await import('../../git/git-storage.js');
 
 const ok = <T>(result: {status: string; message: string; value?: T}): T => {
@@ -176,7 +176,7 @@ const generated = await step('generate the log', () =>
 	}),
 );
 
-const eventsDir = path.join(stateRoot, '.epiq', 'events');
+const eventsDir = path.join(stateRoot, '.ome', 'events');
 const onDisk = fs
 	.readdirSync(eventsDir)
 	.filter(file => file.endsWith('.jsonl'))
@@ -189,7 +189,7 @@ console.log(
 );
 
 const {loadMergedEvents} = await import('../../lib/board/board-log.js');
-const {getEventTimeline} = await import('../../mcp/epiq-time-travel.js');
+const {getEventTimeline} = await import('../../mcp/ome-time-travel.js');
 
 const loaded = await step('load, parse and order the log', () => {
 	const result = loadMergedEvents(stateRoot);

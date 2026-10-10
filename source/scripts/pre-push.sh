@@ -61,7 +61,7 @@ suites() {
 	# that often has several sessions on it, failed five of nine gate runs in
 	# files that pass alone (7VAHK6W). The minutes this costs buy a gate whose
 	# red means the branch is wrong.
-	EPIQ_SKIP_BUILD=1 run containers npm run test:containers
+	OME_SKIP_BUILD=1 run containers npm run test:containers
 
 	# Not `--no-shell`: headless Chromium runs as the headless shell, which that
 	# flag is what skips downloading. It only ever passed here because a machine

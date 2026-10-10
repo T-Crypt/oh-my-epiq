@@ -29,7 +29,7 @@ const SHOW_CURSOR = '\x1B[?25h';
 // can take far longer — so the waits each file asks for are stretched there,
 // rather than written long everywhere and slowing down a failure on a quiet
 // machine. A wait still ends; it just ends later.
-const TIMEOUT_SCALE = Number(process.env['EPIQ_E2E_TIMEOUT_SCALE'] ?? 1);
+const TIMEOUT_SCALE = Number(process.env['OME_E2E_TIMEOUT_SCALE'] ?? 1);
 
 let lastLoggedOutput = '';
 
@@ -59,11 +59,11 @@ export type TuiSession = {
 // Per-file isolation, so concurrent files never share a global config dir.
 // HOME is deliberately left alone: git still needs the real ~/.gitconfig.
 const isolatedGlobalDir = fs.mkdtempSync(
-	path.join(os.tmpdir(), 'epiq-e2e-global-'),
+	path.join(os.tmpdir(), 'ome-e2e-global-'),
 );
 
 // On the worker's own env too, so in-process API calls see the same dir.
-process.env['EPIQ_GLOBAL_DIR'] = isolatedGlobalDir;
+process.env['OME_GLOBAL_DIR'] = isolatedGlobalDir;
 
 const createTuiEnv = (extra: Record<string, string> = {}) => {
 	const env = {...process.env};
@@ -237,7 +237,7 @@ export const setupTui = (
 ): TuiSession => {
 	const ownsCwd = options.cwd === undefined;
 	const cwd =
-		options.cwd ?? fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-e2e-'));
+		options.cwd ?? fs.mkdtempSync(path.join(os.tmpdir(), 'ome-e2e-'));
 	const cliPath = path.resolve(process.cwd(), 'dist/index.js');
 
 	let destroyed = false;

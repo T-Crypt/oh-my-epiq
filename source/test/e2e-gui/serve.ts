@@ -15,11 +15,11 @@ import {HANDOFF_PATH, type Handoff} from './handoff.js';
 // reloading — two and a half minutes of the suite doing nothing. Off here: the
 // scans are over a seeded repository of a few dozen commits, so the answer costs
 // milliseconds to recompute, and the test asks for what is there now.
-process.env['EPIQ_CACHE_MS'] = '0';
+process.env['OME_CACHE_MS'] = '0';
 
 const servers: Array<{close: () => void}> = [];
 
-// The server reports epiq.localhost; the loopback address is what a browser can
+// The server reports ome.localhost; the loopback address is what a browser can
 // be relied on to resolve.
 const serve = async (repoRoot: string): Promise<string> => {
 	const result = await startGuiServer({repoRoot, boardId: ''});
@@ -37,7 +37,7 @@ const serve = async (repoRoot: string): Promise<string> => {
 
 const main = async () => {
 	const repoRoot = await seedProject();
-	const bareRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-gui-bare-'));
+	const bareRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-gui-bare-'));
 
 	const handoff: Handoff = {
 		baseUrl: await serve(repoRoot),
@@ -45,7 +45,7 @@ const main = async () => {
 		bareUrl: await serve(bareRepoRoot),
 		bareRepoRoot,
 		// Set by `seedProject`, which points it at a temp directory of its own.
-		globalDir: process.env['EPIQ_GLOBAL_DIR']!,
+		globalDir: process.env['OME_GLOBAL_DIR']!,
 	};
 
 	// The server boots the repo on its first request; taken here rather than

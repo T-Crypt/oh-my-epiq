@@ -1,6 +1,6 @@
 import {ulid} from 'ulid';
 import {ACTOR_NAME_ENV} from '../../config/actor-env.js';
-import {readEpiqConfig, setConfig} from '../../config/user-config.js';
+import {readOmeConfig, setConfig} from '../../config/user-config.js';
 import {CommandLineInput} from '../../model/action-map.model.js';
 import {failed, isFail, succeeded} from '../../model/result-types.js';
 import {patchSettingsState} from '../../state/settings.state.js';
@@ -17,7 +17,7 @@ export const configCommand = (cmdState: CommandLineInput) => {
 
 	switch (cmdState.modifier) {
 		case ConfigModifiers.USERNAME: {
-			// `EPIQ_USER_NAME` names this process, not the machine. Settings
+			// `OME_USER_NAME` names this process, not the machine. Settings
 			// state holds that actor, so writing it back here would overwrite
 			// the configured user with whichever agent happens to be running.
 			if (process.env[ACTOR_NAME_ENV]) {
@@ -26,7 +26,7 @@ export const configCommand = (cmdState: CommandLineInput) => {
 				);
 			}
 
-			const configResult = readEpiqConfig();
+			const configResult = readOmeConfig();
 			if (isFail(configResult)) return configResult;
 
 			const {userId, preferredEditor, userName} = configResult.value;

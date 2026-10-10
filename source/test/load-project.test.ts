@@ -3,7 +3,7 @@ import path from 'node:path';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {ensureLocalStateBranch} from '../git/git.js';
 import {execGit} from '../git/git-utils.js';
-import {syncEpiqWithRemote} from '../git/sync.js';
+import {syncOmeWithRemote} from '../git/sync.js';
 import {
 	loadProject,
 	loadWithoutProject,
@@ -26,7 +26,7 @@ import {
 	createIssue,
 	listBoards,
 	listSwimlanes,
-} from '../mcp/epiq-api.js';
+} from '../mcp/ome-api.js';
 import {
 	cloneRepo,
 	makeTempDir,
@@ -52,9 +52,9 @@ const makeRepo = async (projectId: string): Promise<string> => {
 	await git(repoRoot, ['add', '-A']);
 	await git(repoRoot, ['commit', '-qm', 'init', '--no-verify']);
 
-	fs.mkdirSync(path.join(repoRoot, '.epiq'), {recursive: true});
+	fs.mkdirSync(path.join(repoRoot, '.ome'), {recursive: true});
 	fs.writeFileSync(
-		path.join(repoRoot, '.epiq', 'project.json'),
+		path.join(repoRoot, '.ome', 'project.json'),
 		JSON.stringify({
 			projectId,
 			stateBranch: DEFAULT_STATE_BRANCH,
@@ -82,13 +82,13 @@ beforeEach(() => {
 		error: vi.fn(),
 	};
 
-	originalGlobalDir = process.env['EPIQ_GLOBAL_DIR'];
-	process.env['EPIQ_GLOBAL_DIR'] = path.join(makeTempDir(), '.epiq-global');
+	originalGlobalDir = process.env['OME_GLOBAL_DIR'];
+	process.env['OME_GLOBAL_DIR'] = path.join(makeTempDir(), '.ome-global');
 });
 
 afterEach(() => {
-	if (originalGlobalDir === undefined) delete process.env['EPIQ_GLOBAL_DIR'];
-	else process.env['EPIQ_GLOBAL_DIR'] = originalGlobalDir;
+	if (originalGlobalDir === undefined) delete process.env['OME_GLOBAL_DIR'];
+	else process.env['OME_GLOBAL_DIR'] = originalGlobalDir;
 });
 
 describe('loadProject', () => {
@@ -121,9 +121,9 @@ describe('loadProject', () => {
 
 	it('does not record a project that failed to load', async () => {
 		const notARepo = path.join(makeTempDir(), 'plain');
-		fs.mkdirSync(path.join(notARepo, '.epiq'), {recursive: true});
+		fs.mkdirSync(path.join(notARepo, '.ome'), {recursive: true});
 		fs.writeFileSync(
-			path.join(notARepo, '.epiq', 'project.json'),
+			path.join(notARepo, '.ome', 'project.json'),
 			JSON.stringify({
 				projectId: '01LOADPROJECT0000000000004',
 				stateBranch: DEFAULT_STATE_BRANCH,
@@ -154,7 +154,7 @@ const seedRemote = async () => {
 	const ownEventFileName = getPersistFileName(assumed.value);
 
 	const sync = () =>
-		onMachine(alice, () => syncEpiqWithRemote({cwd: alice, ownEventFileName}));
+		onMachine(alice, () => syncOmeWithRemote({cwd: alice, ownEventFileName}));
 
 	const bootstrapped = await sync();
 	if (isFail(bootstrapped)) throw new Error(bootstrapped.message);
@@ -200,7 +200,7 @@ const seedRemote = async () => {
 	};
 
 	const bobSync = async () => {
-		const result = await syncEpiqWithRemote({
+		const result = await syncOmeWithRemote({
 			cwd: bob,
 			ownEventFileName: 'u2.bob.jsonl',
 		});

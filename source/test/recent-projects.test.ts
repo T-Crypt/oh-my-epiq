@@ -15,7 +15,7 @@ import {isFail, Result} from '../lib/model/result-types.js';
 
 const tempDirs: string[] = [];
 
-const makeTempDir = (prefix = 'epiq-recent-'): string => {
+const makeTempDir = (prefix = 'ome-recent-'): string => {
 	const dir = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
 	tempDirs.push(dir);
 	return dir;
@@ -23,12 +23,12 @@ const makeTempDir = (prefix = 'epiq-recent-'): string => {
 
 const makeProject = (projectId: string, name = projectId): string => {
 	const root = path.join(makeTempDir(), name);
-	fs.mkdirSync(path.join(root, '.epiq'), {recursive: true});
+	fs.mkdirSync(path.join(root, '.ome'), {recursive: true});
 	fs.writeFileSync(
-		path.join(root, '.epiq', 'project.json'),
+		path.join(root, '.ome', 'project.json'),
 		JSON.stringify({
 			projectId,
-			stateBranch: '__epiq_state__',
+			stateBranch: '__ome_state__',
 			createdAt: new Date().toISOString(),
 		}),
 	);
@@ -43,15 +43,15 @@ const unwrap = <T>(result: Result<T>): T => {
 let originalGlobalDir: string | undefined;
 
 beforeEach(() => {
-	originalGlobalDir = process.env['EPIQ_GLOBAL_DIR'];
-	process.env['EPIQ_GLOBAL_DIR'] = path.join(makeTempDir(), '.epiq-global');
+	originalGlobalDir = process.env['OME_GLOBAL_DIR'];
+	process.env['OME_GLOBAL_DIR'] = path.join(makeTempDir(), '.ome-global');
 });
 
 afterEach(() => {
 	if (originalGlobalDir === undefined) {
-		delete process.env['EPIQ_GLOBAL_DIR'];
+		delete process.env['OME_GLOBAL_DIR'];
 	} else {
-		process.env['EPIQ_GLOBAL_DIR'] = originalGlobalDir;
+		process.env['OME_GLOBAL_DIR'] = originalGlobalDir;
 	}
 
 	for (const dir of tempDirs.splice(0)) {
@@ -62,14 +62,14 @@ afterEach(() => {
 describe('getRecentProjectsPath', () => {
 	it('lives next to config.json in the global dir', () => {
 		expect(getRecentProjectsPath()).toBe(
-			path.join(process.env['EPIQ_GLOBAL_DIR']!, RECENT_PROJECTS_FILE_NAME),
+			path.join(process.env['OME_GLOBAL_DIR']!, RECENT_PROJECTS_FILE_NAME),
 		);
 	});
 });
 
 describe('recentProjectName', () => {
 	it('is the directory name', () => {
-		expect(recentProjectName('/home/me/dev/epiq')).toBe('epiq');
+		expect(recentProjectName('/home/me/dev/ome')).toBe('ome');
 	});
 
 	it('falls back to the root itself when there is no basename', () => {
@@ -164,10 +164,10 @@ describe('recordRecentProject', () => {
 		recordRecentProject({root, now: 1});
 
 		fs.writeFileSync(
-			path.join(root, '.epiq', 'project.json'),
+			path.join(root, '.ome', 'project.json'),
 			JSON.stringify({
 				projectId: 'p2',
-				stateBranch: '__epiq_state__',
+				stateBranch: '__ome_state__',
 				createdAt: new Date().toISOString(),
 			}),
 		);
@@ -216,7 +216,7 @@ describe('recordRecentProject', () => {
 	it('fails when the registry cannot be written', () => {
 		const blocker = path.join(makeTempDir(), 'file');
 		fs.writeFileSync(blocker, '');
-		process.env['EPIQ_GLOBAL_DIR'] = path.join(blocker, 'nested');
+		process.env['OME_GLOBAL_DIR'] = path.join(blocker, 'nested');
 
 		const result = recordRecentProject({root: makeProject('p1')});
 
@@ -265,7 +265,7 @@ describe('listRecentProjects', () => {
 	it('hides a project whose directory lost its project file', () => {
 		const root = makeProject('p1');
 		recordRecentProject({root, now: 1});
-		fs.rmSync(path.join(root, '.epiq'), {recursive: true, force: true});
+		fs.rmSync(path.join(root, '.ome'), {recursive: true, force: true});
 
 		expect(unwrap(listRecentProjects())).toEqual([]);
 	});
@@ -274,10 +274,10 @@ describe('listRecentProjects', () => {
 		const root = makeProject('p1');
 		recordRecentProject({root, now: 1});
 		fs.writeFileSync(
-			path.join(root, '.epiq', 'project.json'),
+			path.join(root, '.ome', 'project.json'),
 			JSON.stringify({
 				projectId: 'p2',
-				stateBranch: '__epiq_state__',
+				stateBranch: '__ome_state__',
 				createdAt: new Date().toISOString(),
 			}),
 		);

@@ -2,7 +2,7 @@ import http from 'node:http';
 import {describe, expect, it} from 'vitest';
 import {startGuiServer} from '../../gui/api/api-server.js';
 import {isFail} from '../../lib/model/result-types.js';
-import {checkoutStateAt, returnToLive} from '../../mcp/epiq-time-travel.js';
+import {checkoutStateAt, returnToLive} from '../../mcp/ome-time-travel.js';
 import {commonSteps} from './e2e-common-steps.js';
 import {setupTui} from './e2e.helper.js';
 

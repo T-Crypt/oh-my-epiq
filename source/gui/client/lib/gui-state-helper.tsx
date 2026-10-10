@@ -7,7 +7,7 @@ export const getResultValue = <T,>(payload: Result<T> | T): T | undefined => {
 	// A `value` key means this is a Result envelope, so its value is the answer
 	// even when there isn't one. Falling through on a failed Result would hand
 	// back `{status, message, value}` as if it were a T — which is how a repo
-	// with no epiq project turned into a white page: the caller got the
+	// with no ome project turned into a white page: the caller got the
 	// envelope, read `.boards` off it, and threw mid-render.
 	if (typeof payload === 'object' && payload !== null && 'value' in payload) {
 		return (payload.value ?? undefined) as T | undefined;

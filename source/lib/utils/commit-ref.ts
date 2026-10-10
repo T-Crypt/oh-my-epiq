@@ -19,8 +19,15 @@ import {NODE_REF_LENGTH, nodeRef} from './node-ref.js';
 const CROCKFORD = /^[0-9ABCDEFGHJKMNPQRSTVWXYZ]+$/;
 
 // A subject that never carries a ref: git writes the first three itself, and
-// epiq writes the last.
-const EXEMPT = [/^Merge /, /^Revert "/, /^fixup! /, /^squash! /, /^\[epiq:/];
+// ome writes the last. `[epiq:` is kept so commits made before the rebrand stay
+// exempt.
+const EXEMPT = [
+	/^Merge /,
+	/^Revert "/,
+	/^fixup! /,
+	/^squash! /,
+	/^\[(?:ome|epiq):/,
+];
 
 export type CommitRefVerdict = {ok: true} | {ok: false; reason: string};
 

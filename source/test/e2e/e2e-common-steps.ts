@@ -132,11 +132,11 @@ export const commonSteps = {
 
 		// Wait on the asserted text, not the title: they arrive in separate chunks.
 		output = await tui.waitFor(
-			'This folder is not an epiq project yet.',
+			'This folder is not an ome project yet.',
 			20_000,
 		);
 
-		expect(output).toContain('This folder is not an epiq project yet.');
+		expect(output).toContain('This folder is not an ome project yet.');
 
 		await typeCommand(tui, ':init');
 		await commonSteps.declineEmails(tui);

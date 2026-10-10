@@ -19,7 +19,7 @@ import {patchSettingsState} from '../lib/state/settings.state.js';
 
 vi.mock('../git/git-utils.js', () => ({execGitAllowFail: vi.fn()}));
 vi.mock('../git/git-constants.js', () => ({
-	getStateBranch: vi.fn(() => succeeded('Branch', '__epiq_state__')),
+	getStateBranch: vi.fn(() => succeeded('Branch', '__ome_state__')),
 	ORIGIN: 'origin',
 }));
 vi.mock('../git/git-storage.js', () => ({
@@ -27,13 +27,13 @@ vi.mock('../git/git-storage.js', () => ({
 }));
 vi.mock('../lib/storage/paths.js', async importOriginal => ({
 	...(await importOriginal<typeof import('../lib/storage/paths.js')>()),
-	resolveClosestEpiqProjectRoot: vi.fn(() =>
+	resolveClosestOmeProjectRoot: vi.fn(() =>
 		succeeded('Resolved', process.cwd()),
 	),
 }));
 vi.mock('../lib/config/user-config.js', () => ({
 	setConfig: vi.fn(() => succeeded('Wrote', null)),
-	readEpiqConfig: vi.fn(() =>
+	readOmeConfig: vi.fn(() =>
 		succeeded('Read', {userId: 'USER', userName: 'jola', preferredEditor: ''}),
 	),
 }));

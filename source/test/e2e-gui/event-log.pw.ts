@@ -54,7 +54,7 @@ test('the log fills beside the board as the movie plays', async ({
 	// are type-checked against the Node libs, which have no `HTMLElement`.
 	const dotColours = (await page.evaluate(
 		`[...document.querySelectorAll('[data-testid="log-line"]')]` +
-			`.map(row => row.style.getPropertyValue('--epiq-log-dot').trim())`,
+			`.map(row => row.style.getPropertyValue('--ome-log-dot').trim())`,
 	)) as string[];
 
 	// Against the rows that one read saw, not a count fetched separately: the
@@ -580,8 +580,8 @@ test('the field boxes fold into a menu when the pane is too narrow', async ({
 	await expect.poll(async () => await lines.count()).toBeGreaterThan(0);
 	await menu.click();
 	await header.getByLabel('Time', {exact: true}).click();
-	await expect(page.locator('.epiq-log-pane').first()).toHaveClass(
-		/epiq-log--no-time/,
+	await expect(page.locator('.ome-log-pane').first()).toHaveClass(
+		/ome-log--no-time/,
 	);
 	// A field off does not colour the trigger.
 	await expect(menu).toHaveCSS('color', quiet);
@@ -631,8 +631,8 @@ test('the header chooses what each line shows, and keeps the choice', async ({
 	const boxes = await header.locator('label').allInnerTexts();
 	const placed = (await page.evaluate(
 		`(() => {
-			const name = document.querySelector('.epiq-log-actor');
-			const row = name.closest('.epiq-log-line');
+			const name = document.querySelector('.ome-log-actor');
+			const row = name.closest('.ome-log-line');
 			const at = pseudo => parseFloat(getComputedStyle(row, pseudo).left);
 			return [
 				{name: 'Time', at: at('::before')},
@@ -668,9 +668,9 @@ test('the header chooses what each line shows, and keeps the choice', async ({
 	// figure rather than between spans; which name sets it is unit-tested.)
 	const actorColumn = (await page.evaluate(
 		`(() => {
-			const spans = [...document.querySelectorAll('.epiq-log-actor')];
+			const spans = [...document.querySelectorAll('.ome-log-actor')];
 			return {
-				chars: getComputedStyle(spans[0]).getPropertyValue('--epiq-log-actor-width').trim(),
+				chars: getComputedStyle(spans[0]).getPropertyValue('--ome-log-actor-width').trim(),
 				widest: Math.max(...spans.map(span => span.textContent.length)),
 				widths: spans.map(span => Math.round(span.getBoundingClientRect().width)),
 				// A name within the cap is shown whole: the column is sized to it.
@@ -684,11 +684,11 @@ test('the header chooses what each line shows, and keeps the choice', async ({
 	// The seed's board events are signed claude/tester, which the log draws
 	// without its provider; the full name is kept in the title. The commits'
 	// author is a person and stays as written.
-	const agent = page.locator('.epiq-log-actor', {hasText: 'tester'}).first();
+	const agent = page.locator('.ome-log-actor', {hasText: 'tester'}).first();
 	await expect(agent).toHaveText('/tester');
 	await expect(agent).toHaveAttribute('title', 'claude/tester');
 	await expect(
-		page.locator('.epiq-log-actor', {hasText: 'claude/'}),
+		page.locator('.ome-log-actor', {hasText: 'claude/'}),
 	).toHaveCount(0);
 	expect(actorColumn.chars).toContain(`${actorColumn.widest}ch`);
 	expect(new Set(actorColumn.widths).size).toBe(1);
@@ -696,7 +696,7 @@ test('the header chooses what each line shows, and keeps the choice', async ({
 	// A commit's line carries what it did to the code; the seeded log opens
 	// with the setup commits, one of which added files. The stat is not a
 	// column: it pushes that row's label along and no other row's.
-	const diff = page.locator('.epiq-log-diff').first();
+	const diff = page.locator('.ome-log-diff').first();
 	await expect(diff).toBeVisible();
 	await expect(diff).toContainText('+');
 	const insets = (await page.evaluate(
@@ -778,11 +778,11 @@ test('the header splits the log into a lane per actor', async ({
 	// down rather than claiming to show a column that is not there. The names
 	// stay in the page for a reader who cannot see the lanes.
 	await expect(header.getByLabel('Actor', {exact: true})).toBeDisabled();
-	await expect(page.locator('.epiq-log-actor').first()).toHaveText(/\S/);
+	await expect(page.locator('.ome-log-actor').first()).toHaveText(/\S/);
 	expect(
 		await page.evaluate(
-			`getComputedStyle(document.querySelector('.epiq-log-pane'))` +
-				`.getPropertyValue('--epiq-log-actor-width').trim()`,
+			`getComputedStyle(document.querySelector('.ome-log-pane'))` +
+				`.getPropertyValue('--ome-log-actor-width').trim()`,
 		),
 	).toBe('0px');
 
@@ -797,7 +797,7 @@ test('the header splits the log into a lane per actor', async ({
 				const box = row.getBoundingClientRect();
 				const start = box.left + parseFloat(getComputedStyle(row).paddingLeft);
 				return {
-					actor: row.querySelector('.epiq-log-actor')?.textContent ?? null,
+					actor: row.querySelector('.ome-log-actor')?.textContent ?? null,
 					// The lane whose heading stands over where this line starts.
 					lane: lanes.findIndex(lane => Math.abs(lane.left - start) < 1),
 					// A line nobody signed spans every lane rather than sitting in one.
@@ -842,7 +842,7 @@ test('the header splits the log into a lane per actor', async ({
 		.getByLabel('Split', {exact: true})
 		.click();
 	await expect(page.getByTestId('log-lane-heads')).toHaveCount(0);
-	await expect(page.locator('.epiq-log-actor').first()).toBeVisible();
+	await expect(page.locator('.ome-log-actor').first()).toBeVisible();
 
 	expect(pageErrors).toEqual([]);
 });

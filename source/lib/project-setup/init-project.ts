@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import {ensureLocalEpiqIgnored} from '../../git/ensure-local-events-ignored.js';
+import {ensureLocalOmeIgnored} from '../../git/ensure-local-events-ignored.js';
 import {git} from '../../git/git-commands.js';
 import {
 	ensureWorktreesDir,
@@ -32,7 +32,7 @@ import {User} from '../state/settings.state.js';
 import {hasLocalProjectFile} from '../storage/paths.js';
 import {
 	ensureProjectFile,
-	EpiqProject,
+	OmeProject,
 	getProjectFileContents,
 } from './project-setup.js';
 import {STATE_IDENTITY_PATH, writeStateIdentity} from './project-identity.js';
@@ -72,10 +72,10 @@ const failAt = (step: number, message: string) =>
 	failed(`[${step}] ${message}`);
 
 /**
- * Turns a git repository into an epiq project: the state branch and its
+ * Turns a git repository into an ome project: the state branch and its
  * worktree, the default board written to the user's event log, and
- * `.epiq/project.json` committed on the user's branch. Every interface — the
- * TUI's `:init`, the MCP's `epiq_project_init` — runs this; nothing else may
+ * `.ome/project.json` committed on the user's branch. Every interface — the
+ * TUI's `:init`, the MCP's `ome_project_init` — runs this; nothing else may
  * commit or push in the user's repository.
  */
 export const initProject = async ({
@@ -102,7 +102,7 @@ export const initProject = async ({
 	if (pendingGitOperationResult.value) {
 		return failAt(
 			2,
-			`Cannot initialize Epiq while a git operation is in progress: ${pendingGitOperationResult.value}`,
+			`Cannot initialize OME while a git operation is in progress: ${pendingGitOperationResult.value}`,
 		);
 	}
 
@@ -115,26 +115,26 @@ export const initProject = async ({
 	if (diffResult.value.length > 0) {
 		return failAt(
 			3,
-			`Cannot initialize Epiq with uncommitted changes (${diffResult.value.join(
+			`Cannot initialize OME with uncommitted changes (${diffResult.value.join(
 				', ',
 			)}). Commit or stash your changes first.`,
 		);
 	}
 
-	// 4. fail if .epiq/project.json already exists
+	// 4. fail if .ome/project.json already exists
 	if (hasLocalProjectFile(repoRoot)) {
-		return failAt(4, 'Epiq project already initialized');
+		return failAt(4, 'OME project already initialized');
 	}
 
 	// 5. the author of the default board
 	const {userId, userName} = user;
 	if (!userId || !userName) {
-		return failAt(5, 'Missing Epiq user id');
+		return failAt(5, 'Missing OME user id');
 	}
 
 	// 6. create state branch (or fail if state branch already exists)
 	// A branch needs a commit to point at, so a repo with none gets one here —
-	// the only place epiq may write a commit in the user's own repository, and
+	// the only place ome may write a commit in the user's own repository, and
 	// only because they asked for it by running init.
 	const initialCommitResult = await ensureInitialCommit(repoRoot);
 	if (isFail(initialCommitResult)) {
@@ -177,7 +177,7 @@ export const initProject = async ({
 		return failAt(6, createStateBranchResult.message);
 	}
 
-	// 7. ensure ~/.epiq-global/worktrees/ exists
+	// 7. ensure ~/.ome-global/worktrees/ exists
 	const ensureWorktreesDirResult = ensureWorktreesDir();
 	if (isFail(ensureWorktreesDirResult)) {
 		return failAt(7, ensureWorktreesDirResult.message);
@@ -199,8 +199,8 @@ export const initProject = async ({
 	}
 
 	// 9. write initial event log directly to authoritative state worktree
-	const stateEpiqDir = path.join(stateBranchRoot, '.epiq');
-	fs.mkdirSync(stateEpiqDir, {recursive: true});
+	const stateOmeDir = path.join(stateBranchRoot, '.ome');
+	fs.mkdirSync(stateOmeDir, {recursive: true});
 
 	const defaultEventsResult = createDefaultEvents({userId, userName});
 	if (isFail(defaultEventsResult)) {
@@ -249,21 +249,21 @@ export const initProject = async ({
 
 	const commitStateBranchResult = await commitAndGetSha({
 		cwd: stateBranchRoot,
-		message: '[epiq:init]',
+		message: '[ome:init]',
 	});
 	if (isFail(commitStateBranchResult)) {
 		return failAt(10, commitStateBranchResult.message);
 	}
 
 	// 11. ensure local-only paths are ignored.
-	// .epiq/events is no longer used as storage, but keeping it ignored is harmless
+	// .ome/events is no longer used as storage, but keeping it ignored is harmless
 	// for legacy directories and avoids accidental commits.
-	const ignoreResult = await ensureLocalEpiqIgnored(repoRoot);
+	const ignoreResult = await ensureLocalOmeIgnored(repoRoot);
 	if (isFail(ignoreResult)) {
 		return failAt(11, ignoreResult.message);
 	}
 
-	// 12. create .epiq/project.json
+	// 12. create .ome/project.json
 	const projectResult = ensureProjectFile({
 		repoRoot,
 		fileContents: projectFileContents,
@@ -272,10 +272,10 @@ export const initProject = async ({
 		return failAt(12, projectResult.message);
 	}
 
-	// 13. commit .epiq/project.json on original branch
+	// 13. commit .ome/project.json on original branch
 	const stageProjectResult = await git.stage({
 		cwd: repoRoot,
-		pathspec: ['.epiq/project.json', '.gitignore'],
+		pathspec: ['.ome/project.json', '.gitignore'],
 	});
 	if (isFail(stageProjectResult)) {
 		return failAt(13, stageProjectResult.message);
@@ -285,8 +285,8 @@ export const initProject = async ({
 	// happened to have staged in their own repo.
 	const commitProjectResult = await git.commit({
 		cwd: repoRoot,
-		message: '[epiq:init-project]',
-		pathspec: ['.epiq/project.json', '.gitignore'],
+		message: '[ome:init-project]',
+		pathspec: ['.ome/project.json', '.gitignore'],
 	});
 	if (isFail(commitProjectResult)) {
 		return failAt(13, commitProjectResult.message);
@@ -323,7 +323,7 @@ export const initProject = async ({
 };
 
 // Whether origin already has the state branch: a repository that is already an
-// epiq project, seen from a clone that does not know it yet. Offline, or with
+// ome project, seen from a clone that does not know it yet. Offline, or with
 // no remote at all, the answer is no, and init proceeds as a first init.
 const hasRemoteStateBranch = async ({
 	repoRoot,
@@ -351,7 +351,7 @@ const hasRemoteStateBranch = async ({
 /**
  * Makes this clone a checkout of the project origin already holds: the
  * identity comes off the state branch, is written and committed as
- * `.epiq/project.json` here, and the worktree is set up as a boot would set
+ * `.ome/project.json` here, and the worktree is set up as a boot would set
  * it up. A branch that carries no identity — written before branches did —
  * cannot say which id it is, and the person is pointed at a checkout that can.
  */
@@ -377,7 +377,7 @@ const adoptRemoteProject = async ({
 		return failAt(
 			6,
 			[
-				`This repository is already an epiq project: origin has the state branch ${stateBranch}.`,
+				`This repository is already an ome project: origin has the state branch ${stateBranch}.`,
 				'Initialising again would mint a second id for the same board.',
 				'',
 				`The branch was written before branches carried their identity, so restore`,
@@ -390,9 +390,9 @@ const adoptRemoteProject = async ({
 		);
 	}
 
-	let project: EpiqProject;
+	let project: OmeProject;
 	try {
-		project = JSON.parse(identityResult.value.stdout) as EpiqProject;
+		project = JSON.parse(identityResult.value.stdout) as OmeProject;
 	} catch (error) {
 		return failAt(
 			6,
@@ -413,7 +413,7 @@ const adoptRemoteProject = async ({
 
 	const commitResult = await git.commit({
 		cwd: repoRoot,
-		message: '[epiq:adopt-project]',
+		message: '[ome:adopt-project]',
 		pathspec: [STATE_IDENTITY_PATH],
 	});
 	if (isFail(commitResult)) return failAt(13, commitResult.message);

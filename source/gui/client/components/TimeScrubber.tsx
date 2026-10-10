@@ -95,16 +95,16 @@ const EMPTY_FLOW: FlowChart = {strands: [], paths: []};
 const boardEventRow = (count: number) =>
 	`${count} board event${count === 1 ? '' : 's'}`;
 
-const COLLAPSED_STORAGE_KEY = 'epiq.timeScrubber.collapsed';
-const ALL_BOARDS_STORAGE_KEY = 'epiq.timeScrubber.allBoards';
-const CATEGORIES_EXPANDED_STORAGE_KEY = 'epiq.timeScrubber.categoriesExpanded';
+const COLLAPSED_STORAGE_KEY = 'ome.timeScrubber.collapsed';
+const ALL_BOARDS_STORAGE_KEY = 'ome.timeScrubber.allBoards';
+const CATEGORIES_EXPANDED_STORAGE_KEY = 'ome.timeScrubber.categoriesExpanded';
 // Which axis's list is open in the series popover, not whether one is: with an
 // axis per row only one is shown at a time, so the answer is a name.
-const EXPANDED_AXIS_STORAGE_KEY = 'epiq.timeScrubber.expandedAxis';
+const EXPANDED_AXIS_STORAGE_KEY = 'ome.timeScrubber.expandedAxis';
 // What the Code series' bars measure: how many commits landed, or how many
 // lines they moved. A different question from which commits are drawn, which is
 // why it is remembered separately from the narrowing.
-const LINES_MEASURE_STORAGE_KEY = 'epiq.timeScrubber.linesMeasure';
+const LINES_MEASURE_STORAGE_KEY = 'ome.timeScrubber.linesMeasure';
 
 export const TimeScrubber = ({
 	timeline,

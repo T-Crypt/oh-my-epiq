@@ -1,7 +1,7 @@
 import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import {readRecentCommands, withCommandRemembered} from './command-recents';
 
-const STORAGE_KEY = 'epiq.gui.recentCommands';
+const STORAGE_KEY = 'ome.gui.recentCommands';
 
 describe('recent commands', () => {
 	// No DOM under vitest here: the store only needs get/set/clear.

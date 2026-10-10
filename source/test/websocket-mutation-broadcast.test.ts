@@ -4,7 +4,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {WebSocket} from 'ws';
 
 // Every imported entry point must exist on the mock or the import fails.
-vi.mock('../mcp/epiq-api.js', () => ({
+vi.mock('../mcp/ome-api.js', () => ({
 	addIssueAssignee: vi.fn(),
 	getBoardContributors: vi.fn(),
 	tombstoneContributor: vi.fn(),
@@ -26,7 +26,7 @@ vi.mock('../mcp/epiq-api.js', () => ({
 	sync: vi.fn(),
 }));
 
-vi.mock('../mcp/epiq-time-travel.js', () => ({
+vi.mock('../mcp/ome-time-travel.js', () => ({
 	checkoutStateAt: vi.fn(),
 	getEventTimeline: vi.fn(),
 	getTimeTravelStatus: vi.fn(),
@@ -42,8 +42,8 @@ vi.mock('../lib/commits/commits.js', () => ({
 	openCommitDiffInEditor: vi.fn(),
 }));
 
-import {closeIssue, deriveGuiState, getGuiState} from '../mcp/epiq-api.js';
-import {getTimeTravelStatus, runExclusive} from '../mcp/epiq-time-travel.js';
+import {closeIssue, deriveGuiState, getGuiState} from '../mcp/ome-api.js';
+import {getTimeTravelStatus, runExclusive} from '../mcp/ome-time-travel.js';
 import {succeeded} from '../lib/model/result-types.js';
 import {setupWebsocket} from '../gui/api/lib/websocket.js';
 

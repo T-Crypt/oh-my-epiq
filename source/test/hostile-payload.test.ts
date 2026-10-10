@@ -47,7 +47,7 @@ afterAll(() => {
 
 /** A state-branch root holding a normal, freshly initialized board. */
 const seedBoard = (): {root: string; edge: string; swimlaneId: string} => {
-	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-hostile-payload-'));
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-hostile-payload-'));
 	roots.push(root);
 
 	const defaults = createDefaultEvents(AUTHOR);
@@ -79,7 +79,7 @@ const appendHostile = (
 	edge: string,
 	payloads: Array<Record<string, unknown>>,
 ): void => {
-	const logPath = path.join(root, '.epiq', 'events', HOSTILE_LOG);
+	const logPath = path.join(root, '.ome', 'events', HOSTILE_LOG);
 	let previous: string | null = edge;
 
 	for (const [index, payload] of payloads.entries()) {
@@ -109,9 +109,9 @@ const bootInChildProcess = (root: string): Promise<BootOutcome> =>
 		const child = spawn(TSX, [RUNNER, root], {
 			env: {
 				...process.env,
-				EPIQ_GLOBAL_DIR: root,
+				OME_GLOBAL_DIR: root,
 				IS_LOCAL: 'true',
-				EPIQ_LOG_LEVEL: 'error',
+				OME_LOG_LEVEL: 'error',
 			},
 			cwd: root,
 			stdio: ['ignore', 'pipe', 'pipe'],

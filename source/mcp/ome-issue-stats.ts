@@ -7,7 +7,7 @@ import {failed, isFail, Result, succeeded} from '../lib/model/result-types.js';
 import {deriveIssueStats} from '../lib/stats/issue-stats.js';
 import {IssueStats, StatsCommit} from '../lib/stats/issue-stats.model.js';
 import {nodeRef, NODE_REF_LENGTH} from '../lib/utils/node-ref.js';
-import {resolveClosestEpiqProjectRoot} from '../lib/storage/paths.js';
+import {resolveClosestOmeProjectRoot} from '../lib/storage/paths.js';
 import {withCommitAuthors} from './api/commit-authors.js';
 import {getCommitsForRef} from '../lib/commits/commits.js';
 
@@ -44,12 +44,12 @@ export const getIssueStats = async (
 	const raw = input.idOrRef.trim();
 	if (!raw) return failed('idOrRef must not be empty');
 
-	// A full id is accepted for the same reason epiq_issue_get accepts one:
+	// A full id is accepted for the same reason ome_issue_get accepts one:
 	// callers hold ids, readers hold refs, and slicing by hand is the mistake
 	// the ref field exists to prevent.
 	const ref = raw.length > NODE_REF_LENGTH ? nodeRef(raw) : raw.toUpperCase();
 
-	const repoRootResult = resolveClosestEpiqProjectRoot(
+	const repoRootResult = resolveClosestOmeProjectRoot(
 		input.repoRoot ?? process.cwd(),
 	);
 	if (isFail(repoRootResult)) return failed(repoRootResult.message);

@@ -17,14 +17,14 @@ import {LogDestination} from './log-destination';
 // board path.
 export const LOG_WINDOW_PATH = '/log';
 // One window per board tab: a second pop-out from the same tab finds the first.
-const LOG_WINDOW_NAME = 'epiq-log';
+const LOG_WINDOW_NAME = 'ome-log';
 const LOG_WINDOW_FEATURES = 'popup=yes,width=520,height=760';
 
 // Sent by the board. `followedLine` is which row to mark: following is decided
 // on the board's side for both panels, so the window is told the answer rather
 // than working one out of its own.
 export type LogLinesMessage = {
-	type: 'epiq-log:lines';
+	type: 'ome-log:lines';
 	entries: LogEntry[];
 	moment: number;
 	followedLine: string | null;
@@ -37,10 +37,10 @@ export type LogLinesMessage = {
 // itself — whether this pane is at its foot — and following needs it, so it
 // comes back across the same channel a click does.
 export type LogWindowMessage =
-	| {type: 'epiq-log:ready'}
-	| {type: 'epiq-log:open'; destination: LogDestination; replace: boolean}
-	| {type: 'epiq-log:pinned'; pinned: boolean}
-	| {type: 'epiq-log:closed'};
+	| {type: 'ome-log:ready'}
+	| {type: 'ome-log:open'; destination: LogDestination; replace: boolean}
+	| {type: 'ome-log:pinned'; pinned: boolean}
+	| {type: 'ome-log:closed'};
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === 'object' && value !== null;
@@ -63,22 +63,22 @@ export const parseLogWindowMessage = (
 	if (!isRecord(data)) return null;
 
 	switch (data['type']) {
-		case 'epiq-log:ready':
-			return {type: 'epiq-log:ready'};
-		case 'epiq-log:closed':
-			return {type: 'epiq-log:closed'};
-		case 'epiq-log:open':
+		case 'ome-log:ready':
+			return {type: 'ome-log:ready'};
+		case 'ome-log:closed':
+			return {type: 'ome-log:closed'};
+		case 'ome-log:open':
 			return isDestination(data['destination'])
 				? {
-						type: 'epiq-log:open',
+						type: 'ome-log:open',
 						destination: data['destination'],
 						// Absent from an older window, where every open was a push.
 						replace: data['replace'] === true,
 				  }
 				: null;
-		case 'epiq-log:pinned':
+		case 'ome-log:pinned':
 			return typeof data['pinned'] === 'boolean'
-				? {type: 'epiq-log:pinned', pinned: data['pinned']}
+				? {type: 'ome-log:pinned', pinned: data['pinned']}
 				: null;
 		default:
 			return null;
@@ -90,11 +90,11 @@ export const parseLogWindowMessage = (
 // them field by field on every slice would cost more than it guards.
 export const parseLogLinesMessage = (data: unknown): LogLinesMessage | null =>
 	isRecord(data) &&
-	data['type'] === 'epiq-log:lines' &&
+	data['type'] === 'ome-log:lines' &&
 	Array.isArray(data['entries']) &&
 	typeof data['moment'] === 'number'
 		? {
-				type: 'epiq-log:lines',
+				type: 'ome-log:lines',
 				entries: data['entries'] as LogEntry[],
 				moment: data['moment'],
 				followedLine:
@@ -155,7 +155,7 @@ export const useLogWindow = ({
 
 	const send = useCallback((to: Window, lines: typeof latest.current) => {
 		const message: LogLinesMessage = {
-			type: 'epiq-log:lines',
+			type: 'ome-log:lines',
 			entries: lines.entries as LogEntry[],
 			moment: lines.moment,
 			followedLine: lines.followedLine,
@@ -184,10 +184,10 @@ export const useLogWindow = ({
 			const message = parseLogWindowMessage(event.data);
 			if (!message) return;
 
-			if (message.type === 'epiq-log:ready') send(target, latest.current);
-			else if (message.type === 'epiq-log:open') {
+			if (message.type === 'ome-log:ready') send(target, latest.current);
+			else if (message.type === 'ome-log:open') {
 				onOpenRef.current(message.destination, {replace: message.replace});
-			} else if (message.type === 'epiq-log:pinned') {
+			} else if (message.type === 'ome-log:pinned') {
 				onPinnedChangeRef.current(message.pinned);
 			} else setTarget(null);
 		};
@@ -257,11 +257,11 @@ export const useLogMirror = (): {
 			if (message) setLines(message);
 		};
 
-		const onPageHide = () => say({type: 'epiq-log:closed'});
+		const onPageHide = () => say({type: 'ome-log:closed'});
 
 		window.addEventListener('message', onMessage);
 		window.addEventListener('pagehide', onPageHide);
-		say({type: 'epiq-log:ready'});
+		say({type: 'ome-log:ready'});
 
 		return () => {
 			window.removeEventListener('message', onMessage);
@@ -273,7 +273,7 @@ export const useLogMirror = (): {
 		(destination: LogDestination, options?: {replace?: boolean}) => {
 			board?.postMessage(
 				{
-					type: 'epiq-log:open',
+					type: 'ome-log:open',
 					destination,
 					replace: options?.replace === true,
 				} satisfies LogWindowMessage,
@@ -286,7 +286,7 @@ export const useLogMirror = (): {
 	const reportPinned = useCallback(
 		(pinned: boolean) => {
 			board?.postMessage(
-				{type: 'epiq-log:pinned', pinned} satisfies LogWindowMessage,
+				{type: 'ome-log:pinned', pinned} satisfies LogWindowMessage,
 				window.location.origin,
 			);
 		},

@@ -169,9 +169,9 @@ export const EventRow = ({
 	<div
 		data-testid="log-line"
 		className={[
-			'epiq-log-line',
+			'ome-log-line',
 			lane === null ? LOG_LANE_ALL_CLASS : '',
-			followed ? 'epiq-log-line--followed' : '',
+			followed ? 'ome-log-line--followed' : '',
 		]
 			.filter(Boolean)
 			.join(' ')}

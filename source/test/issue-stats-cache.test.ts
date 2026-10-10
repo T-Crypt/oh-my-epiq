@@ -9,9 +9,9 @@ import {isFail, succeeded} from '../lib/model/result-types.js';
 vi.mock('../lib/storage/paths.js', async importOriginal => ({
 	...(await importOriginal<typeof import('../lib/storage/paths.js')>()),
 	// The worktree itself, because booting a board to give the resolver
-	// something to resolve against reads a real `.epiq/project.json`. The git
+	// something to resolve against reads a real `.ome/project.json`. The git
 	// and derivation calls are mocked, so nothing else touches the repository.
-	resolveClosestEpiqProjectRoot: vi.fn(() =>
+	resolveClosestOmeProjectRoot: vi.fn(() =>
 		succeeded('Resolved', process.cwd()),
 	),
 }));
@@ -27,7 +27,7 @@ vi.mock('../lib/stats/issue-stats.js', () => ({
 const {getCommitsForRef} = await import('../lib/commits/commits.js');
 const {deriveIssueStats} = await import('../lib/stats/issue-stats.js');
 const {getIssueStats, resetIssueStatsCacheForTests} = await import(
-	'../mcp/epiq-issue-stats.js'
+	'../mcp/ome-issue-stats.js'
 );
 
 const derive = vi.mocked(deriveIssueStats);

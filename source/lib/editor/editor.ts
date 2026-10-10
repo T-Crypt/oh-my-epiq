@@ -106,7 +106,7 @@ export function buildEditorDiffCommand(
 }
 
 export function openEditorOnText(initial: string): Result<string> {
-	const tmpDir = path.join(os.tmpdir(), 'epiq');
+	const tmpDir = path.join(os.tmpdir(), 'ome');
 	fileManager.mkDir(tmpDir);
 
 	const tmpPath = path.join(tmpDir, ulid());

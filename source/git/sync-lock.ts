@@ -19,12 +19,12 @@ import {logger} from '../logger.js';
  * second by destroying the first. Whether a process still holds the worktree is
  * not something git knows, but it is something the operating system knows.
  *
- * Advisory, deliberately: it binds epiq processes, not a person running git in
+ * Advisory, deliberately: it binds ome processes, not a person running git in
  * the worktree by hand. Git's own `index.lock` and `rebase-merge/` remain the
- * hard boundary. Every writer here is an epiq process, so in practice this
+ * hard boundary. Every writer here is an ome process, so in practice this
  * covers the cases that actually occur.
  *
- * Assumes the worktree is on a local filesystem, which `~/.epiq-global` is.
+ * Assumes the worktree is on a local filesystem, which `~/.ome-global` is.
  * `pid` means nothing across hosts and `wx` is not reliably atomic on NFS, so
  * `hostname` is recorded and a lock from elsewhere is never broken on liveness.
  */
@@ -35,7 +35,7 @@ import {logger} from '../logger.js';
  * it would mean an old build and a new one no longer seeing each other's
  * claims.
  */
-export const SYNC_LOCK_FILE = 'epiq-sync.lock';
+export const SYNC_LOCK_FILE = 'ome-sync.lock';
 
 /**
  * Backstop for the one case liveness cannot settle: a dead holder whose pid has
@@ -241,7 +241,7 @@ export const acquireSyncLock = async ({
 	operation: string;
 }): Promise<Result<LockOutcome>> => {
 	// The gitdir, never the worktree tree: nothing here may ever become
-	// committable, and `.epiq/` is staged by glob.
+	// committable, and `.ome/` is staged by glob.
 	const gitDirResult = await getGitDir(worktreeRoot);
 	if (isFail(gitDirResult)) return failed(gitDirResult.message);
 

@@ -13,7 +13,7 @@ import {isFail} from '../../lib/model/result-types.js';
 import {getPersistFileName} from '../../lib/event/event-persist.js';
 import type {ActorAction, ActorJob, ActorReport} from './protocol.js';
 
-const STATE_BRANCH = 'epiq/state';
+const STATE_BRANCH = 'ome/state';
 const ACTOR_ENTRY = fileURLToPath(new URL('./actor.ts', import.meta.url));
 
 /**
@@ -41,7 +41,7 @@ const ACTOR_ENTRY = fileURLToPath(new URL('./actor.ts', import.meta.url));
  */
 const sweepDeadBundles = (dir: string): void => {
 	for (const name of fs.readdirSync(dir)) {
-		const pid = /^epiq-collab-actor\.(\d+)\./.exec(name)?.[1];
+		const pid = /^ome-collab-actor\.(\d+)\./.exec(name)?.[1];
 		if (pid === undefined || Number(pid) === process.pid) continue;
 
 		try {
@@ -63,7 +63,7 @@ const buildActor = (): string => {
 	// because it is what says whose file this is when it comes to sweeping.
 	const out = fileURLToPath(
 		new URL(
-			`../../../node_modules/.cache/epiq-collab-actor.${
+			`../../../node_modules/.cache/ome-collab-actor.${
 				process.pid
 			}.${ulid()}.mjs`,
 			import.meta.url,
@@ -155,7 +155,7 @@ export const startCollaboration = async ({
 	sharedIdentityFor?: string[][];
 }): Promise<Collaboration> => {
 	const dirs: string[] = [];
-	const remoteRoot = tempDir(dirs, 'epiq-collab-remote-');
+	const remoteRoot = tempDir(dirs, 'ome-collab-remote-');
 
 	await git(remoteRoot, ['init', '--bare', '-q', '-b', 'main', '.']);
 
@@ -172,8 +172,8 @@ export const startCollaboration = async ({
 			name,
 			userId: shared?.userId ?? ulid(),
 			userName: shared?.userName ?? name,
-			repoRoot: tempDir(dirs, `epiq-collab-${name}-`),
-			globalDir: tempDir(dirs, `epiq-global-${name}-`),
+			repoRoot: tempDir(dirs, `ome-collab-${name}-`),
+			globalDir: tempDir(dirs, `ome-global-${name}-`),
 		};
 	});
 
@@ -184,7 +184,7 @@ export const startCollaboration = async ({
 	await git(first.repoRoot, ['init', '-q', '-b', 'main', '.']);
 	await git(first.repoRoot, ['config', 'user.name', first.userName]);
 	await git(first.repoRoot, ['config', 'user.email', `${first.name}@test`]);
-	writeJson(path.join(first.repoRoot, '.epiq', 'project.json'), {
+	writeJson(path.join(first.repoRoot, '.ome', 'project.json'), {
 		projectId: ulid(),
 		stateBranch: STATE_BRANCH,
 		createdAt: new Date().toISOString(),
@@ -218,7 +218,7 @@ export const startCollaboration = async ({
  * several processes appending to one events directory — as opposed to
  * `startCollaboration`, whose actors are separate machines.
  *
- * The identity comes from `EPIQ_USER_NAME`, so it must be derived the way
+ * The identity comes from `OME_USER_NAME`, so it must be derived the way
  * `resolveEnvActor` derives it or the two would disagree about which log file
  * is this actor's own.
  */
@@ -268,9 +268,9 @@ export const runActor = async (
 				cwd: actor.repoRoot,
 				env: {
 					...process.env,
-					EPIQ_GLOBAL_DIR: actor.globalDir,
+					OME_GLOBAL_DIR: actor.globalDir,
 					IS_LOCAL: 'true',
-					...(actor.envActorName ? {EPIQ_USER_NAME: actor.envActorName} : {}),
+					...(actor.envActorName ? {OME_USER_NAME: actor.envActorName} : {}),
 				},
 			},
 		);
@@ -363,9 +363,9 @@ export const runActorAndKill = async (
 				detached: true,
 				env: {
 					...process.env,
-					EPIQ_GLOBAL_DIR: actor.globalDir,
+					OME_GLOBAL_DIR: actor.globalDir,
 					IS_LOCAL: 'true',
-					...(actor.envActorName ? {EPIQ_USER_NAME: actor.envActorName} : {}),
+					...(actor.envActorName ? {OME_USER_NAME: actor.envActorName} : {}),
 				},
 			},
 		);
@@ -409,21 +409,21 @@ export const cleanUp = ({dirs}: Collaboration): void => {
 /**
  * Where this actor's state worktree lives. Resolved the way the app resolves
  * it — the committed project id under the actor's own global dir — rather than
- * by importing `getStateBranchRoot`, which reads `EPIQ_GLOBAL_DIR` off *this*
+ * by importing `getStateBranchRoot`, which reads `OME_GLOBAL_DIR` off *this*
  * process and so would answer for the wrong machine.
  *
  * Only exists after the actor has synced at least once.
  */
 export const stateBranchRootFor = (actor: Actor): string => {
 	const project = JSON.parse(
-		fs.readFileSync(path.join(actor.repoRoot, '.epiq', 'project.json'), 'utf8'),
+		fs.readFileSync(path.join(actor.repoRoot, '.ome', 'project.json'), 'utf8'),
 	) as {projectId: string};
 
 	return path.join(actor.globalDir, 'worktrees', project.projectId);
 };
 
 export const ownLogPathFor = (actor: Actor, fileName: string): string =>
-	path.join(stateBranchRootFor(actor), '.epiq', 'events', fileName);
+	path.join(stateBranchRootFor(actor), '.ome', 'events', fileName);
 
 /** The log file this actor writes, named the way `persist` names it. */
 export const logFileNameFor = (actor: Actor): string =>
@@ -468,7 +468,7 @@ export const appendRawToOwnLog = (
 
 /** Every event id in an actor's state worktree, in file order. */
 export const idsInStateWorktree = (actor: Actor): string[] => {
-	const dir = path.join(stateBranchRootFor(actor), '.epiq', 'events');
+	const dir = path.join(stateBranchRootFor(actor), '.ome', 'events');
 	if (!fs.existsSync(dir)) return [];
 
 	return fs

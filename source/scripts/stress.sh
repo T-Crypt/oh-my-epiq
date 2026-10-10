@@ -36,8 +36,8 @@ if [ ! -f dist/gui/index.html ]; then
 	npm run build:gui
 fi
 
-if ! docker image inspect epiq-e2e >/dev/null 2>&1; then
-	echo "Building the epiq-e2e image (once)..."
+if ! docker image inspect ome-e2e >/dev/null 2>&1; then
+	echo "Building the ome-e2e image (once)..."
 	npm run build:e2e:image
 fi
 
@@ -61,11 +61,11 @@ exec docker run --rm ${TTY_FLAGS} --init \
 	-e STRESS_YEARS="${STRESS_YEARS:-}" \
 	-e STRESS_SERVE="${SERVE}" \
 	-e NODE_OPTIONS="--max-old-space-size=${NODE_HEAP}" \
-	-e EPIQ_GUI_PORT="${PORT}" \
+	-e OME_GUI_PORT="${PORT}" \
 	-v "$PWD":/app:ro \
 	-v /app/node_modules \
 	-w /app \
-	epiq-e2e \
+	ome-e2e \
 	sh -c "
 		if [ '${SERVE}' = 'true' ]; then
 			apt-get update >/dev/null 2>&1

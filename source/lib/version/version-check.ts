@@ -7,7 +7,7 @@ export type VersionStatus = {
 	updateAvailable: boolean;
 };
 
-const NPM_LATEST_URL = 'https://registry.npmjs.org/epiq/latest';
+const NPM_LATEST_URL = 'https://registry.npmjs.org/ome/latest';
 
 let cachedStatus: VersionStatus | null = null;
 let cachedAt = 0;

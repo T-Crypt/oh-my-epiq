@@ -112,14 +112,14 @@ export const ownEventFileNames = (
 };
 
 export const getEventLogPath = (
-	epiqRoot: string,
+	omeRoot: string,
 	{userId}: Actor,
 ): Result<string> => {
 	const fileName = getPersistFileName({userId});
 	const isValid = /^(?!.*\.jsonl.*\.jsonl).*\.jsonl$/.test(fileName);
 	if (!isValid) return failed(`Invalid event log file name: ${fileName}`);
 
-	const logPath = path.join(getEventsDirPath(epiqRoot), fileName);
+	const logPath = path.join(getEventsDirPath(omeRoot), fileName);
 	return succeeded('Successfully resolved event log path', logPath);
 };
 

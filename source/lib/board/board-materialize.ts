@@ -684,7 +684,7 @@ export const boardHandlers: EventHandlers<AppEventMap> = {
 	'link.contributor.email': event => {
 		const {contributor, email} = event.payload;
 
-		// Checked here rather than in the payload schema: a future epiq may accept
+		// Checked here rather than in the payload schema: a future ome may accept
 		// an address this build would reject, and a skip leaves that event in the
 		// log for a newer reader instead of quarantining the line.
 		if (!isValidEmail(email)) {

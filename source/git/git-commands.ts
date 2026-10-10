@@ -25,10 +25,10 @@ export const git = {
 	// Without it a commit takes whatever the user happened to have staged, which
 	// in their own repo means committing work that is not ours to commit.
 	//
-	// `--no-verify`: every call here is epiq's own bookkeeping — the state
-	// branch, or `.epiq/project.json` on init — never the user's application
+	// `--no-verify`: every call here is ome's own bookkeeping — the state
+	// branch, or `.ome/project.json` on init — never the user's application
 	// changes, so a repo's pre-commit hook has nothing of ours to check. On the
-	// state branch it is actively wrong: that worktree holds only `.epiq/`, no
+	// state branch it is actively wrong: that worktree holds only `.ome/`, no
 	// package.json, so a hook built for the user's repo fails outright there.
 	commit: ({
 		cwd,
@@ -84,7 +84,7 @@ export const git = {
 	checkout: ({cwd, branch}: {cwd: string; branch: string}) =>
 		execGit({args: ['checkout', branch], cwd}),
 
-	// `--no-verify`: same reasoning as `commit` above — this is epiq's own state
+	// `--no-verify`: same reasoning as `commit` above — this is ome's own state
 	// branch push, and this repo's pre-push hook (lint/build/test/e2e/gui) has
 	// no business running against that storage-only worktree. It currently
 	// fails there outright, since `npm run` finds no package.json to work with.

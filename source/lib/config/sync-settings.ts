@@ -17,9 +17,9 @@ import {
 import {failed, isFail, Result, succeeded} from '../model/result-types.js';
 import {patchSettingsState} from '../state/settings.state.js';
 import {
-	EpiqConfig,
+	OmeConfig,
 	loadSettingsFromConfig,
-	readEpiqConfig,
+	readOmeConfig,
 	setConfig,
 } from './user-config.js';
 
@@ -63,12 +63,12 @@ export const autoSyncBlockedReason = (identity: {
  * panel that fell back to the raw config would find a name and an editor
  * there, report all-clear, and leave somebody watching a toggle that is on
  * while nothing ever syncs — which is the exact silence this field exists to
- * break. `EPIQ_USER_ID` exported without `EPIQ_USER_NAME` reaches it.
+ * break. `OME_USER_ID` exported without `OME_USER_NAME` reaches it.
  *
  * The raw config is still consulted, but only to name the missing field, since
  * the resolver's own message is about an actor rather than about a setting.
  */
-const blockedReasonFor = (config: EpiqConfig): string | null => {
+const blockedReasonFor = (config: OmeConfig): string | null => {
 	const resolved = loadSettingsFromConfig();
 
 	if (isFail(resolved)) {
@@ -84,7 +84,7 @@ const blockedReasonFor = (config: EpiqConfig): string | null => {
 };
 
 export const readAutoSyncSettings = (): Result<AutoSyncSettings> => {
-	const config = readEpiqConfig();
+	const config = readOmeConfig();
 	if (isFail(config)) return failed(config.message);
 
 	return succeeded('Read auto sync settings', {

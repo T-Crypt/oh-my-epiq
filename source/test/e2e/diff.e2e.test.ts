@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {beforeAll, describe, expect, it} from 'vitest';
 import {isFail} from '../../lib/model/result-types.js';
-import {listIssues} from '../../mcp/epiq-api.js';
+import {listIssues} from '../../mcp/ome-api.js';
 import {commonSteps} from './e2e-common-steps.js';
 import {
 	ARROW_DOWN,
@@ -330,7 +330,7 @@ describe('TUI diff e2e', () => {
 				// The removed line is not in the new revision, so it is not quoted.
 				expect(comment).not.toContain('const drop = 2;');
 				// The marker itself is rendered, never shown as raw JSON.
-				expect(comment).not.toContain('epiq-diff-comment');
+				expect(comment).not.toContain('ome-diff-comment');
 			} finally {
 				await tui.destroy();
 			}

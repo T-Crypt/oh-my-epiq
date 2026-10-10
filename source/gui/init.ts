@@ -8,7 +8,7 @@ import {
 	failed,
 } from '../lib/model/result-types.js';
 import {patchSettingsState} from '../lib/state/settings.state.js';
-import {EPIQ_VERSION} from '../version.js';
+import {OME_VERSION} from '../version.js';
 import {launchBanner} from './launch-banner.js';
 import {canOpenBrowser, openBrowser} from './open-browser.js';
 import {startGuiServer} from './api/api-server.js';
@@ -37,14 +37,14 @@ export const startGui = async (input: {
 	const settings = loadSettingsFromConfig();
 	if (isSuccess(settings)) patchSettingsState(settings.value);
 
-	// An epiq already serving this project on the usual port is the one to open,
+	// An ome already serving this project on the usual port is the one to open,
 	// not something to start a rival to. A second server would land on an
 	// ephemeral port, and since browser storage is scoped to the whole origin —
 	// port included — that new origin arrives with none of the panel widths,
 	// board selection or lane state the first one has been keeping.
 	//
 	// Only this exact case is reused. A different project, or anything that
-	// isn't epiq, falls through to the existing fallback: taking a port from
+	// isn't ome, falls through to the existing fallback: taking a port from
 	// either of them is a decision for TYR7186, not a side effect of booting.
 	const running = await probeGuiInstance(PREFERRED_GUI_PORT);
 
@@ -55,7 +55,7 @@ export const startGui = async (input: {
 			launchBanner({
 				url,
 				repoRoot: input.repoRoot,
-				version: EPIQ_VERSION,
+				version: OME_VERSION,
 				reused: true,
 			}),
 		);
@@ -78,7 +78,7 @@ export const startGui = async (input: {
 		launchBanner({
 			url,
 			repoRoot: input.repoRoot,
-			version: EPIQ_VERSION,
+			version: OME_VERSION,
 			reused: false,
 		}),
 	);

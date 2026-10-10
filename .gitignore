@@ -3,13 +3,13 @@ node_modules
 
 .vscode/tasks.json
 .archive
-epiq-*.tgz
+ome-*.tgz
 .DS_Store
 coverage
 
-# [epiq]: local hydrated state is never committed
-.epiq/events/
-.epiq/log/
+# [ome]: local hydrated state is never committed
+.ome/events/
+.ome/log/
 .DS_Store
 
 # playwright

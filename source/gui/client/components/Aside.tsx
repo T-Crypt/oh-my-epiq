@@ -30,10 +30,10 @@ const MIN_ASIDE_HEIGHT = 160;
 // split/unified boundary the panel itself resizes around.
 export const STACKED_DIFF_WIDTH = 760;
 
-const WIDTH_STORAGE_KEY = 'epiq.aside.width';
+const WIDTH_STORAGE_KEY = 'ome.aside.width';
 // Kept apart from the width on purpose: switching sides and back should give
 // you the size you had on that side, which one shared number cannot do.
-const HEIGHT_STORAGE_KEY = 'epiq.aside.height';
+const HEIGHT_STORAGE_KEY = 'ome.aside.height';
 
 export const readStoredAsideWidth = (): number => {
 	const stored = Number(localStorage.getItem(WIDTH_STORAGE_KEY));

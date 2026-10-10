@@ -10,12 +10,12 @@ import {
 	toPersistedEvent,
 } from '../lib/board/board-log.js';
 import {flushPendingLogs} from '../lib/event/pending-log.js';
-import {resolveClosestEpiqRoot} from '../lib/storage/paths.js';
+import {resolveClosestOmeRoot} from '../lib/storage/paths.js';
 import {AppEvent, StoredAppEvent} from '../lib/board/board-events.model.js';
 import {isFail} from '../lib/model/result-types.js';
 
 const makeTempDir = (): string =>
-	fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-'));
+	fs.mkdtempSync(path.join(os.tmpdir(), 'ome-'));
 
 const event = (overrides: Partial<AppEvent> = {}): AppEvent =>
 	({
@@ -34,7 +34,7 @@ describe('event persist', () => {
 
 	beforeEach(() => {
 		rootDir = makeTempDir();
-		fs.mkdirSync(path.join(rootDir, '.epiq'), {recursive: true});
+		fs.mkdirSync(path.join(rootDir, '.ome'), {recursive: true});
 	});
 
 	it('parses a valid persisted event', () => {
@@ -100,11 +100,11 @@ describe('event persist', () => {
 		}
 	});
 
-	it('resolves nearest parent directory containing .epiq', () => {
+	it('resolves nearest parent directory containing .ome', () => {
 		const nested = path.join(rootDir, 'a', 'b', 'c');
 		fs.mkdirSync(nested, {recursive: true});
 
-		const result = resolveClosestEpiqRoot(nested);
+		const result = resolveClosestOmeRoot(nested);
 
 		expect(isFail(result)).toBe(false);
 		if (!isFail(result)) {
@@ -112,14 +112,14 @@ describe('event persist', () => {
 		}
 	});
 
-	it('fails when no .epiq directory exists', () => {
+	it('fails when no .ome directory exists', () => {
 		const dir = makeTempDir();
 
-		const result = resolveClosestEpiqRoot(dir);
+		const result = resolveClosestOmeRoot(dir);
 
 		expect(isFail(result)).toBe(true);
 		if (isFail(result)) {
-			expect(result.message).toBe('No .epiq directory found in any parent');
+			expect(result.message).toBe('No .ome directory found in any parent');
 		}
 	});
 
@@ -132,7 +132,7 @@ describe('event persist', () => {
 		// the worktree; folding it in is what puts it in the actor's own log.
 		flushPendingLogs(rootDir, 'u1.jsonl');
 
-		const filePath = path.join(rootDir, '.epiq', 'events', 'u1.jsonl');
+		const filePath = path.join(rootDir, '.ome', 'events', 'u1.jsonl');
 
 		expect(fs.existsSync(filePath)).toBe(true);
 
@@ -169,7 +169,7 @@ describe('event persist', () => {
 
 		flushPendingLogs(rootDir, 'u1.jsonl');
 
-		const filePath = path.join(rootDir, '.epiq', 'events', 'u1.jsonl');
+		const filePath = path.join(rootDir, '.ome', 'events', 'u1.jsonl');
 
 		const [firstLine, secondLine] = fs
 			.readFileSync(filePath, 'utf8')
@@ -185,7 +185,7 @@ describe('event persist', () => {
 	// unable to write anything ever again — the log is append-only, so there
 	// was no way back.
 	const writeEdge = (id: string) => {
-		const eventsDir = path.join(rootDir, '.epiq', 'events');
+		const eventsDir = path.join(rootDir, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 		fs.writeFileSync(
 			path.join(eventsDir, '01ARZ3NDEKTSV4RRFFQ69G5FAV.mallory.jsonl'),

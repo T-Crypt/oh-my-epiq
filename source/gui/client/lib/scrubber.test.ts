@@ -588,15 +588,15 @@ describe('dot animations', () => {
 	it('retracts with its own forward keyframes, holding both ends', () => {
 		const exit = dotExitAnimation('abc');
 
-		expect(exit).toContain('epiqScrubberRetract');
+		expect(exit).toContain('omeScrubberRetract');
 		expect(exit).not.toContain('reverse');
 		// Without `both` a dot pops back to full size before it unmounts.
 		expect(exit).toContain('both');
 	});
 
 	it('declares the keyframes it animates', () => {
-		expect(SCRUBBER_KEYFRAMES).toContain('@keyframes epiqScrubberRetract');
-		expect(SCRUBBER_KEYFRAMES).toContain('@keyframes epiqScrubberTwinkle');
+		expect(SCRUBBER_KEYFRAMES).toContain('@keyframes omeScrubberRetract');
+		expect(SCRUBBER_KEYFRAMES).toContain('@keyframes omeScrubberTwinkle');
 	});
 
 	it('finishes every dot within the advertised total', () => {

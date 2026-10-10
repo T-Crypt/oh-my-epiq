@@ -39,7 +39,7 @@ const respondWith = (status: number, body: unknown): http.RequestListener =>
 	};
 
 const validBody = {
-	app: 'epiq',
+	app: 'ome',
 	repoRoot: '/tmp/project',
 	version: '1.6.1',
 	pid: 4242,
@@ -69,7 +69,7 @@ afterEach(async () => {
 const ANSWERED = 10_000;
 
 describe('probeGuiInstance', () => {
-	it('identifies an epiq holding the port', async () => {
+	it('identifies an ome holding the port', async () => {
 		const {port} = await serve(respondWith(200, validBody));
 
 		expect(await probeGuiInstance(port, ANSWERED)).toEqual(validBody);
@@ -77,14 +77,14 @@ describe('probeGuiInstance', () => {
 
 	// Every unusable answer collapses to null, because the caller does the same
 	// thing for all of them: start its own server.
-	it('returns null for a server that is not epiq', async () => {
+	it('returns null for a server that is not ome', async () => {
 		const {port} = await serve(respondWith(200, {app: 'vite', repoRoot: '/x'}));
 
 		expect(await probeGuiInstance(port, ANSWERED)).toBeNull();
 	});
 
 	it('returns null for a body missing fields', async () => {
-		const {port} = await serve(respondWith(200, {app: 'epiq'}));
+		const {port} = await serve(respondWith(200, {app: 'ome'}));
 
 		expect(await probeGuiInstance(port, ANSWERED)).toBeNull();
 	});
@@ -116,7 +116,7 @@ describe('probeGuiInstance', () => {
 
 describe('canonicalRepoRoot', () => {
 	it('resolves a symlinked path to the same string as the real one', () => {
-		const base = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-instance-'));
+		const base = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-instance-'));
 		const real = path.join(base, 'project');
 		const link = path.join(base, 'link');
 		fs.mkdirSync(real);
@@ -128,7 +128,7 @@ describe('canonicalRepoRoot', () => {
 	});
 
 	it('falls back to an absolute path when the directory is not there', () => {
-		const missing = path.join(os.tmpdir(), 'epiq-not-here-9f3a');
+		const missing = path.join(os.tmpdir(), 'ome-not-here-9f3a');
 
 		expect(canonicalRepoRoot(missing)).toBe(path.resolve(missing));
 	});

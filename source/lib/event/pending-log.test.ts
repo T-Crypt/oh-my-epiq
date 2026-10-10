@@ -53,8 +53,8 @@ const flushTwice = (): void => {
 };
 
 beforeEach(() => {
-	root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-pending-'));
-	eventsDir = path.join(root, '.epiq', 'events');
+	root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-pending-'));
+	eventsDir = path.join(root, '.ome', 'events');
 	fs.mkdirSync(eventsDir, {recursive: true});
 });
 

@@ -51,7 +51,7 @@ test('the board stands down while the socket is gone, and comes back', async ({
 	// Now one it cannot: every retry is refused. The schedule runs at a fifth
 	// of its length from here, so the button arrives without sitting through
 	// fifteen seconds of it.
-	await page.evaluate('window.__epiqReconnectScale = 0.2');
+	await page.evaluate('window.__omeReconnectScale = 0.2');
 	refuse = true;
 	cut!();
 

@@ -147,7 +147,7 @@ export type AttachmentExt = (typeof ATTACHMENT_EXTENSIONS)[number];
 
 /**
  * Attachment metadata. The image bytes live as a content-addressed blob at
- * `.epiq/media/<hash>.<ext>` in the state branch worktree — events and
+ * `.ome/media/<hash>.<ext>` in the state branch worktree — events and
  * state only ever carry this reference.
  */
 export type AttachmentState = {

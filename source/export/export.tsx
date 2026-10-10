@@ -9,7 +9,7 @@ import {render as renderInk} from 'ink';
 import {Writable} from 'node:stream';
 import {
 	getExportsDirPath,
-	resolveClosestEpiqRoot,
+	resolveClosestOmeRoot,
 } from '../lib/storage/paths.js';
 import {getSettingsState} from '../lib/state/settings.state.js';
 
@@ -115,9 +115,9 @@ export const exportBoardLayout = async (): Promise<Result<string>> => {
 		return failed('Failed to render board export');
 	}
 
-	const epiqRootResult = resolveClosestEpiqRoot(process.cwd());
-	if (isFail(epiqRootResult)) {
-		return failed('Unable to export, epiq root not found');
+	const omeRootResult = resolveClosestOmeRoot(process.cwd());
+	if (isFail(omeRootResult)) {
+		return failed('Unable to export, ome root not found');
 	}
 
 	const now = new Date();
@@ -125,7 +125,7 @@ export const exportBoardLayout = async (): Promise<Result<string>> => {
 	const exportFileName = `board_${toFilenameSafeSegment(
 		board.title,
 	)}_${date}.md`;
-	const exportsDir = getExportsDirPath(epiqRootResult.value);
+	const exportsDir = getExportsDirPath(omeRootResult.value);
 	fs.mkdirSync(exportsDir, {recursive: true});
 	const exportPath = path.join(exportsDir, exportFileName);
 

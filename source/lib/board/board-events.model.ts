@@ -219,7 +219,7 @@ export type AppEventMap = {
 	};
 
 	/**
-	 * References a content-addressed blob at `.epiq/media/<hash>.<ext>` in
+	 * References a content-addressed blob at `.ome/media/<hash>.<ext>` in
 	 * the state branch worktree. The blob is written in the same commit as
 	 * this event; blobs are immutable and never deleted so peek/replay can
 	 * always render historical states.
@@ -282,7 +282,7 @@ export type AppEventMap = {
 	 * by one person read as one person.
 	 *
 	 * Names its target rather than taking the author, so somebody can link a
-	 * colleague who does not use epiq — without it their commits never resolve.
+	 * colleague who does not use ome — without it their commits never resolve.
 	 * Two contributors claiming one address makes it contested and it resolves
 	 * to nobody; see `4NENX8W` for why that is preferred to refusing the second.
 	 */
@@ -318,7 +318,7 @@ export type EventAction = keyof AppEventMap;
 
 /**
  * Runtime registry of every action this version understands. Events with
- * actions outside this list (written by a newer epiq) are skipped on load
+ * actions outside this list (written by a newer ome) are skipped on load
  * instead of failing replay.
  */
 export const EVENT_ACTIONS = [

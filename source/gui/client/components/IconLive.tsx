@@ -6,7 +6,7 @@
 //
 // Unlit it is a ring around a hollow dot, so the mark keeps its size and its
 // shape whether or not it is on. Lit, the dot fills and two rings leave it half
-// a cycle apart — `epiqLiveRipple`, defined with the bar's own keyframes, so
+// a cycle apart — `omeLiveRipple`, defined with the bar's own keyframes, so
 // the animation is one declaration rather than one per instance.
 export const IconLive = ({
 	size = 14,
@@ -28,12 +28,12 @@ export const IconLive = ({
 	>
 		{lit ? (
 			<>
-				<circle cx="12" cy="12" r="9" className="epiq-live-ripple" />
+				<circle cx="12" cy="12" r="9" className="ome-live-ripple" />
 				<circle
 					cx="12"
 					cy="12"
 					r="9"
-					className="epiq-live-ripple epiq-live-ripple--trailing"
+					className="ome-live-ripple ome-live-ripple--trailing"
 				/>
 			</>
 		) : (

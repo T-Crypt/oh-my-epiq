@@ -1,11 +1,11 @@
 import {readProjectFile} from '../lib/project-setup/project-setup.js';
 import {failed, isFail, Result, succeeded} from '../lib/model/result-types.js';
-import {resolveClosestEpiqProjectRoot} from '../lib/storage/paths.js';
+import {resolveClosestOmeProjectRoot} from '../lib/storage/paths.js';
 
 export const getStateBranch = (cwd: string): Result<string> => {
-	const repoRootResult = resolveClosestEpiqProjectRoot(cwd);
+	const repoRootResult = resolveClosestOmeProjectRoot(cwd);
 	if (isFail(repoRootResult)) {
-		return failed('Unable to resolve epiq project root');
+		return failed('Unable to resolve ome project root');
 	}
 	const projectFileResult = readProjectFile(repoRootResult.value);
 	if (isFail(projectFileResult)) return failed('Unable to read project.json');

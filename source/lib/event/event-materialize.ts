@@ -100,7 +100,7 @@ export const createMaterializer = <M extends EventMap>(
 		const handler = catalog.apply[event.action];
 		if (!handler) {
 			return failed(
-				`Unknown event action "${event.action}", likely created by a newer epiq version. Evt id: ${event.id}`,
+				`Unknown event action "${event.action}", likely created by a newer ome version. Evt id: ${event.id}`,
 			);
 		}
 

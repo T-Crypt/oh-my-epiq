@@ -1,11 +1,11 @@
-import {EPIQ_VERSION} from '../version.js';
+import {OME_VERSION} from '../version.js';
 
-const HELP = `epiq-mcp ${EPIQ_VERSION}
+const HELP = `ome-mcp ${OME_VERSION}
 
-Usage: epiq-mcp [name]
+Usage: ome-mcp [name]
 
   name  the board identity this server writes under, e.g. claude/peter
-        (equivalent to setting EPIQ_USER_NAME)
+        (equivalent to setting OME_USER_NAME)
 
 Options:
   -v, --version  print the version
@@ -20,7 +20,7 @@ export type McpArgs =
 
 /**
  * A flag is never a name. `isValidUserName` only measures length, so an
- * unchecked argument means `epiq-mcp --version` starts the server under the
+ * unchecked argument means `ome-mcp --version` starts the server under the
  * identity `--version`, and the first write makes that a contributor the board
  * cannot be rid of.
  */
@@ -37,7 +37,7 @@ export const parseMcpArgs = (args: string[]): McpArgs => {
 	if (argument === undefined) return {kind: 'none'};
 
 	if (argument === '--version' || argument === '-v') {
-		return {kind: 'print', text: `${EPIQ_VERSION}\n`};
+		return {kind: 'print', text: `${OME_VERSION}\n`};
 	}
 
 	if (argument === '--help' || argument === '-h') {
@@ -47,7 +47,7 @@ export const parseMcpArgs = (args: string[]): McpArgs => {
 	if (argument.startsWith('-')) {
 		return {
 			kind: 'error',
-			message: `Unknown option ${argument}; expected a name, e.g. epiq-mcp claude/peter`,
+			message: `Unknown option ${argument}; expected a name, e.g. ome-mcp claude/peter`,
 		};
 	}
 

@@ -4,12 +4,12 @@ import {isSyncLockHeldAt} from '../../../git/sync-lock.js';
 import {logSignature} from '../../../lib/event/log-signature.js';
 import {isFail} from '../../../lib/model/result-types.js';
 import {startPacedWatch} from '../../../lib/utils/paced-watch.js';
-import {resolveClosestEpiqProjectRoot} from '../../../lib/storage/paths.js';
-import {getGuiState} from '../../../mcp/epiq-api.js';
+import {resolveClosestOmeProjectRoot} from '../../../lib/storage/paths.js';
+import {getGuiState} from '../../../mcp/ome-api.js';
 import {
 	getTimeTravelStatus,
 	runExclusive,
-} from '../../../mcp/epiq-time-travel.js';
+} from '../../../mcp/ome-time-travel.js';
 import {broadcastGuiMessage} from '../../client/lib/gui-broadcast.js';
 import {slimStateResult} from './slim-state.js';
 
@@ -18,7 +18,7 @@ const LOG_WATCH_INTERVAL_MS = 1_000;
 // Walks up like every other read on this path: the GUI may have been launched
 // in a subdirectory of the project.
 const stateBranchRootOf = (project: GuiProject): string | null => {
-	const projectRoot = resolveClosestEpiqProjectRoot(project.repoRoot);
+	const projectRoot = resolveClosestOmeProjectRoot(project.repoRoot);
 	if (isFail(projectRoot)) return null;
 
 	const stateBranchRoot = getStateBranchRoot({repoRoot: projectRoot.value});

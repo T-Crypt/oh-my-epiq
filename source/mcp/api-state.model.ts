@@ -11,7 +11,7 @@ export type ApiComment = {
 	createdAt: number;
 };
 
-// A comment as epiq_issue_get carries it: what a thread is read for, and
+// A comment as ome_issue_get carries it: what a thread is read for, and
 // nothing the GUI needs to draw one.
 export type ApiIssueComment = {
 	id: string;

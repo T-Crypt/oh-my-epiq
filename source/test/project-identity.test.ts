@@ -35,7 +35,7 @@ useTempHome();
 
 const user = {userId: '01HZZZZZZZZZZZZZZZZZZZZZZZ', userName: 'Jo'};
 
-// A clone with a bare remote and one commit, and no epiq project yet.
+// A clone with a bare remote and one commit, and no ome project yet.
 const setupPlainRepo = async () => {
 	const remoteRoot = makeTempDir();
 	const repoRoot = makeTempDir();
@@ -80,7 +80,7 @@ const secondClone = async (remoteRoot: string) => {
 		'-m',
 		'a branch without the project file',
 	]);
-	process.env['EPIQ_GLOBAL_DIR'] = makeTempDir();
+	process.env['OME_GLOBAL_DIR'] = makeTempDir();
 
 	return cloneRoot;
 };
@@ -126,7 +126,7 @@ describe('the project identity on the state branch', () => {
 		expect(project.value.projectId).toBe(first.projectId);
 
 		expect(await git(cloneRoot, ['log', '-1', '--format=%s'])).toBe(
-			'[epiq:adopt-project]',
+			'[ome:adopt-project]',
 		);
 		expect(adopted.value.stateBranchRoot).toBe(
 			path.join(getWorktreesRoot(), first.projectId),
@@ -161,7 +161,7 @@ describe('the project identity on the state branch', () => {
 		const refused = await initProject({cwd: cloneRoot, user});
 
 		expect(isFail(refused)).toBe(true);
-		expect(refused.message).toContain('already an epiq project');
+		expect(refused.message).toContain('already an ome project');
 		expect(refused.message).toContain(
 			`git show origin/main:${STATE_IDENTITY_PATH}`,
 		);

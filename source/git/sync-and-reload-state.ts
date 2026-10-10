@@ -11,7 +11,7 @@ import {failed, isFail, Result, succeeded} from '../lib/model/result-types.js';
 import {getSafeState, getState, patchState} from '../lib/state/state.js';
 import {failSync} from '../lib/state/sync-state.js';
 import {trace} from '../lib/utils/logger.utils.js';
-import {syncEpiqWithRemote} from './sync.js';
+import {syncOmeWithRemote} from './sync.js';
 
 let syncAndReloadPromise: Promise<Result<boolean>> | null = null;
 
@@ -132,14 +132,14 @@ const syncAndReloadStateUnsafe = async (): Promise<Result<boolean>> => {
 		ownEventFileName,
 	});
 
-	logger.debug('[sync] syncEpiqWithRemote:start');
+	logger.debug('[sync] syncOmeWithRemote:start');
 
 	const syncResult = trace(
-		'syncEpiqWithRemote',
-		await syncEpiqWithRemote({ownEventFileName}),
+		'syncOmeWithRemote',
+		await syncOmeWithRemote({ownEventFileName}),
 	);
 
-	logger.debug('[sync] syncEpiqWithRemote:result', {
+	logger.debug('[sync] syncOmeWithRemote:result', {
 		success: !isFail(syncResult),
 		message: isFail(syncResult) ? syncResult.message : syncResult.message,
 	});

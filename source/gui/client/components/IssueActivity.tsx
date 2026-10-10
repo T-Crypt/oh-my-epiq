@@ -37,7 +37,7 @@ export const IssueActivity = ({
 			) : (
 				<div
 					data-testid="issue-activity"
-					className="epiq-log-pane"
+					className="ome-log-pane"
 					style={{marginTop: 10}}
 				>
 					<style>{EVENT_LOG_STYLES}</style>

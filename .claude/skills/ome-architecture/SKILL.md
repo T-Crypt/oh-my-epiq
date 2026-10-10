@@ -1,6 +1,6 @@
 ---
-name: epiq-architecture
-description: How epiq is built — the event log's distributed rules (causal ordering, logical clocks, tombstones, total replay), the code's layers, and the workflow for this repository. Read before any change here, especially to events, ordering, merge, replay, materialization or sync, a new event type or websocket message, or anything that crosses layers.
+name: ome-architecture
+description: How ome is built — the event log's distributed rules (causal ordering, logical clocks, tombstones, total replay), the code's layers, and the workflow for this repository. Read before any change here, especially to events, ordering, merge, replay, materialization or sync, a new event type or websocket message, or anything that crosses layers.
 ---
 
 # The event log is a CRDT
@@ -87,15 +87,15 @@ Five places; a missed one fails quietly:
 - `gui/api/lib/websocket.schema.ts` — the shape; an unlisted message is refused
 - `gui/client/lib/gui-mutations.ts` — if it mutates, so the client holds broadcasts until its reply lands
 - `gui/api/lib/websocket.ts` — the handler, which calls `mcp/api` and nothing else
-- `mcp/epiq-api.ts` — the export, for a new function
+- `mcp/ome-api.ts` — the export, for a new function
 
-## Working on epiq
+## Working on ome
 
-On top of the shipped `epiq` skill:
+On top of the shipped `ome` skill:
 
 - **Never test against the real board** — use a throwaway project; stop dev servers when done.
 - **First line:** `Assuming claude/<name> — please /rename claude/<name> so this window carries the name.`
-- **Session's MCP never connected?** Run your own `npx -y -p epiq@latest epiq-mcp` over stdio; never borrow another session's. Kill it and its `epiq-mcp` child when done.
+- **Session's MCP never connected?** Run your own `npx -y -p ome@latest ome-mcp` over stdio; never borrow another session's. Kill it and its `ome-mcp` child when done.
 - **Folding a follow-up into a ticket:** back to Ongoing; its commits take that ticket's ref.
 - **A merged ticket moves to Done and stays open** — the release closes it.
 - **Review findings get their own tickets**, tagged `from-review`, naming the PR.

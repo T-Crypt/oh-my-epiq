@@ -8,11 +8,11 @@ import {removeTempRepo, setupTui} from './e2e.helper.js';
 
 // A git stand-in the TUI resolves ahead of the real one: it holds every push,
 // shrugging off the hangup the pty sends when the TUI dies, and keeps writing
-// into the repo's `.epiq` the whole time — the child that outlives the TUI and
+// into the repo's `.ome` the whole time — the child that outlives the TUI and
 // repopulates the directory the teardown is trying to remove.
 const fakeGit = (): {binDir: string; holdDir: string} => {
-	const binDir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-e2e-fakegit-'));
-	const holdDir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-e2e-hold-'));
+	const binDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-e2e-fakegit-'));
+	const holdDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-e2e-hold-'));
 	const realGit = execFileSync('sh', ['-c', 'command -v git'], {
 		encoding: 'utf8',
 	}).trim();
@@ -25,7 +25,7 @@ const fakeGit = (): {binDir: string; holdDir: string} => {
 			"  trap '' HUP INT TERM",
 			`  : > "${path.join(holdDir, 'held')}"`,
 			'  i=0; while [ $i -lt 300 ]; do',
-			'    mkdir -p "$EPIQ_E2E_REPO/.epiq/hold" && : > "$EPIQ_E2E_REPO/.epiq/hold/$i"',
+			'    mkdir -p "$OME_E2E_REPO/.ome/hold" && : > "$OME_E2E_REPO/.ome/hold/$i"',
 			'    sleep 0.1; i=$((i+1))',
 			'  done',
 			'fi',
@@ -50,12 +50,12 @@ const waitForFile = async (file: string, timeoutMs: number): Promise<void> => {
 describe('TUI e2e teardown', () => {
 	it('destroy() takes the whole process group down, not just the TUI', async () => {
 		const {binDir, holdDir} = fakeGit();
-		const repo = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-e2e-teardown-'));
+		const repo = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-e2e-teardown-'));
 		const tui = setupTui([], {
 			cwd: repo,
 			env: {
 				PATH: `${binDir}${path.delimiter}${process.env['PATH'] ?? ''}`,
-				EPIQ_E2E_REPO: repo,
+				OME_E2E_REPO: repo,
 			},
 		});
 
@@ -64,7 +64,7 @@ describe('TUI e2e teardown', () => {
 		// Init pushes the state branch before the board renders, so this drives
 		// init by hand and waits for the push to be held rather than for a frame.
 		execSync('git init', {cwd: tui.cwd, stdio: 'ignore'});
-		await tui.waitFor('This folder is not an epiq project yet.', 8_000);
+		await tui.waitFor('This folder is not an ome project yet.', 8_000);
 		await typeCommand(tui, ':init');
 		await waitForFile(path.join(holdDir, 'held'), 10_000);
 

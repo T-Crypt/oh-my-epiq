@@ -175,12 +175,12 @@ test('a popped-out log keeps following, and moves the board', async ({
 		// As strings, for the same reason the write above is one: the root
 		// tsconfig carries no DOM lib, so a typed callback cannot touch an
 		// element's scroll geometry.
-		const PANE = `document.querySelector('[data-testid="event-log"] .epiq-log-pane')`;
+		const PANE = `document.querySelector('[data-testid="event-log"] .ome-log-pane')`;
 
 		// The pane mounts a beat after the toggle reports pressed, and an
 		// evaluate on a missing element throws rather than retrying.
 		await expect(
-			page.getByTestId('event-log').locator('.epiq-log-pane'),
+			page.getByTestId('event-log').locator('.ome-log-pane'),
 		).toHaveCount(1);
 
 		await expect
@@ -264,10 +264,10 @@ test('scrubbing and coming back leaves the log able to follow', async ({
 		await live.click();
 		await expect(live).toHaveAttribute('aria-pressed', 'true');
 
-		const PANE = `document.querySelector('[data-testid="event-log"] .epiq-log-pane')`;
+		const PANE = `document.querySelector('[data-testid="event-log"] .ome-log-pane')`;
 		// As above: the pane is not there the instant the toggle is pressed.
 		await expect(
-			page.getByTestId('event-log').locator('.epiq-log-pane'),
+			page.getByTestId('event-log').locator('.ome-log-pane'),
 		).toHaveCount(1);
 		await expect
 			.poll(

@@ -16,7 +16,7 @@ import {isFail} from '../lib/model/result-types.js';
 // that is what the cache watches.
 
 let root = '';
-const eventsDir = () => path.join(root, '.epiq', 'events');
+const eventsDir = () => path.join(root, '.ome', 'events');
 const logPath = (actor: string) => path.join(eventsDir(), `${actor}.jsonl`);
 
 const WS = '01H0000000000000000000WS01';
@@ -80,7 +80,7 @@ const titlesOf = (): string[] => {
 describe('the remembered parse of a log file', () => {
 	beforeEach(() => {
 		clearEdgeCache();
-		root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-parse-'));
+		root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-parse-'));
 		fs.mkdirSync(eventsDir(), {recursive: true});
 	});
 

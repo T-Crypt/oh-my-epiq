@@ -1,8 +1,8 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 
-const syncEpiqWithRemote = vi.hoisted(() => vi.fn());
+const syncOmeWithRemote = vi.hoisted(() => vi.fn());
 
-vi.mock('../git/sync.js', () => ({syncEpiqWithRemote}));
+vi.mock('../git/sync.js', () => ({syncOmeWithRemote}));
 vi.mock('../lib/board/board-log.js', async importOriginal => ({
 	...(await importOriginal<object>()),
 	resolveActorId: () => ({
@@ -24,13 +24,13 @@ beforeEach(() => {
 		error: vi.fn(),
 	};
 
-	syncEpiqWithRemote.mockReset();
+	syncOmeWithRemote.mockReset();
 	loadWithoutProject();
 });
 
 describe('syncAndReloadState when the sync throws', () => {
 	it('fails every caller, including one that joined, and frees the pill', async () => {
-		syncEpiqWithRemote.mockImplementation(async () => {
+		syncOmeWithRemote.mockImplementation(async () => {
 			await new Promise(resolve => setTimeout(resolve, 10));
 			throw new Error('sync threw');
 		});

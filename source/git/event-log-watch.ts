@@ -3,14 +3,14 @@ import {accountedSignature, logSignature} from '../lib/event/log-signature.js';
 import {Mode} from '../lib/model/action-map.model.js';
 import {failed, isFail, Result, succeeded} from '../lib/model/result-types.js';
 import {getSafeState, isStateInitialized} from '../lib/state/state.js';
-import {resolveClosestEpiqProjectRoot} from '../lib/storage/paths.js';
+import {resolveClosestOmeProjectRoot} from '../lib/storage/paths.js';
 import {logger} from '../logger.js';
 import {getStateBranchRoot} from './git-storage.js';
 import {isSyncLockHeldAt} from './sync-lock.js';
 import {reloadStateFromEventLog} from './sync-and-reload-state.js';
 
 const resolveStateBranchRoot = (): Result<string | null> => {
-	const repoRootResult = resolveClosestEpiqProjectRoot(process.cwd());
+	const repoRootResult = resolveClosestOmeProjectRoot(process.cwd());
 	if (isFail(repoRootResult)) return succeeded('No project here', null);
 
 	return getStateBranchRoot({repoRoot: repoRootResult.value});

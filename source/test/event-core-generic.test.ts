@@ -145,7 +145,7 @@ const openCanvas = () =>
 beforeEach(() => {
 	reset();
 	log.clearEdgeCache();
-	root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-core-test-'));
+	root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-core-test-'));
 });
 
 afterEach(() => {
@@ -198,10 +198,10 @@ describe('the event log with a non-board catalog', () => {
 		if (isFail(written)) throw new Error(written.message);
 
 		const lines = fs
-			.readdirSync(path.join(root, '.epiq', 'events'))
+			.readdirSync(path.join(root, '.ome', 'events'))
 			.flatMap(file =>
 				fs
-					.readFileSync(path.join(root, '.epiq', 'events', file), 'utf8')
+					.readFileSync(path.join(root, '.ome', 'events', file), 'utf8')
 					.split('\n')
 					.filter(Boolean)
 					.map(line => JSON.parse(line) as {id: [string, string | null]}),
@@ -261,7 +261,7 @@ describe('the event log with a non-board catalog', () => {
 	});
 
 	it('quarantines a line whose payload the catalog refuses', () => {
-		const eventsDir = path.join(root, '.epiq', 'events');
+		const eventsDir = path.join(root, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 		fs.writeFileSync(
 			path.join(eventsDir, 'u1.drawer.jsonl'),

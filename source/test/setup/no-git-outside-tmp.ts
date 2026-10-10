@@ -1,7 +1,7 @@
 /**
  * A test run once rewrote the developer's branches and git identity: `main` was
  * moved onto a chain of test commits and `user.name=Test` was written into the
- * shared `.git/config`. `git-safety.test.ts` already claims epiq only ever
+ * shared `.git/config`. `git-safety.test.ts` already claims ome only ever
  * commits into a user's repository in one place — this enforces that claim for
  * every suite, at the only chokepoint they share.
  *

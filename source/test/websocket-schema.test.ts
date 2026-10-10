@@ -16,12 +16,12 @@ describe('parseGuiMessage', () => {
 	it('accepts an open request naming a root', () => {
 		const parsed = parseGuiMessage({
 			type: 'project:open',
-			payload: {root: '/home/me/dev/epiq'},
+			payload: {root: '/home/me/dev/ome'},
 		});
 
 		expect(parsed).toEqual({
 			ok: true,
-			message: {type: 'project:open', payload: {root: '/home/me/dev/epiq'}},
+			message: {type: 'project:open', payload: {root: '/home/me/dev/ome'}},
 		});
 	});
 

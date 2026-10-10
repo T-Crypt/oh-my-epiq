@@ -8,7 +8,7 @@ import {useState} from 'react';
  * commit and path, since a file reviewed in one commit says nothing about the
  * same path changed again in the next.
  */
-const STORAGE_KEY = 'epiq.commits.reviewedFiles';
+const STORAGE_KEY = 'ome.commits.reviewedFiles';
 
 const reviewedKey = (sha: string, path: string): string => `${sha}:${path}`;
 

@@ -6,7 +6,7 @@
  * All three leave the state worktree in a state git calls "rebase in
  * progress": HEAD detached, an autostash holding whatever was uncommitted.
  *
- * The next epiq process recovers by running `git rebase --abort`, and an abort
+ * The next ome process recovers by running `git rebase --abort`, and an abort
  * resets the working tree. Anything a *write* put in that directory in the
  * meantime is in the working tree and not in any commit — so the question this
  * asks is whether recovery takes those writes with it.

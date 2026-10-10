@@ -30,7 +30,7 @@ const write = (name: string, contents: Buffer | string) =>
 	fs.writeFileSync(path.join(repo, name), contents);
 
 beforeEach(() => {
-	repo = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-binary-'));
+	repo = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-binary-'));
 
 	git('init', '-q', '-b', 'main');
 	git('config', 'user.name', 'Test');
@@ -39,12 +39,12 @@ beforeEach(() => {
 
 	// `getCommitDiff` resolves its repo root by finding one, so the temp repo
 	// has to look like a project.
-	fs.mkdirSync(path.join(repo, '.epiq'));
+	fs.mkdirSync(path.join(repo, '.ome'));
 	write(
-		'.epiq/project.json',
+		'.ome/project.json',
 		JSON.stringify({
 			projectId: '01M2XZW1424SQK471GQRM4X72P',
-			stateBranch: '__epiq_state__',
+			stateBranch: '__ome_state__',
 			createdAt: new Date(0).toISOString(),
 		}),
 	);

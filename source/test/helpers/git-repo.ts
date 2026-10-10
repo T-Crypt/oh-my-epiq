@@ -9,7 +9,7 @@ import {getRelativeEventFilePath} from '../../git/git-storage.js';
 const tempDirs: string[] = [];
 
 export const makeTempDir = (): string => {
-	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-sync-'));
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-sync-'));
 	tempDirs.push(dir);
 	return dir;
 };
@@ -21,11 +21,11 @@ export const writeFile = (filePath: string, content: string): void => {
 
 export const writeProjectFile = (repoRoot: string): void => {
 	writeFile(
-		path.join(repoRoot, '.epiq', 'project.json'),
+		path.join(repoRoot, '.ome', 'project.json'),
 		JSON.stringify(
 			{
 				projectId: path.basename(repoRoot),
-				stateBranch: 'epiq/state',
+				stateBranch: 'ome/state',
 				createdAt: new Date(),
 			},
 			null,
@@ -134,12 +134,12 @@ export const setupRepo = async (): Promise<{
 		message: 'initial',
 	});
 	const stageProject = await execGit({
-		args: ['add', '.epiq/project.json'],
+		args: ['add', '.ome/project.json'],
 		cwd: repoRoot,
 	});
 	if (isFail(stageProject)) throw new Error(stageProject.message);
 	const commitProject = await execGit({
-		args: ['commit', '-q', '-m', '[epiq:init-project]'],
+		args: ['commit', '-q', '-m', '[ome:init-project]'],
 		cwd: repoRoot,
 	});
 	if (isFail(commitProject)) throw new Error(commitProject.message);
@@ -184,7 +184,7 @@ const globalDirs = new Map<string, string>();
 export const globalDirFor = (repoRoot: string): string => {
 	let dir = globalDirs.get(repoRoot);
 	if (!dir) {
-		dir = path.join(makeTempDir(), '.epiq-global');
+		dir = path.join(makeTempDir(), '.ome-global');
 		globalDirs.set(repoRoot, dir);
 	}
 	return dir;
@@ -195,13 +195,13 @@ export const onMachine = async <T>(
 	repoRoot: string,
 	fn: () => Promise<T>,
 ): Promise<T> => {
-	const previous = process.env['EPIQ_GLOBAL_DIR'];
-	process.env['EPIQ_GLOBAL_DIR'] = globalDirFor(repoRoot);
+	const previous = process.env['OME_GLOBAL_DIR'];
+	process.env['OME_GLOBAL_DIR'] = globalDirFor(repoRoot);
 
 	try {
 		return await fn();
 	} finally {
-		if (previous === undefined) delete process.env['EPIQ_GLOBAL_DIR'];
-		else process.env['EPIQ_GLOBAL_DIR'] = previous;
+		if (previous === undefined) delete process.env['OME_GLOBAL_DIR'];
+		else process.env['OME_GLOBAL_DIR'] = previous;
 	}
 };

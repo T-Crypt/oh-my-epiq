@@ -2,7 +2,7 @@
  * One collaborator, in its own process.
  *
  * App state is a module singleton, so two actors cannot share a process. Each
- * gets its own clone and its own `EPIQ_GLOBAL_DIR` — where identity and the
+ * gets its own clone and its own `OME_GLOBAL_DIR` — where identity and the
  * state worktree live — while sharing the project id that is committed to the
  * repo. That is what a second machine actually looks like.
  *
@@ -11,7 +11,7 @@
  */
 import fs from 'node:fs';
 import {getStateBranchRoot} from '../../git/git-storage.js';
-import {syncEpiqWithRemote} from '../../git/sync.js';
+import {syncOmeWithRemote} from '../../git/sync.js';
 import {loadSettingsFromConfig} from '../../lib/config/user-config.js';
 import {createDefaultEvents} from '../../lib/board/board-boot.js';
 import {loadMergedEvents} from '../../lib/board/board-log.js';
@@ -25,7 +25,7 @@ import {
 	createIssue,
 	listIssues,
 	listSwimlanes,
-} from '../../mcp/epiq-api.js';
+} from '../../mcp/ome-api.js';
 import {readEventIds, readOwnEventIds} from './log-reader.js';
 import type {ActorJob, ActorReport} from './protocol.js';
 
@@ -46,7 +46,7 @@ const actor = {userId: job.userId, userName: job.userName};
 // state branch and its worktree, then the default events give the board a
 // workspace and a swimlane to put issues in.
 if (job.init) {
-	const bootstrap = await syncEpiqWithRemote({
+	const bootstrap = await syncOmeWithRemote({
 		cwd: job.repoRoot,
 		ownEventFileName: getPersistFileName(actor),
 	});
@@ -115,7 +115,7 @@ if (job.sync) {
 	// waiting to interrupt what comes next.
 	if (job.syncStartedPath) fs.writeFileSync(job.syncStartedPath, '');
 
-	const synced = await syncEpiqWithRemote({
+	const synced = await syncOmeWithRemote({
 		cwd: job.repoRoot,
 		ownEventFileName: getPersistFileName(actor),
 	});

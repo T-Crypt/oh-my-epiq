@@ -55,7 +55,7 @@ describe('checkCommitRef', () => {
 	// nuisance instead of a safety net.
 	it.each([
 		'make ticket refs in comments and descriptions clickable',
-		'epiq skill: never test against the real board',
+		'ome skill: never test against the real board',
 		'fix the scrubber',
 	])('accepts an ordinary subject with no ref: %s', subject => {
 		expect(check(subject).ok).toBe(true);
@@ -77,9 +77,9 @@ describe('checkCommitRef', () => {
 		'Revert "B8PYTCM refuse to commit a log that lost lines"',
 		'fixup! B8PYTCM refuse to commit',
 		'squash! B8PYTCM refuse to commit',
-		'[epiq:init]',
+		'[ome:init]',
 		'[sync|branch:main:sha:3ea7e6e3]',
-	])('accepts the subject git or epiq writes itself: %s', subject => {
+	])('accepts the subject git or ome writes itself: %s', subject => {
 		expect(check(subject).ok).toBe(true);
 	});
 

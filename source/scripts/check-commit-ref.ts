@@ -23,7 +23,7 @@ import {
 	findStagedIdentityDrift,
 	STATE_IDENTITY_PATH,
 } from '../lib/project-setup/project-identity.js';
-import {resolveClosestEpiqProjectRoot} from '../lib/storage/paths.js';
+import {resolveClosestOmeProjectRoot} from '../lib/storage/paths.js';
 import {checkCommitRef} from '../lib/utils/commit-ref.js';
 
 // Every action that introduces a node. A ref names a node, so these are the
@@ -40,7 +40,7 @@ const NODE_ACTIONS = new Set([
 const allow = (): never => process.exit(0);
 
 const collectNodeIds = (): string[] => {
-	const repoRoot = resolveClosestEpiqProjectRoot(process.cwd());
+	const repoRoot = resolveClosestOmeProjectRoot(process.cwd());
 	if (isFail(repoRoot)) return [];
 
 	const stateBranchRoot = getStateBranchRoot({repoRoot: repoRoot.value});
@@ -66,7 +66,7 @@ const collectNodeIds = (): string[] => {
 // file is the one in question. Silent unless the file is staged and the
 // branch has an identity to disagree with.
 const refuseIdentityDrift = async (): Promise<void> => {
-	const repoRoot = resolveClosestEpiqProjectRoot(process.cwd());
+	const repoRoot = resolveClosestOmeProjectRoot(process.cwd());
 	if (isFail(repoRoot)) return;
 
 	const stateBranch = getStateBranch(repoRoot.value);

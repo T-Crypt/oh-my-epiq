@@ -345,23 +345,23 @@ describe('stored selection', () => {
 	// the axis.
 	it('reads a stored bare list onto the axis the stored view colours by', () => {
 		localStorage.setItem(
-			'epiq.board.selection',
+			'ome.board.selection',
 			'{"scope":"all","layout":"even","view":"assigning","only":["jola"]}',
 		);
 		expect(readStoredSelection().only).toEqual({assignee: ['jola']});
 
 		localStorage.setItem(
-			'epiq.board.selection',
+			'ome.board.selection',
 			'{"scope":"all","layout":"even","view":"all","only":["jola"]}',
 		);
 		expect(readStoredSelection().only).toEqual({});
 	});
 
 	it('shrugs off garbage', () => {
-		localStorage.setItem('epiq.board.selection', '{not json');
+		localStorage.setItem('ome.board.selection', '{not json');
 		expect(readStoredSelection()).toEqual(DEFAULT_SELECTION);
 
-		localStorage.setItem('epiq.board.selection', '{"scope":"never","only":3}');
+		localStorage.setItem('ome.board.selection', '{"scope":"never","only":3}');
 		expect(readStoredSelection()).toEqual(DEFAULT_SELECTION);
 	});
 });

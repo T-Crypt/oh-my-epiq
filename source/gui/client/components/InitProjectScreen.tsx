@@ -71,13 +71,13 @@ export const InitProjectScreen = ({
 				</div>
 
 				<h1 style={{margin: 0, fontSize: 16, fontWeight: 700}}>
-					This folder is not an epiq project yet
+					This folder is not an ome project yet
 				</h1>
 
 				<div
 					style={{fontSize: 12, color: GUI_THEME.secondary, lineHeight: 1.7}}
 				>
-					No <span style={codeStyle}>.epiq/project.json</span> was found in this
+					No <span style={codeStyle}>.ome/project.json</span> was found in this
 					directory or any of its parents:
 				</div>
 
@@ -95,10 +95,10 @@ export const InitProjectScreen = ({
 				<div
 					style={{fontSize: 12, color: GUI_THEME.secondary, lineHeight: 1.7}}
 				>
-					To start tracking issues here, run <span style={codeStyle}>epiq</span>{' '}
+					To start tracking issues here, run <span style={codeStyle}>ome</span>{' '}
 					in that folder and type <span style={codeStyle}>:init</span>. That
 					creates, commits and pushes{' '}
-					<span style={codeStyle}>.epiq/project.json</span>. Then come back and
+					<span style={codeStyle}>.ome/project.json</span>. Then come back and
 					reload.
 				</div>
 

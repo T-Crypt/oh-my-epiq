@@ -136,7 +136,7 @@ export const TheatrePlayer = ({
 					zIndex: 40,
 					background:
 						'radial-gradient(120% 90% at 50% 45%, rgba(6,7,10,0) 35%, rgba(6,7,10,0.72) 100%)',
-					animation: animate ? 'epiqTheatreFade 320ms ease-out' : undefined,
+					animation: animate ? 'omeTheatreFade 320ms ease-out' : undefined,
 				}}
 			/>
 
@@ -163,7 +163,7 @@ export const TheatrePlayer = ({
 					background: 'rgba(13, 16, 22, 0.94)',
 					backdropFilter: 'blur(14px)',
 					WebkitBackdropFilter: 'blur(14px)',
-					animation: animate ? 'epiqTheatreRise 260ms ease-out' : undefined,
+					animation: animate ? 'omeTheatreRise 260ms ease-out' : undefined,
 				}}
 			>
 				<div style={{display: 'flex', alignItems: 'center', gap: 14}}>
@@ -340,7 +340,7 @@ export const TheatrePlayer = ({
 							textOverflow: 'ellipsis',
 							whiteSpace: 'nowrap',
 							animation: animate
-								? 'epiqTheatreCaption 220ms ease-out'
+								? 'omeTheatreCaption 220ms ease-out'
 								: undefined,
 						}}
 					>

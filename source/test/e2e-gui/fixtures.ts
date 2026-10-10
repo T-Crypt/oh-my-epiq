@@ -8,7 +8,7 @@ export const readHandoff = (workerIndex: number): Handoff =>
 export const test = base.extend<{
 	appUrl: string;
 	repoRoot: string;
-	// A GUI served over a directory with no epiq project.
+	// A GUI served over a directory with no ome project.
 	bareAppUrl: string;
 	bareRepoRoot: string;
 	// Anything the page logged that indicates a crash. A blank screen is React

@@ -35,7 +35,7 @@ import {openBrowser} from '../gui/open-browser.js';
 const REPO = process.cwd();
 
 const instance = (repoRoot: string) => ({
-	app: 'epiq' as const,
+	app: 'ome' as const,
 	repoRoot: canonicalRepoRoot(repoRoot),
 	version: '1.6.1',
 	pid: 1,
@@ -78,7 +78,7 @@ describe('startGui', () => {
 		expect(openBrowser).toHaveBeenCalledWith('http://127.0.0.1:9999');
 	});
 
-	it('starts its own server when the port holds something that is not epiq', async () => {
+	it('starts its own server when the port holds something that is not ome', async () => {
 		vi.mocked(probeGuiInstance).mockResolvedValue(null);
 
 		await startGui({repoRoot: REPO});

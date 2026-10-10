@@ -75,7 +75,7 @@ type OpenTicket = {id: string; lane: number};
 export const generateLog = async (
 	input: GenerateInput,
 ): Promise<{lines: number; closed: number; open: number}> => {
-	const eventsDir = path.join(input.stateRoot, '.epiq', 'events');
+	const eventsDir = path.join(input.stateRoot, '.ome', 'events');
 	fs.mkdirSync(eventsDir, {recursive: true});
 
 	// One open handle per actor: a million appends through writeFileSync would

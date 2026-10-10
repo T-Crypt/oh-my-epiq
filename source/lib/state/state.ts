@@ -9,7 +9,7 @@ import type {AppState} from '../model/app-state.model.js';
 import {type AnyContext, type Workspace} from '../model/context.model.js';
 import type {NavNode} from '../model/navigation-node.model.js';
 import {failed, isFail, Result, succeeded} from '../model/result-types.js';
-import {resolveClosestEpiqProjectRoot} from '../storage/paths.js';
+import {resolveClosestOmeProjectRoot} from '../storage/paths.js';
 import {
 	groupChildrenByParent,
 	groupChildrenOfSome,
@@ -125,7 +125,7 @@ setClaimedEmailsReader(contributor =>
 
 export function initWorkspaceState(workspace: Workspace) {
 	_initialWorkspace = workspace;
-	const repoRootResult = resolveClosestEpiqProjectRoot(process.cwd());
+	const repoRootResult = resolveClosestOmeProjectRoot(process.cwd());
 
 	let hasProjectDefinition = false;
 

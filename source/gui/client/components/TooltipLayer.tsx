@@ -28,7 +28,7 @@ import {TICKET_REF_ATTRIBUTE} from './TicketPreviewLayer';
 // Where the title text is parked while the attribute is off the element. It
 // has to leave: there is no way to keep `title` and suppress the native bubble,
 // and both showing at once is worse than either.
-const STASH = 'epiqTip';
+const STASH = 'omeTip';
 
 type Shown = {label: string; trigger: HTMLElement};
 
@@ -36,7 +36,7 @@ type Shown = {label: string; trigger: HTMLElement};
 const triggerFor = (target: EventTarget | null): HTMLElement | null => {
 	if (!(target instanceof Element)) return null;
 
-	const owner = target.closest<HTMLElement>(`[title], [data-${'epiq-tip'}]`);
+	const owner = target.closest<HTMLElement>(`[title], [data-${'ome-tip'}]`);
 
 	// A linkified ticket ref has a hint of its own — TicketPreviewLayer's card.
 	// Without this, an enclosing element's plain `title` would open beside it,

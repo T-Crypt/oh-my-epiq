@@ -205,7 +205,7 @@ const ensureSyncReady = async ({
 	if (stateOpResult.value !== null) {
 		// Whatever is still here after the clearing above is not this process's
 		// to force: a merge, which sync never starts, so it came from outside
-		// epiq — or anything at all when the claim was `stale` and nothing was
+		// ome — or anything at all when the claim was `stale` and nothing was
 		// cleared. It says where, now, because the answer is a git command run
 		// in a directory the reader has no reason to know about.
 		logger.info('[sync] state branch git operation in progress', {claim});
@@ -374,7 +374,7 @@ const runSync = async (
 	// ============================
 	// Abort-guards
 	// ============================
-	logger.debug('[sync] syncEpiqWithRemote:start', {
+	logger.debug('[sync] syncOmeWithRemote:start', {
 		cwd,
 		ownEventFileName,
 	});
@@ -618,7 +618,7 @@ const runSync = async (
 			: 'Already synced',
 	);
 
-	logger.debug('[sync] syncEpiqWithRemote:done');
+	logger.debug('[sync] syncOmeWithRemote:done');
 
 	return succeeded('Synced event logs with state branch', {
 		repoRoot,
@@ -676,7 +676,7 @@ export const withEventLogsIntact = async <T>(
  * a crashed process abandoned, and recovered from the second by destroying the
  * first.
  */
-export const syncEpiqWithRemote = async (
+export const syncOmeWithRemote = async (
 	args: SyncArgs,
 ): Promise<Result<SyncSummary>> => {
 	const cwd = args.cwd ?? process.cwd();

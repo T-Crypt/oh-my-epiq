@@ -46,8 +46,8 @@ const C = '01H0000000000000000000000C';
 
 /** An events directory holding exactly the log files given. */
 const seed = (logs: Record<string, string[]>): string => {
-	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-old-names-'));
-	const eventsDir = path.join(root, '.epiq', 'events');
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-old-names-'));
+	const eventsDir = path.join(root, '.ome', 'events');
 	fs.mkdirSync(eventsDir, {recursive: true});
 
 	for (const [fileName, lines] of Object.entries(logs)) {

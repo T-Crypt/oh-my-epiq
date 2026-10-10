@@ -30,7 +30,7 @@ import {
 	removeIssueTag,
 	reopenIssue,
 	sync,
-} from '../../../mcp/epiq-api.js';
+} from '../../../mcp/ome-api.js';
 import {
 	getCommitDiff,
 	getCommitsForRef,
@@ -45,8 +45,8 @@ import {
 	getTimeTravelStatus,
 	returnToLive,
 	runExclusive,
-} from '../../../mcp/epiq-time-travel.js';
-import {getIssueStats} from '../../../mcp/epiq-issue-stats.js';
+} from '../../../mcp/ome-time-travel.js';
+import {getIssueStats} from '../../../mcp/ome-issue-stats.js';
 import {getRefDiffStats} from '../../../mcp/api/ref-diff-stats.js';
 import {getSwimlaneStats} from '../../../mcp/api/swimlane-stats.js';
 import {isFail, Result, succeeded} from '../../../lib/model/result-types.js';

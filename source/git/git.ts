@@ -39,7 +39,7 @@ import {
 
 /**
  * Creates the one commit a repository needs before it can carry a branch, for
- * the case where epiq is initialized in a repo that has none.
+ * the case where ome is initialized in a repo that has none.
  *
  * Only ever called from `:init`. This writes in the user's own repository,
  * which may hold unrelated or confidential work, so it is deliberately hard to
@@ -53,7 +53,7 @@ import {
  *   staged files, so even a caller that gets the check wrong cannot commit
  *   somebody's work.
  */
-export const INITIAL_COMMIT_MESSAGE = '[epiq:init-repo]';
+export const INITIAL_COMMIT_MESSAGE = '[ome:init-repo]';
 
 export const ensureInitialCommit = async (
 	repoRoot: string,
@@ -147,7 +147,7 @@ export const createStateBranch = async ({
 	logger.info(`Creating ${stateBranchName}`);
 
 	const commitResult = await execGit({
-		args: ['commit-tree', EMPTY_TREE_SHA, '-m', '[epiq:init-state-branch]'],
+		args: ['commit-tree', EMPTY_TREE_SHA, '-m', '[ome:init-state-branch]'],
 		cwd: repoRoot,
 	});
 
@@ -320,7 +320,7 @@ const createStateBranchWorktree = async ({
 					'',
 					'Deleting it would destroy them, and with no .git here there is no',
 					'committed copy to recover from. Move the directory aside and',
-					'salvage the logs before letting epiq recreate the worktree.',
+					'salvage the logs before letting ome recreate the worktree.',
 				].join('\n'),
 			);
 		}
@@ -383,7 +383,7 @@ export const ensureStateBranchWorktree = async ({
 // Two worktree roots under the same global directory differ only in the
 // project id in their last segment: two ids for one branch, which is a
 // checkout that minted a second identity for an existing board (JQS9XDR),
-// not a process with another EPIQ_GLOBAL_DIR.
+// not a process with another OME_GLOBAL_DIR.
 const isProjectIdDrift = (existing: string, expected: string): boolean => {
 	const worktrees = normalizeExistingPath(getWorktreesRoot());
 
@@ -446,7 +446,7 @@ const placeStateBranchWorktree = async ({
 		// state worktree nearly always holds some, because every `persist`
 		// appends to the log and nothing commits until the next sync.
 		//
-		// The paths disagree whenever two processes resolve `EPIQ_GLOBAL_DIR`
+		// The paths disagree whenever two processes resolve `OME_GLOBAL_DIR`
 		// differently: a dev server, a test run, an agent with its own
 		// environment. Relocating then threw away every event the other process
 		// had written since its last sync, silently, and reported success.
@@ -466,7 +466,7 @@ const placeStateBranchWorktree = async ({
 					'a deleted worktree from.',
 					'',
 					`This worktree is expected at ${expected}, so something else is`,
-					'using a different EPIQ_GLOBAL_DIR against the same repository.',
+					'using a different OME_GLOBAL_DIR against the same repository.',
 					'Sync from that location first, or point both at the same one.',
 				].join('\n'),
 			);

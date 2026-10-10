@@ -99,7 +99,7 @@ const openCommitAsSideBySideDiffs = async (
 		);
 	}
 
-	// Locks the whole `epiq/commit-diffs` chain down, so the per-file
+	// Locks the whole `ome/commit-diffs` chain down, so the per-file
 	// directories written under it below inherit a parent nobody else can enter.
 	const tmpDirResult = privateTempDir('commit-diffs', sha);
 	if (isFail(tmpDirResult)) return failed(tmpDirResult.message);

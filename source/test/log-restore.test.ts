@@ -34,14 +34,14 @@ const line = (n: number) =>
 	});
 
 const makeRoot = (): string => {
-	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-log-restore-'));
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-log-restore-'));
 	dirs.push(root);
-	fs.mkdirSync(path.join(root, '.epiq', 'events'), {recursive: true});
+	fs.mkdirSync(path.join(root, '.ome', 'events'), {recursive: true});
 	return root;
 };
 
 const logPath = (root: string, name = LOG): string =>
-	path.join(root, '.epiq', 'events', name);
+	path.join(root, '.ome', 'events', name);
 
 const write = (root: string, lines: string[], name = LOG): void =>
 	fs.writeFileSync(logPath(root, name), lines.join('\n') + '\n');

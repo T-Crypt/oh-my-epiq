@@ -37,7 +37,7 @@ type LinkInput = ToolInput & {email: string; contributorId?: string};
  * Binds a git address to a contributor, defaulting to whoever is asking.
  *
  * `contributorId` is accepted so somebody can link a colleague who does not use
- * epiq — without that their commits never resolve at all. Retracting is the
+ * ome — without that their commits never resolve at all. Retracting is the
  * narrow half: see `unlinkContributorEmail`.
  */
 export const linkContributorEmail = async (

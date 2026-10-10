@@ -25,7 +25,7 @@ vi.mock('../lib/project-setup/project-setup.js', async importOriginal => ({
 	readProjectFile: vi.fn(() =>
 		projectId
 			? succeeded('Read', {projectId})
-			: failed('Missing .epiq/project.json'),
+			: failed('Missing .ome/project.json'),
 	),
 	readProjectId: vi.fn(() =>
 		projectId ? succeeded('Read', projectId) : failed('No project'),
@@ -34,7 +34,7 @@ vi.mock('../lib/project-setup/project-setup.js', async importOriginal => ({
 
 vi.mock('../lib/storage/paths.js', async importOriginal => ({
 	...(await importOriginal<typeof import('../lib/storage/paths.js')>()),
-	resolveClosestEpiqProjectRoot: vi.fn(() =>
+	resolveClosestOmeProjectRoot: vi.fn(() =>
 		succeeded('Resolved', process.cwd()),
 	),
 }));

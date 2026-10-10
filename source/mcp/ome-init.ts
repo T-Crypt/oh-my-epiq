@@ -2,7 +2,7 @@ import {ulid} from 'ulid';
 import {ACTOR_NAME_ENV} from '../lib/config/actor-env.js';
 import {recordRecentProject} from '../lib/config/recent-projects.js';
 import {readGitName} from '../lib/config/git-identity.js';
-import {readEpiqConfig, setConfig} from '../lib/config/user-config.js';
+import {readOmeConfig, setConfig} from '../lib/config/user-config.js';
 import {failed, isFail, Result, succeeded} from '../lib/model/result-types.js';
 import {
 	initProject,
@@ -60,7 +60,7 @@ export const initProjectTool = async (
 		}
 	>
 > => {
-	const configResult = readEpiqConfig();
+	const configResult = readOmeConfig();
 	if (isFail(configResult)) return failed(configResult.message);
 	const config = configResult.value;
 
@@ -104,7 +104,7 @@ export const initProjectTool = async (
 		return failed(
 			`This machine is already set up with ${field.name} ${JSON.stringify(
 				current,
-			)}; epiq_project_init does not change it. Call again without ${
+			)}; ome_project_init does not change it. Call again without ${
 				field.name
 			}, or let the user change it in the TUI with :config.`,
 		);
@@ -158,13 +158,13 @@ export const initProjectTool = async (
 			: '';
 
 		return failed(
-			`Setup incomplete. Ask the user for: ${asks}.${proposal} Then call epiq_project_init again with the answers; what was given so far is saved.`,
+			`Setup incomplete. Ask the user for: ${asks}.${proposal} Then call ome_project_init again with the answers; what was given so far is saved.`,
 		);
 	}
 
 	const user = {userId: merged.userId ?? '', userName: merged.userName ?? ''};
 	if (!user.userId || !user.userName) {
-		return failed('Missing Epiq user id');
+		return failed('Missing OME user id');
 	}
 
 	const initResult = await initProject({

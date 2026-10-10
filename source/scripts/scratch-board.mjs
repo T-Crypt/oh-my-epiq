@@ -7,7 +7,7 @@
 // drives setup to completion and hands back a project ready to use.
 //
 // Nothing here can reach a real board. The repository is a fresh temp
-// directory, and EPIQ_GLOBAL_DIR points at another one, so `~/.epiq-global` is
+// directory, and OME_GLOBAL_DIR points at another one, so `~/.ome-global` is
 // never read or written and every run starts from nothing.
 
 import {execFileSync, spawn} from 'node:child_process';
@@ -19,8 +19,8 @@ import {fileURLToPath} from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const wantsGui = process.argv.includes('gui');
 
-const repo = mkdtempSync(join(tmpdir(), 'epiq-scratch-'));
-const globalDir = mkdtempSync(join(tmpdir(), 'epiq-scratch-global-'));
+const repo = mkdtempSync(join(tmpdir(), 'ome-scratch-'));
+const globalDir = mkdtempSync(join(tmpdir(), 'ome-scratch-global-'));
 
 const git = (...args) =>
 	execFileSync('git', args, {cwd: repo, stdio: 'pipe'}).toString().trim();
@@ -78,7 +78,7 @@ const child = spawn(join(root, 'node_modules/.bin/tsx'), args, {
 	stdio: 'inherit',
 	env: {
 		...process.env,
-		EPIQ_GLOBAL_DIR: globalDir,
+		OME_GLOBAL_DIR: globalDir,
 		// Only the GUI reads this, to find the bundle in dist/ rather than beside
 		// its own module.
 		IS_LOCAL: 'true',

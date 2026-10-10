@@ -3,7 +3,7 @@
  * dereferences the payload", so it has two ways to be wrong, and the expensive
  * one is not the obvious one.
  *
- * Rejecting junk is what it is for. Rejecting something a *newer* epiq wrote —
+ * Rejecting junk is what it is for. Rejecting something a *newer* ome wrote —
  * an added field, a value this build has no opinion about — would quarantine
  * events this build can apply perfectly well, on every clone, permanently.
  */
@@ -64,7 +64,7 @@ describe('parseEventPayload', () => {
 		expect(
 			accepts('add.issue', {
 				id: ID,
-				name: 'from a newer epiq',
+				name: 'from a newer ome',
 				parent: ID,
 				rank: RANK,
 				estimate: 5,

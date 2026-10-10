@@ -406,15 +406,15 @@ export const IssueDetails = ({
 	// Read synchronously rather than in an effect: entering fullscreen has to
 	// lay the lanes out in the same commit, which aside-stacking.pw.ts proves.
 	const [overviewCollapsed, setOverviewCollapsed] = usePersistedFlag(
-		'epiq.lane.overview.collapsed',
+		'ome.lane.overview.collapsed',
 		false,
 	);
 	const [commentsCollapsed, setCommentsCollapsed] = usePersistedFlag(
-		'epiq.lane.comments.collapsed',
+		'ome.lane.comments.collapsed',
 		false,
 	);
 	const [commitsCollapsed, setCommitsCollapsed] = usePersistedFlag(
-		'epiq.lane.commits.collapsed',
+		'ome.lane.commits.collapsed',
 		false,
 	);
 	const laneCollapsed: Record<LaneKey, boolean> = {

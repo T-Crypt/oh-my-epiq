@@ -16,7 +16,7 @@ import {
 	getGuiState,
 	listIssues,
 	sync,
-} from '../../mcp/epiq-api.js';
+} from '../../mcp/ome-api.js';
 import {commonSteps} from './e2e-common-steps.js';
 import {
 	ARROW_DOWN,
@@ -95,7 +95,7 @@ describe('issue attachments', () => {
 		// hand the repo over to the API layer. Passing an explicit cwd keeps
 		// the directory alive after destroy() (the session only removes
 		// directories it created itself).
-		repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-attach-'));
+		repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-attach-'));
 		const tui = setupTui([], {cwd: repoRoot});
 		cleanupTui = tui.destroy;
 
@@ -310,8 +310,8 @@ describe('issue attachments', () => {
 				`git --git-dir="${remoteDir}" ls-tree -r --name-only "${projectResult.value.stateBranch}"`,
 				{encoding: 'utf8'},
 			);
-			expect(remoteFiles).toContain(`.epiq/media/${fileName}`);
-			expect(remoteFiles).toContain('.epiq/events/');
+			expect(remoteFiles).toContain(`.ome/media/${fileName}`);
+			expect(remoteFiles).toContain('.ome/events/');
 		},
 		testTimeout,
 	);
@@ -319,7 +319,7 @@ describe('issue attachments', () => {
 	it(
 		'attaches from a file path, naming the attachment after the file',
 		async () => {
-			const source = path.join(os.tmpdir(), `epiq-shot-${Date.now()}.png`);
+			const source = path.join(os.tmpdir(), `ome-shot-${Date.now()}.png`);
 			fs.writeFileSync(source, PNG_1PX);
 
 			try {
@@ -353,7 +353,7 @@ describe('issue attachments', () => {
 			const missing = await addIssueAttachment({
 				repoRoot,
 				issueId,
-				filePath: path.join(os.tmpdir(), 'epiq-does-not-exist.png'),
+				filePath: path.join(os.tmpdir(), 'ome-does-not-exist.png'),
 			});
 
 			expect(isFail(missing)).toBe(true);

@@ -3,33 +3,33 @@ import {render} from 'ink';
 import meow from 'meow';
 import React from 'react';
 import {startGui} from './gui/init.js';
-import EpiqApp from './lib/components/EpiqApp.js';
+import OmeApp from './lib/components/OmeApp.js';
 import {applyActorNameArgument} from './lib/config/actor-env.js';
 import {failed, isFail, Result, succeeded} from './lib/model/result-types.js';
 import {initUiState} from './lib/state/ux-state.js';
 import {formatUnknownError} from './lib/utils/logger.utils.js';
-import {EPIQ_VERSION} from './version.js';
+import {OME_VERSION} from './version.js';
 import './logger.js';
 import {bootTui} from './boot-tui.js';
 
 initUiState();
 
-const helpText = `${chalk.bold('Epiq CLI')}
+const helpText = `${chalk.bold('OME CLI')}
 
 ${chalk.dim('Boot in directory:')}
-  ${chalk.cyan('$ epiq')}
+  ${chalk.cyan('$ ome')}
 
 ${chalk.dim('Launch GUI:')}
-  ${chalk.cyan('$ epiq gui')}
-  ${chalk.cyan('$ epiq gui --no-open')}  ${chalk.dim('no browser')}
+  ${chalk.cyan('$ ome gui')}
+  ${chalk.cyan('$ ome gui --no-open')}  ${chalk.dim('no browser')}
 
 ${chalk.dim('Act as somebody other than the configured user:')}
-  ${chalk.cyan('$ epiq --as claude')}
+  ${chalk.cyan('$ ome --as claude')}
 `;
 
 const cli = meow(helpText, {
 	importMeta: import.meta,
-	version: EPIQ_VERSION,
+	version: OME_VERSION,
 	flags: {
 		init: {
 			type: 'boolean',
@@ -80,7 +80,7 @@ const renderNode = (node: React.ReactNode): Result<void> => {
 };
 
 export const renderApp = (): Result<void> =>
-	renderNode(<EpiqApp width={width} height={height} />);
+	renderNode(<OmeApp width={width} height={height} />);
 
 process.stdout.on('resize', () => {
 	width = process.stdout.columns || 120;
@@ -102,7 +102,7 @@ if (command === 'gui') {
 	});
 
 	if (isFail(guiResult)) {
-		console.error(chalk.red(`Failed to start Epiq GUI:\n${guiResult.message}`));
+		console.error(chalk.red(`Failed to start OME GUI:\n${guiResult.message}`));
 		process.exitCode = 1;
 	}
 } else {
@@ -112,7 +112,7 @@ if (command === 'gui') {
 
 	if (isFail(bootResult)) {
 		logger.info(bootResult.message);
-		console.error(chalk.red(`Failed to boot Epiq:\n${bootResult.message}`));
+		console.error(chalk.red(`Failed to boot OME:\n${bootResult.message}`));
 		process.exitCode = 1;
 	}
 }

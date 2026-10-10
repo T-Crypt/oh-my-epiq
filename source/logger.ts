@@ -3,9 +3,9 @@ import path from 'path';
 import util from 'util';
 import {isFail} from './lib/model/result-types.js';
 import {
-	EPIQ_DIR_NAME,
+	OME_DIR_NAME,
 	getGlobalConfigDir,
-	resolveClosestEpiqRoot,
+	resolveClosestOmeRoot,
 } from './lib/storage/paths.js';
 import {LogLevel} from './lib/state/settings.state.js';
 
@@ -21,24 +21,24 @@ const TRIM_EVERY_N_WRITES = 50;
 
 let writesSinceTrim = 0;
 
-const isMcp = () => process.env['EPIQ_MCP'] === 'true';
+const isMcp = () => process.env['OME_MCP'] === 'true';
 
 const getLogPath = () => {
 	const cwd = process.cwd();
-	const epiqRootDirResult = resolveClosestEpiqRoot(cwd);
+	const omeRootDirResult = resolveClosestOmeRoot(cwd);
 
-	if (isFail(epiqRootDirResult)) {
+	if (isFail(omeRootDirResult)) {
 		// Not into the working directory: an MCP server is launched in
 		// repositories that have no project yet, and a stray file there is an
-		// uncommitted change that stops `epiq_project_init` from creating one.
+		// uncommitted change that stops `ome_project_init` from creating one.
 		if (isMcp()) {
-			return path.join(getGlobalConfigDir(), 'epiq-mcp.log');
+			return path.join(getGlobalConfigDir(), 'ome-mcp.log');
 		}
 
 		return undefined;
 	}
 
-	return path.join(epiqRootDirResult.value, EPIQ_DIR_NAME, 'log', 'epiq.log');
+	return path.join(omeRootDirResult.value, OME_DIR_NAME, 'log', 'ome.log');
 };
 
 // The last `maxBytes` of the file, starting at a line boundary, without
@@ -123,10 +123,10 @@ function write(prefix: string, args: unknown[], short = false) {
 
 const getLogLevel = (): LogLevel => {
 	if (isMcp()) {
-		return (process.env['EPIQ_MCP_LOG_LEVEL'] as LogLevel) ?? 'error';
+		return (process.env['OME_MCP_LOG_LEVEL'] as LogLevel) ?? 'error';
 	}
 
-	return (process.env['EPIQ_LOG_LEVEL'] as LogLevel) ?? 'debug';
+	return (process.env['OME_LOG_LEVEL'] as LogLevel) ?? 'debug';
 };
 
 export const logger = {

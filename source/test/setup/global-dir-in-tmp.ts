@@ -1,11 +1,11 @@
 /**
- * The real `~/.epiq-global` holds the state-branch worktree — the live event
+ * The real `~/.ome-global` holds the state-branch worktree — the live event
  * logs of every project on this machine. A test that resolves it writes real
  * events without ever running git outside tmp, so `no-git-outside-tmp` never
  * fires; a 529-line `*.test.jsonl` log ended up committed to this repo's own
  * state branch that way.
  *
- * Defaulted first, so a suite that forgets `EPIQ_GLOBAL_DIR` is isolated
+ * Defaulted first, so a suite that forgets `OME_GLOBAL_DIR` is isolated
  * rather than failed; asserted per test, so one that points it somewhere real
  * fails on the spot.
  */
@@ -45,17 +45,17 @@ export const assertGlobalDirThrowaway = (dir: string): void => {
 	}
 
 	throw new Error(
-		`Refusing to run tests with the Epiq global dir outside a throwaway directory.\n` +
+		`Refusing to run tests with the OME global dir outside a throwaway directory.\n` +
 			`  resolved: ${resolved}\n` +
 			`It holds the real state-branch worktree, so tests writing there ` +
-			`publish events into production boards. Point EPIQ_GLOBAL_DIR under ` +
+			`publish events into production boards. Point OME_GLOBAL_DIR under ` +
 			`${tempRoot}.`,
 	);
 };
 
-if (!process.env['EPIQ_GLOBAL_DIR']) {
-	process.env['EPIQ_GLOBAL_DIR'] = fs.mkdtempSync(
-		path.join(tempRoot, 'epiq-global-'),
+if (!process.env['OME_GLOBAL_DIR']) {
+	process.env['OME_GLOBAL_DIR'] = fs.mkdtempSync(
+		path.join(tempRoot, 'ome-global-'),
 	);
 }
 

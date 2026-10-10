@@ -61,7 +61,7 @@ describe('timeline-index', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		clearTimelineCache();
-		root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-timeline-'));
+		root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-timeline-'));
 		fs.mkdirSync(eventsDir());
 		served([event(1), event(2)]);
 	});
@@ -131,7 +131,7 @@ describe('timeline-index', () => {
 		it('serves a different project without answering from the first', () => {
 			getTimelineEntries(root);
 
-			const other = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-timeline-'));
+			const other = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-timeline-'));
 			fs.mkdirSync(path.join(other, 'events'));
 			getTimelineEntries(other);
 

@@ -17,7 +17,7 @@ let projectExists = true;
 
 vi.mock('../lib/config/user-config.js', () => ({
 	setConfig: vi.fn(() => succeeded('Wrote', null)),
-	readEpiqConfig: vi.fn(() =>
+	readOmeConfig: vi.fn(() =>
 		succeeded('Read', {
 			userId: 'USER',
 			userName: null,
@@ -37,13 +37,13 @@ vi.mock('../lib/project-setup/project-setup.js', async importOriginal => ({
 	readProjectFile: vi.fn(() =>
 		projectExists
 			? succeeded('Read', {})
-			: failed('Missing .epiq/project.json'),
+			: failed('Missing .ome/project.json'),
 	),
 }));
 
 vi.mock('../lib/storage/paths.js', async importOriginal => ({
 	...(await importOriginal<typeof import('../lib/storage/paths.js')>()),
-	resolveClosestEpiqProjectRoot: vi.fn(() =>
+	resolveClosestOmeProjectRoot: vi.fn(() =>
 		succeeded('Resolved', process.cwd()),
 	),
 }));

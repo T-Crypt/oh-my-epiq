@@ -70,7 +70,7 @@ export const inCommitWindow = (
 	(end === undefined || time <= end);
 
 // Pure read of the *code* repo's history, safe mid-scrub. `--not <stateBranch>`
-// is required: worktrees share one ref namespace, so epiq's own state commits
+// is required: worktrees share one ref namespace, so ome's own state commits
 // would otherwise appear mixed into real development history.
 export const getCommitTimeline = async (
 	input: RepoInput & {start?: number; end?: number} = {},
@@ -158,7 +158,7 @@ export const getCommitTimeline = async (
 	return succeeded('Computed commit timeline', commits);
 };
 
-// Matches the convention documented in the epiq skill: a commit's subject is
+// Matches the convention documented in the ome skill: a commit's subject is
 // prefixed with the issue's ref, e.g. "5S52AC8 message". Reuses
 // getCommitTimeline's full-history read rather than a second git invocation —
 // same repo, same state-branch exclusion, and this repo's whole history is a

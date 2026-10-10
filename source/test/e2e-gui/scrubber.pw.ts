@@ -7,7 +7,7 @@ const SCOPES = ['Week', 'Month', 'Year', 'All'];
 const WATCH_BAR_STARTS = `
 	window.__starts = 0;
 	document.addEventListener('animationstart', event => {
-		if (event.animationName === 'epiqScrubberGrow') window.__starts += 1;
+		if (event.animationName === 'omeScrubberGrow') window.__starts += 1;
 	}, true);
 `;
 
@@ -15,7 +15,7 @@ const RESET_STARTS = 'window.__starts = 0';
 
 const SAMPLE = `({
 	starts: window.__starts,
-	bars: document.querySelectorAll('div[style*="epiqScrubberGrow"]').length,
+	bars: document.querySelectorAll('div[style*="omeScrubberGrow"]').length,
 })`;
 
 // An entrance keyed to the click rather than to the arriving window runs once

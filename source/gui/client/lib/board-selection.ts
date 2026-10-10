@@ -65,7 +65,7 @@ const PARAM_KEYS = [
 	'ticket',
 ] as const;
 
-const STORAGE_KEY = 'epiq.board.selection';
+const STORAGE_KEY = 'ome.board.selection';
 
 const unique = (ids: readonly string[]): string[] => [...new Set(ids)];
 

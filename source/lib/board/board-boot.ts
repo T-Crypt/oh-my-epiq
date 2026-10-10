@@ -290,7 +290,7 @@ export function bootStateFromEventLog(
 	}
 
 	if (!eventLog.some(e => e.action === 'init.workspace')) {
-		return failed('Initialized Epiq project has no workspace init event');
+		return failed('Initialized OME project has no workspace init event');
 	}
 
 	const results = materializeAll(eventLog);

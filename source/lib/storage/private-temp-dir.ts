@@ -7,7 +7,7 @@ import {failed, Result, succeeded} from '../model/result-types.js';
  * A directory under the system temp dir that only this user can enter.
  *
  * `os.tmpdir()` is per-user on macOS but shared on Linux, where the default
- * 0755 left whatever epiq wrote there — a private repository's diffs — readable
+ * 0755 left whatever ome wrote there — a private repository's diffs — readable
  * by every local account, and let one of them pre-create a path as a symlink so
  * the write landed on a file of their choosing.
  *
@@ -18,7 +18,7 @@ import {failed, Result, succeeded} from '../model/result-types.js';
  * prevented.
  */
 export const privateTempDir = (...segments: string[]): Result<string> => {
-	const dir = path.join(os.tmpdir(), 'epiq', ...segments);
+	const dir = path.join(os.tmpdir(), 'ome', ...segments);
 
 	try {
 		if (existsSync(dir) && lstatSync(dir).isSymbolicLink()) {

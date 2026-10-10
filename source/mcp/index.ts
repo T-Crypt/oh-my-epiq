@@ -1,4 +1,4 @@
-process.env['EPIQ_MCP'] = 'true';
+process.env['OME_MCP'] = 'true';
 
 console.log = console.error;
 console.info = console.error;

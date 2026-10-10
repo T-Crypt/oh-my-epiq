@@ -64,7 +64,7 @@ const slowDownRemote = async (
 	const url = `ext::${script} %s ${remoteRoot}`;
 
 	// Off by default since git 2.x; this is test scaffolding, not a change to
-	// how epiq talks to a remote.
+	// how ome talks to a remote.
 	await git(actor.repoRoot, [
 		'config',
 		'--local',

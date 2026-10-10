@@ -6,7 +6,7 @@ import path from 'node:path';
 import {actorSegmentOf} from '../../lib/event/pending-log.js';
 
 const eventsDir = (stateBranchRoot: string): string =>
-	path.join(stateBranchRoot, '.epiq', 'events');
+	path.join(stateBranchRoot, '.ome', 'events');
 
 // A file listed a moment ago and gone by the time it is opened is a sync
 // having rebased the worktree underneath the listing — which is the very thing

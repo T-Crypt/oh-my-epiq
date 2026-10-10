@@ -115,7 +115,7 @@ jobs:
   # pushed next — `V8TZ5CD` sat broken on main exactly that way, and the person
   # who found it was the person it stopped.
   #
-  # This is the suite that says whether several epiq processes on one board
+  # This is the suite that says whether several ome processes on one board
   # still converge. Nothing else covers it: the unit suite never syncs, and the
   # e2e suite drives one actor.
   collaboration:
@@ -134,7 +134,7 @@ jobs:
           node-version: '22'
           cache: npm
 
-      # Every actor is a real epiq process, and every one of them runs git.
+      # Every actor is a real ome process, and every one of them runs git.
       - name: Configure Git
         run: |
           git config --global user.name "GitHub Actions"
@@ -214,17 +214,17 @@ jobs:
       matrix:
         include:
           - os: macos-latest
-            artifact: epiq-macos-arm64
-            bin: epiq
+            artifact: ome-macos-arm64
+            bin: ome
           - os: ubuntu-latest
-            artifact: epiq-linux-x64
-            bin: epiq
+            artifact: ome-linux-x64
+            bin: ome
           - os: ubuntu-24.04-arm
-            artifact: epiq-linux-arm64
-            bin: epiq
+            artifact: ome-linux-arm64
+            bin: ome
           - os: windows-latest
-            artifact: epiq-windows-x64.exe
-            bin: epiq.exe
+            artifact: ome-windows-x64.exe
+            bin: ome.exe
 
     runs-on: ${{ matrix.os }}
 
@@ -258,7 +258,7 @@ jobs:
   # of release jobs timing out for 24h while awaiting a runner. The SEA blob is
   # architecture-independent, so we inject it into an x64 Node binary.
   release-macos-x64:
-    name: Release epiq-macos-x64
+    name: Release ome-macos-x64
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [test, gui, collaboration]
     permissions:
@@ -285,27 +285,27 @@ jobs:
       - name: Build x64 binary
         run: npm run build:binary
         env:
-          EPIQ_SEA_NODE: /tmp/node-x64/bin/node
+          OME_SEA_NODE: /tmp/node-x64/bin/node
 
       - name: Verify architecture
         run: |
-          file dist/epiq
-          file dist/epiq | grep -q x86_64 || { echo "::error::built binary is not x86_64"; exit 1; }
+          file dist/ome
+          file dist/ome | grep -q x86_64 || { echo "::error::built binary is not x86_64"; exit 1; }
           # Best-effort runtime smoke test via Rosetta (present on GitHub's
           # macOS Apple-silicon runners). The arch check above is the hard gate.
-          if arch -x86_64 dist/epiq --version; then
+          if arch -x86_64 dist/ome --version; then
             echo "Rosetta smoke test passed."
           else
             echo "::warning::Rosetta smoke test unavailable; relying on the arch check."
           fi
 
       - name: Rename artifact
-        run: mv dist/epiq dist/epiq-macos-x64
+        run: mv dist/ome dist/ome-macos-x64
 
       - name: Upload to release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/epiq-macos-x64
+          files: dist/ome-macos-x64
           fail_on_unmatched_files: true
           prerelease: true
 

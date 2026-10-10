@@ -2,7 +2,7 @@ import {GuiState, GuiSwimlane} from './gui-state.model';
 
 // Its own MIME type rather than text/plain, which a ticket drag carries. The
 // column body is a ticket drop target, so the two have to be distinguishable.
-export const SWIMLANE_DRAG_TYPE = 'application/x-epiq-swimlane';
+export const SWIMLANE_DRAG_TYPE = 'application/x-ome-swimlane';
 
 // `types` is the only thing readable during dragover — getData is blanked until
 // drop, so the ticket handlers cannot ask what is being dragged any other way.

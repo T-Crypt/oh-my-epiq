@@ -8,7 +8,7 @@ import {Button} from './Button';
 import {CommandPaletteHint} from './CommandPaletteHint';
 import {Panel} from './Panel';
 import {User} from './User';
-import {EPIQ_VERSION} from '../../../version.js';
+import {OME_VERSION} from '../../../version.js';
 
 type HeaderProps = {
 	state: GuiState | null;
@@ -130,7 +130,7 @@ export const Header = ({
 							fontWeight: 700,
 						}}
 					>
-						:epiq
+						:ome
 					</div>
 
 					{/* Read as a breadcrumb: the app, then the board it is showing. The
@@ -232,7 +232,7 @@ export const Header = ({
 								color: GUI_THEME.dim,
 							}}
 						>
-							{'v' + EPIQ_VERSION}
+							{'v' + OME_VERSION}
 						</span>
 					</div>
 

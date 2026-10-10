@@ -6,7 +6,7 @@ import {AttachmentState} from '../model/app-state.model.js';
 import {failed, isFail, Result, succeeded} from '../model/result-types.js';
 import {
 	getMediaDirPath,
-	resolveClosestEpiqProjectRoot,
+	resolveClosestOmeProjectRoot,
 } from '../storage/paths.js';
 import {openUrl} from './open-in-browser.js';
 
@@ -15,7 +15,7 @@ import {openUrl} from './open-in-browser.js';
  * in the state branch worktree, so no server needs to be running.
  */
 export const openAttachment = (attachment: AttachmentState): Result => {
-	const repoRootResult = resolveClosestEpiqProjectRoot(process.cwd());
+	const repoRootResult = resolveClosestOmeProjectRoot(process.cwd());
 	if (isFail(repoRootResult)) return failed('Unable to resolve project root');
 
 	const stateRootResult = getStateBranchRoot({

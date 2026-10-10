@@ -54,8 +54,8 @@ const idsIn = (name: string): string[] =>
 	linesOf(name).map(line => (JSON.parse(line) as {id: [string]}).id[0]);
 
 beforeEach(() => {
-	repo = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-pending-e2e-'));
-	eventsDir = path.join(repo, '.epiq', 'events');
+	repo = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-pending-e2e-'));
+	eventsDir = path.join(repo, '.ome', 'events');
 
 	git('init', '-q');
 
@@ -194,7 +194,7 @@ describe("another actor's pending log during someone else's sync", () => {
 
 		const snapshot = snapshotEventLogs(repo);
 		flushPendingLogs(repo, TRACKED);
-		git('add', '--', `.epiq/events/${TRACKED}`);
+		git('add', '--', `.ome/events/${TRACKED}`);
 		git('commit', '-q', '-m', 'ana sync');
 		git('checkout', '--', '.');
 		restoreDroppedEventLines(repo, snapshot);

@@ -2,8 +2,8 @@ import crypto from 'node:crypto';
 import {failed, Result, succeeded} from '../model/result-types.js';
 import {User} from '../state/settings.state.js';
 
-export const ACTOR_NAME_ENV = 'EPIQ_USER_NAME';
-export const ACTOR_ID_ENV = 'EPIQ_USER_ID';
+export const ACTOR_NAME_ENV = 'OME_USER_NAME';
+export const ACTOR_ID_ENV = 'OME_USER_ID';
 
 // Crockford base32 — ULID's alphabet, without I, L, O and U.
 const ID_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
@@ -27,7 +27,7 @@ const normalize = (value: string): string => value.trim().toLowerCase();
 export const deriveActorId = (name: string): string => {
 	const digest = crypto
 		.createHash('sha256')
-		.update(`epiq:actor:${normalize(name)}`)
+		.update(`ome:actor:${normalize(name)}`)
 		.digest();
 
 	let id = '';
@@ -126,7 +126,7 @@ export const applyActorNameArgument = (
 		);
 	}
 
-	// Only when the variable is not already saying it. With `EPIQ_USER_ID`
+	// Only when the variable is not already saying it. With `OME_USER_ID`
 	// pinned, `resolveEnvActor` takes the display name from here verbatim, so
 	// writing the argument's casing over an agreeing variable renames that
 	// contributor on the board.

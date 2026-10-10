@@ -9,7 +9,7 @@ const REF_SHAPE = `[0-9A-HJKMNP-TV-Z]{${NODE_REF_LENGTH}}`;
 // Not a real URL scheme: it only has to survive the markdown pipeline as a
 // link target so MarkdownContent can recognise it and render a control rather
 // than an anchor.
-export const TICKET_REF_URL_PREFIX = 'epiq-ref:';
+export const TICKET_REF_URL_PREFIX = 'ome-ref:';
 
 // Structural subset of mdast — enough to walk and rewrite, without taking a
 // dependency on the full AST types for a plugin this small.

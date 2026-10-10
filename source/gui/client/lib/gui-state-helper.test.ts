@@ -83,12 +83,12 @@ describe('getResultValue', () => {
 	});
 
 	it('gives nothing back for a failed Result, rather than its envelope', () => {
-		// A repo with no epiq project answers exactly this. Returning the
+		// A repo with no ome project answers exactly this. Returning the
 		// envelope let the caller read `.boards` off it and throw mid-render,
 		// unmounting the GUI to a white page.
 		const failed = {
 			status: 'fail',
-			message: 'No .epiq/project.json found in any parent',
+			message: 'No .ome/project.json found in any parent',
 			value: null,
 		} as unknown as Result<{boards: unknown[]}>;
 

@@ -22,7 +22,7 @@ import {
 } from '../../lib/stats/swimlane-stats.model.js';
 import {laneVisits} from '../../lib/utils/lane-dwell.js';
 import {nodeRef} from '../../lib/utils/node-ref.js';
-import {getIssueStats} from '../epiq-issue-stats.js';
+import {getIssueStats} from '../ome-issue-stats.js';
 import {getStateResult} from './boot.js';
 
 // A lane can hold a great many tickets, and each one measured is a walk over

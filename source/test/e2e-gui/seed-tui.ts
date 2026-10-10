@@ -23,16 +23,16 @@ export type SeedTui = {
 };
 
 export const startSeedTui = (): SeedTui => {
-	const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-gui-e2e-'));
+	const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-gui-e2e-'));
 	// Outside the repo, or the global dir itself becomes an uncommitted change
 	// and `:init` refuses. HOME is left alone: git still needs ~/.gitconfig.
 	const globalDir = fs.mkdtempSync(
-		path.join(os.tmpdir(), 'epiq-gui-e2e-global-'),
+		path.join(os.tmpdir(), 'ome-gui-e2e-global-'),
 	);
 	const cliPath = path.resolve(process.cwd(), 'dist/index.js');
 
 	// The in-process GUI server reads this too, so it must be on our own env.
-	process.env['EPIQ_GLOBAL_DIR'] = globalDir;
+	process.env['OME_GLOBAL_DIR'] = globalDir;
 
 	let output = '';
 
@@ -51,7 +51,7 @@ export const startSeedTui = (): SeedTui => {
 		cwd,
 		env: {
 			...env,
-			EPIQ_GLOBAL_DIR: globalDir,
+			OME_GLOBAL_DIR: globalDir,
 			TERM: 'xterm-256color',
 		} as Record<string, string>,
 	});
@@ -133,7 +133,7 @@ export const seedProject = async (): Promise<string> => {
 	await tui.waitFor('Initialize project');
 
 	execSync('git init', {cwd: tui.cwd, stdio: 'ignore'});
-	await tui.waitFor('This folder is not an epiq project yet.');
+	await tui.waitFor('This folder is not an ome project yet.');
 
 	// ENTER must arrive as its own write, or it is handled before the command
 	// is committed and the confirm is dropped.

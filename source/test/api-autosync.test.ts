@@ -11,25 +11,25 @@ import {failed, succeeded} from '../lib/model/result-types.js';
 
 // A real project layout, so the pass resolves the state branch the way the
 // server does: project.json under the repo, the worktree under the global dir.
-const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-autosync-'));
+const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-autosync-'));
 const projectId = path.basename(repoRoot);
-fs.mkdirSync(path.join(repoRoot, '.epiq'));
+fs.mkdirSync(path.join(repoRoot, '.ome'));
 fs.writeFileSync(
-	path.join(repoRoot, '.epiq', 'project.json'),
+	path.join(repoRoot, '.ome', 'project.json'),
 	JSON.stringify({
 		projectId,
-		stateBranch: 'epiq/state',
+		stateBranch: 'ome/state',
 		createdAt: new Date().toISOString(),
 	}),
 );
-const eventsDir = path.join(getWorktreesRoot(), projectId, '.epiq', 'events');
+const eventsDir = path.join(getWorktreesRoot(), projectId, '.ome', 'events');
 
 const syncMock = vi.fn();
 const getGuiStateMock = vi.fn();
 const broadcastMock = vi.fn();
 
 vi.mock('../lib/config/user-config.js', () => ({
-	readEpiqConfig: vi.fn(() =>
+	readOmeConfig: vi.fn(() =>
 		succeeded('config', {
 			autoSync: true,
 			preferredEditor: 'vim',
@@ -46,12 +46,12 @@ vi.mock('../lib/config/user-config.js', () => ({
 	),
 }));
 
-vi.mock('../mcp/epiq-api.js', () => ({
+vi.mock('../mcp/ome-api.js', () => ({
 	sync: (...args: unknown[]) => syncMock(...args),
 	getGuiState: (...args: unknown[]) => getGuiStateMock(...args),
 }));
 
-vi.mock('../mcp/epiq-time-travel.js', () => ({
+vi.mock('../mcp/ome-time-travel.js', () => ({
 	getTimeTravelStatus: () => ({mode: 'live'}),
 	runExclusive: (fn: () => Promise<unknown>) => fn(),
 }));

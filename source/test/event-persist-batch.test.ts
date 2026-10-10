@@ -41,8 +41,8 @@ const addSwimlane = (id: string, name: string): AppEvent<'add.swimlane'> => ({
 let rootDir = '';
 
 beforeEach(() => {
-	rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-batch-'));
-	fs.mkdirSync(path.join(rootDir, '.epiq'), {recursive: true});
+	rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-batch-'));
+	fs.mkdirSync(path.join(rootDir, '.ome'), {recursive: true});
 
 	// `ensureContributorCurrent` registers the author on their first write and
 	// takes the name from here, since an event carries none. Without it the
@@ -64,7 +64,7 @@ const ownLogLines = (): Array<{id: [string, string | null]}> => {
 
 	return fs
 		.readFileSync(
-			path.join(rootDir, '.epiq', 'events', getPersistFileName({userId: 'u1'})),
+			path.join(rootDir, '.ome', 'events', getPersistFileName({userId: 'u1'})),
 			'utf8',
 		)
 		.trim()
@@ -75,7 +75,7 @@ const ownLogLines = (): Array<{id: [string, string | null]}> => {
 describe('materializeAndPersistAll edge threading', () => {
 	it('reads the log once per batch, not once per event', () => {
 		// One log to read, so a re-read per event would show up as a count.
-		const eventsDir = path.join(rootDir, '.epiq', 'events');
+		const eventsDir = path.join(rootDir, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 		fs.writeFileSync(
 			path.join(eventsDir, '01ARZ3NDEKTSV4RRFFQ69G5FAV.mallory.jsonl'),
@@ -109,7 +109,7 @@ describe('materializeAndPersistAll edge threading', () => {
 
 	it('chains every persisted event to its predecessor, starting at the loaded edge', () => {
 		// Another actor's log provides the edge the batch must anchor to.
-		const eventsDir = path.join(rootDir, '.epiq', 'events');
+		const eventsDir = path.join(rootDir, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 		const existingEdge = '01H00000000000000000000099';
 		fs.writeFileSync(

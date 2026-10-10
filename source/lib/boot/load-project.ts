@@ -25,7 +25,7 @@ import {
 	setSyncing,
 	setSyncOffline,
 } from '../state/sync-state.js';
-import {resolveClosestEpiqProjectRoot} from '../storage/paths.js';
+import {resolveClosestOmeProjectRoot} from '../storage/paths.js';
 import {failAt, formatUnknownError} from '../utils/logger.utils.js';
 
 // A log with no init event cannot boot: a contributor registration alone is
@@ -52,7 +52,7 @@ const pullStateBranch = async (
 // `:open` moves the process to another project; a pull that was in flight
 // when it did must not materialise the old one over it.
 const isCurrentProject = (stateBranchRoot: string): boolean => {
-	const rootResult = resolveClosestEpiqProjectRoot(process.cwd());
+	const rootResult = resolveClosestOmeProjectRoot(process.cwd());
 	if (isFail(rootResult)) return false;
 
 	const currentResult = getStateBranchRoot({repoRoot: rootResult.value});

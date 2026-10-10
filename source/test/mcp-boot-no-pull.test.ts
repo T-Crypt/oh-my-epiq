@@ -5,7 +5,7 @@ import {describe, expect, it} from 'vitest';
 // Every MCP tool answers out of local state. A boot that pulled would put a
 // network round trip — and another clone's writes — inside a call the caller
 // believes is a read of their own repo, and would do it on a tool that never
-// said it syncs. Syncing is `epiq_sync`'s job, and the autosync loop's, both of
+// said it syncs. Syncing is `ome_sync`'s job, and the autosync loop's, both of
 // which announce themselves.
 //
 // Scanned rather than exercised: the rule is that *no* call site reaches the

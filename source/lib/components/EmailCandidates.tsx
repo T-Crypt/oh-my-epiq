@@ -11,7 +11,7 @@ import {
 import {setOfferedEmails} from '../state/email-offers.state.js';
 import {getSettingsState} from '../state/settings.state.js';
 import {getSafeState} from '../state/state.js';
-import {resolveClosestEpiqProjectRoot} from '../storage/paths.js';
+import {resolveClosestOmeProjectRoot} from '../storage/paths.js';
 
 /**
  * The addresses the setup step is asking about, drawn where it asks.
@@ -30,7 +30,7 @@ export const EmailCandidates: React.FC = () => {
 
 		const load = async () => {
 			const stateResult = getSafeState();
-			const repoRootResult = resolveClosestEpiqProjectRoot(process.cwd());
+			const repoRootResult = resolveClosestOmeProjectRoot(process.cwd());
 
 			if (isFail(stateResult) || isFail(repoRootResult)) return;
 

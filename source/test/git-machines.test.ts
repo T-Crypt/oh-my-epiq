@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {describe, expect, it} from 'vitest';
 import {execGit, hasInProgressGitOperation} from '../git/git-utils.js';
-import {syncEpiqWithRemote} from '../git/sync.js';
+import {syncOmeWithRemote} from '../git/sync.js';
 import {isFail} from '../lib/model/result-types.js';
 import {
 	cloneRepo,
@@ -36,7 +36,7 @@ describe('sync across machines', () => {
 
 	const syncActor = async (repoRoot: string, ownEventFileName: string) =>
 		onMachine(repoRoot, () =>
-			syncEpiqWithRemote({cwd: repoRoot, ownEventFileName}),
+			syncOmeWithRemote({cwd: repoRoot, ownEventFileName}),
 		);
 
 	it('carries one machine event log to another', async () => {
@@ -129,7 +129,7 @@ describe('sync across machines', () => {
 		if (isFail(boot)) throw new Error(boot.message);
 		const {stateBranchRoot} = boot.value;
 
-		await setRemoteUrl(alice, 'https://epiq-offline.invalid/x.git');
+		await setRemoteUrl(alice, 'https://ome-offline.invalid/x.git');
 
 		writeFile(
 			getEventsFile({root: stateBranchRoot, fileName: 'u1.alice.jsonl'}),
@@ -250,13 +250,13 @@ describe('sync across machines', () => {
 		// commit — not a content conflict, just a process that never got to
 		// finish — by making the replay step itself fail.
 		const fetch = await execGit({
-			args: ['fetch', 'origin', 'epiq/state'],
+			args: ['fetch', 'origin', 'ome/state'],
 			cwd: stateBranchRoot,
 		});
 		if (isFail(fetch)) throw new Error(fetch.message);
 
 		const rebase = await execGit({
-			args: ['rebase', '--exec', 'false', 'origin/epiq/state'],
+			args: ['rebase', '--exec', 'false', 'origin/ome/state'],
 			cwd: stateBranchRoot,
 		});
 		expect(isFail(rebase)).toBe(true);

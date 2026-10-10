@@ -44,13 +44,13 @@ export const InitProjectUI: React.FC<InitProjectUIProps> = ({
 			</Text>
 
 			<Text>{`This folder is not an ${chalk.hex(theme.accent)(
-				'epiq',
+				'ome',
 			)} project yet.`}</Text>
 
 			<Text color={theme.primary}>
 				To start tracking issues here, we need to initialize a new
 				<Text color={theme.primary} backgroundColor={theme.secondary}>
-					{' .epiq/project.json '}
+					{' .ome/project.json '}
 				</Text>
 				file in this repository.
 			</Text>
@@ -66,7 +66,7 @@ export const InitProjectUI: React.FC<InitProjectUIProps> = ({
 			<Box marginTop={1}>
 				<Text color={theme.secondary2}>This will create, commit and push </Text>
 				<Text color={theme.primary} backgroundColor={theme.secondary}>
-					{' .epiq/project.json '}
+					{' .ome/project.json '}
 				</Text>
 			</Box>
 

@@ -4,15 +4,15 @@ import {effectiveAutoSyncIntervalMs} from '../../../lib/config/auto-sync-interva
 import {autoSyncBlockedReason} from '../../../lib/config/sync-settings.js';
 import {
 	loadSettingsFromConfig,
-	readEpiqConfig,
+	readOmeConfig,
 } from '../../../lib/config/user-config.js';
 import {isFail} from '../../../lib/model/result-types.js';
 import {logger} from '../../../logger.js';
-import {sync} from '../../../mcp/epiq-api.js';
+import {sync} from '../../../mcp/ome-api.js';
 import {
 	getTimeTravelStatus,
 	runExclusive,
-} from '../../../mcp/epiq-time-travel.js';
+} from '../../../mcp/ome-time-travel.js';
 
 export const startGuiAutoSync = (input: {
 	project: GuiProject;
@@ -24,7 +24,7 @@ export const startGuiAutoSync = (input: {
 	let lastStartedAt = 0;
 
 	const config = () => {
-		const result = readEpiqConfig();
+		const result = readOmeConfig();
 		if (isFail(result)) {
 			logger.error(result.message);
 			return null;

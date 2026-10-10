@@ -1,6 +1,6 @@
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import {epiqPlugin} from './source/scripts/eslint-rules.mjs';
+import {omePlugin} from './source/scripts/eslint-rules.mjs';
 
 export default tseslint.config(
 	{
@@ -25,9 +25,9 @@ export default tseslint.config(
 				tsconfigRootDir: import.meta.dirname,
 			},
 		},
-		plugins: {epiq: epiqPlugin},
+		plugins: {ome: omePlugin},
 		rules: {
-			'epiq/no-raw-control-characters': 'error',
+			'ome/no-raw-control-characters': 'error',
 			'no-control-regex': 'off',
 			'no-useless-assignment': 'off',
 			'no-case-declarations': 'off',

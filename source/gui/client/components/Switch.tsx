@@ -10,7 +10,7 @@ import {GUI_THEME} from '../lib/gui-theme';
 // one included" but "is it on", and where the answer wants to be legible at a
 // glance from across the panel.
 //
-// Epiq's own weights rather than the platform's: the track is filled with the
+// OME's own weights rather than the platform's: the track is filled with the
 // accent when on and is the panel's own recess when off, and the knob is a
 // plain circle that slides. No shadow and no gradient — nothing else in this
 // GUI has either, and a switch borrowed whole from somewhere else reads as a

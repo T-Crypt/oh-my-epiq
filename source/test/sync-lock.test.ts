@@ -26,7 +26,7 @@ describe('sync lock', () => {
 
 		const gitDir = await getGitDir(worktree);
 		if (isFail(gitDir)) throw new Error(gitDir.message);
-		lockPath = path.join(gitDir.value, 'epiq-sync.lock');
+		lockPath = path.join(gitDir.value, 'ome-sync.lock');
 	});
 
 	it('acquires when nobody holds it, and releases after', async () => {

@@ -82,7 +82,7 @@ describe('peekCommand', () => {
 		vi.mocked(getRepoRootDir).mockResolvedValue(succeeded('repo', '/repo'));
 
 		vi.mocked(getStateBranchRoot).mockReturnValue(
-			succeeded('branch', '/repo/.epiq'),
+			succeeded('branch', '/repo/.ome'),
 		);
 
 		vi.mocked(findInBreadCrumb).mockReturnValue(
@@ -160,7 +160,7 @@ describe('peekCommand', () => {
 
 		const result = await peekCommand();
 
-		expect(loadMergedEventsBefore).toHaveBeenCalledWith('/repo/.epiq', 1000);
+		expect(loadMergedEventsBefore).toHaveBeenCalledWith('/repo/.ome', 1000);
 
 		expect(materializeAll).toHaveBeenCalledWith([{id: '1'}]);
 
@@ -199,7 +199,7 @@ describe('peekCommand', () => {
 		const result = await peekCommand();
 
 		expect(parsePeekDateInput).toHaveBeenCalledWith('2027-06-19');
-		expect(loadMergedEventsBefore).toHaveBeenCalledWith('/repo/.epiq', 2000);
+		expect(loadMergedEventsBefore).toHaveBeenCalledWith('/repo/.ome', 2000);
 
 		expect(patchState).toHaveBeenCalledWith({
 			mode: 'default',
@@ -251,7 +251,7 @@ describe('peekCommand', () => {
 		await peekCommand();
 
 		expect(loadMergedEventsBefore).toHaveBeenCalledWith(
-			'/repo/.epiq',
+			'/repo/.ome',
 			previousTime,
 		);
 	});
@@ -295,7 +295,7 @@ describe('peekCommand', () => {
 		await peekCommand();
 
 		expect(loadMergedEventsBefore).toHaveBeenCalledWith(
-			'/repo/.epiq',
+			'/repo/.ome',
 			nextTime + 1,
 		);
 	});
@@ -339,7 +339,7 @@ describe('peekCommand', () => {
 		await peekCommand();
 
 		expect(loadMergedEventsBefore).toHaveBeenCalledWith(
-			'/repo/.epiq',
+			'/repo/.ome',
 			previousTime,
 		);
 	});

@@ -102,7 +102,7 @@ export const laneIndexOf = (
 	return lanes[others]?.others ? others : null;
 };
 
-const SPLIT_STORAGE_KEY = 'epiq.eventLog.split';
+const SPLIT_STORAGE_KEY = 'ome.eventLog.split';
 
 // Kept per browser, as the field checkboxes beside it are.
 export const useLogSplit = (): [boolean, (next: boolean) => void] =>

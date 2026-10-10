@@ -294,30 +294,30 @@ export const useTheatrePlayback = ({
 // Mounted with the player, so the board's cards can use them for as long as one
 // is up. The flash is what marks the ticket an event just landed on.
 export const THEATRE_KEYFRAMES = `
-@keyframes epiqTheatreRise {
+@keyframes omeTheatreRise {
 	from { opacity: 0; transform: translateY(100%); }
 	to { opacity: 1; transform: translateY(0); }
 }
-@keyframes epiqTheatreFade {
+@keyframes omeTheatreFade {
 	from { opacity: 0; }
 	to { opacity: 1; }
 }
-@keyframes epiqTheatreCaption {
+@keyframes omeTheatreCaption {
 	from { opacity: 0; transform: translateY(4px); }
 	to { opacity: 1; transform: translateY(0); }
 }
-@keyframes epiqTheatreCardIn {
+@keyframes omeTheatreCardIn {
 	from { opacity: 0; transform: scale(0.96); }
 	to { opacity: 1; transform: scale(1); }
 }
 @media (prefers-reduced-motion: reduce) {
-	@keyframes epiqTheatreRise { from { opacity: 1; transform: none; } to { opacity: 1; transform: none; } }
-	@keyframes epiqTheatreCardIn { from { opacity: 1; } to { opacity: 1; } }
-	@keyframes epiqTheatreCaption { from { opacity: 1; } to { opacity: 1; } }
+	@keyframes omeTheatreRise { from { opacity: 1; transform: none; } to { opacity: 1; transform: none; } }
+	@keyframes omeTheatreCardIn { from { opacity: 1; } to { opacity: 1; } }
+	@keyframes omeTheatreCaption { from { opacity: 1; } to { opacity: 1; } }
 }
 `;
 
-export const THEATRE_CARD_IN_ANIMATION = 'epiqTheatreCardIn 260ms ease-out';
+export const THEATRE_CARD_IN_ANIMATION = 'omeTheatreCardIn 260ms ease-out';
 
 // The spotlight on the ticket an event just landed on. Web-animation frames
 // rather than a keyframes rule: the card's own entrance owns its `animation`

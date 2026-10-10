@@ -23,7 +23,7 @@ import {nodes} from '../lib/state/node-builder.js';
 import {initWorkspaceState} from '../lib/state/state.js';
 
 // A temp root of this test's own: the real one holds whatever the developer's
-// own epiq has recorded, and every worker would otherwise share one file.
+// own ome has recorded, and every worker would otherwise share one file.
 let root: string;
 
 const unwrap = <T>(result: Result<T>): T => {
@@ -33,12 +33,12 @@ const unwrap = <T>(result: Result<T>): T => {
 
 const makeProject = (projectId: string): string => {
 	const projectRoot = path.join(root, 'projects', projectId);
-	fs.mkdirSync(path.join(projectRoot, '.epiq'), {recursive: true});
+	fs.mkdirSync(path.join(projectRoot, '.ome'), {recursive: true});
 	fs.writeFileSync(
-		path.join(projectRoot, '.epiq', 'project.json'),
+		path.join(projectRoot, '.ome', 'project.json'),
 		JSON.stringify({
 			projectId,
-			stateBranch: '__epiq_state__',
+			stateBranch: '__ome_state__',
 			createdAt: new Date().toISOString(),
 		}),
 	);
@@ -48,7 +48,7 @@ const makeProject = (projectId: string): string => {
 const historyFile = () => unwrap(getCommandHistoryPath());
 
 beforeEach(() => {
-	root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-cmd-history-'));
+	root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-cmd-history-'));
 	vi.spyOn(os, 'tmpdir').mockReturnValue(root);
 });
 
@@ -58,9 +58,9 @@ afterEach(() => {
 });
 
 describe('getCommandHistoryPath', () => {
-	it('lives in epiq’s own private directory under the temp dir', () => {
+	it('lives in ome’s own private directory under the temp dir', () => {
 		expect(historyFile()).toBe(
-			path.join(root, 'epiq', COMMAND_HISTORY_FILE_NAME),
+			path.join(root, 'ome', COMMAND_HISTORY_FILE_NAME),
 		);
 	});
 

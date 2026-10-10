@@ -15,7 +15,7 @@ const LOOPBACK_HOSTS: ReadonlySet<string> = new Set([
 	'[::1]',
 	'localhost',
 	// What `startGuiServer` advertises.
-	'epiq.localhost',
+	'ome.localhost',
 ]);
 
 export const isForeignOrigin = (

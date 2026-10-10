@@ -14,7 +14,7 @@ import {
 	listSwimlanes,
 	moveIssue,
 	moveSwimlane,
-} from '../mcp/epiq-api.js';
+} from '../mcp/ome-api.js';
 import {deriveGuiState} from '../mcp/api/state.js';
 import {setupRepo, useTempHome} from './helpers/git-repo.js';
 

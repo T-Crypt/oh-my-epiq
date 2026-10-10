@@ -41,6 +41,10 @@ copyFileSync(
 	resolve(root, 'source/gui/favicon.ico'),
 	resolve(root, 'dist/gui/favicon.ico'),
 );
+copyFileSync(
+	resolve(root, 'source/gui/favicon.svg'),
+	resolve(root, 'dist/gui/favicon.svg'),
+);
 
 // React reads `process.env.NODE_ENV` to decide which of its two runtimes it is.
 // Nothing defined it, so esbuild left the expression alone and the bundle got
@@ -50,7 +54,7 @@ copyFileSync(
 // and the worker entry below takes it to 0.98mb by moving the highlighter into
 // a chunk the two of them share.
 //
-// EPIQ_GUI_DEV_BUILD=1 asks for the development one back — `npm run
+// OME_GUI_DEV_BUILD=1 asks for the development one back — `npm run
 // test:gui:warnings` is that build plus the browser suite. React's warnings — a
 // style shorthand fighting a longhand, a missing key, invalid DOM nesting —
 // exist only in the development runtime, and `source/test/e2e-gui/fixtures.ts`
@@ -58,7 +62,7 @@ copyFileSync(
 // catches them. The production bundle is what ships and what the gate runs
 // against, so the warning pass is a deliberate, separate run.
 const nodeEnv =
-	process.env['EPIQ_GUI_DEV_BUILD'] === '1' ? 'development' : 'production';
+	process.env['OME_GUI_DEV_BUILD'] === '1' ? 'development' : 'production';
 
 // The API rather than the CLI: a define's value is JSON, so `"production"`
 // carries quotes that a Windows shell would eat before esbuild saw them.

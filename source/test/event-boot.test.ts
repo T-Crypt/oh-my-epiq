@@ -163,7 +163,7 @@ describe('event boot', () => {
 	// Replay converges over events it cannot apply, so an unreadable one no
 	// longer locks anything. Locking left a board permanently unopenable
 	// whenever the action came from a build that never shipped, and "upgrade
-	// epiq" was then advice nobody could follow.
+	// ome" was then advice nobody could follow.
 	describe('unreadable events are reported, not enforced', () => {
 		const log = () =>
 			[

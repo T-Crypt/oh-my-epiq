@@ -145,11 +145,11 @@ const LOG_REFRESH_QUIET_MS = 400;
 // Remembered beside the scrubber's own view flags, which is what their controls
 // sit among. The two series live here rather than in the scrubber because the
 // log is drawn from them and is not the scrubber's to draw.
-const LOG_STORAGE_KEY = 'epiq.timeScrubber.showLog';
-const SHOW_ISSUES_STORAGE_KEY = 'epiq.timeScrubber.showIssues';
-const SHOW_COMMITS_STORAGE_KEY = 'epiq.timeScrubber.showCommits';
-const COMPACTED_DIFF_STORAGE_KEY = 'epiq.diffTab.compacted';
-const LINKED_COMMITS_STORAGE_KEY = 'epiq.timeScrubber.linkedCommitsOnly';
+const LOG_STORAGE_KEY = 'ome.timeScrubber.showLog';
+const SHOW_ISSUES_STORAGE_KEY = 'ome.timeScrubber.showIssues';
+const SHOW_COMMITS_STORAGE_KEY = 'ome.timeScrubber.showCommits';
+const COMPACTED_DIFF_STORAGE_KEY = 'ome.diffTab.compacted';
+const LINKED_COMMITS_STORAGE_KEY = 'ome.timeScrubber.linkedCommitsOnly';
 
 // What the chrome around the board wears while a movie plays. Faded rather than
 // unmounted: the page must not reflow around the picture being watched.
@@ -212,7 +212,7 @@ export const App = () => {
 		msg: 'idle',
 	});
 	const [state, setState] = useState<GuiState | null>(null);
-	// Set only when the server says there is nothing to load here — no epiq
+	// Set only when the server says there is nothing to load here — no ome
 	// project at or above its root. Distinct from `state === null`, which just
 	// means the first broadcast has not arrived yet.
 	const [noProject, setNoProject] = useState<{
@@ -342,7 +342,7 @@ export const App = () => {
 	const navigate = useNavigate();
 
 	// Route params carry shorthand refs (full ids in old links still resolve).
-	// `boards` is optional-chained too: a repo with no epiq project yet sends a
+	// `boards` is optional-chained too: a repo with no ome project yet sends a
 	// state with no boards at all, and indexing straight into it throws during
 	// render, unmounting the app to a white page.
 	const selectedBoard =

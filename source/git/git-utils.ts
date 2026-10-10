@@ -12,7 +12,7 @@ export type GitExecResult = {
 };
 
 /**
- * A local git call against a worktree holding only `.epiq/` answers in
+ * A local git call against a worktree holding only `.ome/` answers in
  * milliseconds. Ten seconds is already far past "something is wrong".
  */
 const GIT_TIMEOUT_MS = 10_000;
@@ -652,7 +652,7 @@ const rebaseWithRetry = async (
  * in the same file.
  *
  * `preserve` is for the caller's own lock, which is the one lock in this
- * directory that is emphatically not stale: epiq's sits here too and ends in
+ * directory that is emphatically not stale: ome's sits here too and ends in
  * `.lock` like git's, so a sweep that did not know about it would delete the
  * claim the sweeper is standing on and run the rest of its work unheld.
  */
@@ -692,7 +692,7 @@ export const clearStaleGitLocks = async (
  * which is the same permanent wedge by a narrower path.
  *
  * One named ref, never a walk: that directory belongs to the user as much as to
- * epiq, and a lock on `main` is somebody's commit in progress. The branch comes
+ * ome, and a lock on `main` is somebody's commit in progress. The branch comes
  * from the project file, so the resolved path is checked to be inside
  * `refs/heads/` before anything is removed — a name with a `..` in it is a
  * corrupt project file, not a licence to delete elsewhere.

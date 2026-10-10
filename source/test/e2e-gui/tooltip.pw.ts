@@ -42,7 +42,7 @@ test('the title attribute is given back when the pointer leaves', async ({
 
 	await expect(page.getByTitle('Add issue').first()).toBeVisible();
 	await expect(
-		page.evaluate(`document.querySelectorAll('[data-epiq-tip]').length`),
+		page.evaluate(`document.querySelectorAll('[data-ome-tip]').length`),
 	).resolves.toBe(0);
 
 	expect(pageErrors).toEqual([]);

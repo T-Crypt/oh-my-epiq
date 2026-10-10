@@ -65,14 +65,14 @@ vi.mock('../lib/storage/paths.js', async importOriginal => {
 
 	return {
 		...actual,
-		resolveClosestEpiqProjectRoot: vi.fn((from?: string) => {
+		resolveClosestOmeProjectRoot: vi.fn((from?: string) => {
 			if (from !== undefined && from !== process.cwd()) {
-				return actual.resolveClosestEpiqProjectRoot(from);
+				return actual.resolveClosestOmeProjectRoot(from);
 			}
 
 			return initialized
 				? succeeded('Resolved', process.cwd())
-				: failed('Not an epiq project');
+				: failed('Not an ome project');
 		}),
 	};
 });
@@ -91,19 +91,19 @@ import {recordRecentProject} from '../lib/config/recent-projects.js';
 const tempDirs: string[] = [];
 
 const makeTempDir = (): string => {
-	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-open-val-'));
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-open-val-'));
 	tempDirs.push(dir);
 	return dir;
 };
 
 const makeProject = (projectId: string): string => {
 	const root = path.join(makeTempDir(), projectId);
-	fs.mkdirSync(path.join(root, '.epiq'), {recursive: true});
+	fs.mkdirSync(path.join(root, '.ome'), {recursive: true});
 	fs.writeFileSync(
-		path.join(root, '.epiq', 'project.json'),
+		path.join(root, '.ome', 'project.json'),
 		JSON.stringify({
 			projectId,
-			stateBranch: '__epiq_state__',
+			stateBranch: '__ome_state__',
 			createdAt: new Date().toISOString(),
 		}),
 	);
@@ -114,13 +114,13 @@ let originalGlobalDir: string | undefined;
 
 beforeEach(() => {
 	initialized = false;
-	originalGlobalDir = process.env['EPIQ_GLOBAL_DIR'];
-	process.env['EPIQ_GLOBAL_DIR'] = path.join(makeTempDir(), '.epiq-global');
+	originalGlobalDir = process.env['OME_GLOBAL_DIR'];
+	process.env['OME_GLOBAL_DIR'] = path.join(makeTempDir(), '.ome-global');
 });
 
 afterEach(() => {
-	if (originalGlobalDir === undefined) delete process.env['EPIQ_GLOBAL_DIR'];
-	else process.env['EPIQ_GLOBAL_DIR'] = originalGlobalDir;
+	if (originalGlobalDir === undefined) delete process.env['OME_GLOBAL_DIR'];
+	else process.env['OME_GLOBAL_DIR'] = originalGlobalDir;
 
 	for (const dir of tempDirs.splice(0)) {
 		fs.rmSync(dir, {recursive: true, force: true});
@@ -171,7 +171,7 @@ describe(':open completions', () => {
 	it('is only read when completing the open command itself', () => {
 		const root = makeProject('p');
 		recordRecentProject({root, now: 1});
-		const globalDir = process.env['EPIQ_GLOBAL_DIR']!;
+		const globalDir = process.env['OME_GLOBAL_DIR']!;
 		fs.chmodSync(globalDir, 0o000);
 
 		try {
@@ -186,7 +186,7 @@ describe(':open completions', () => {
 	});
 
 	it('offers nothing from a corrupt registry', () => {
-		const globalDir = process.env['EPIQ_GLOBAL_DIR']!;
+		const globalDir = process.env['OME_GLOBAL_DIR']!;
 		fs.mkdirSync(globalDir, {recursive: true});
 		fs.writeFileSync(path.join(globalDir, 'recent-projects.json'), 'nope');
 

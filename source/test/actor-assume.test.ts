@@ -13,7 +13,7 @@ import {
 	createIssue,
 	listBoards,
 	listSwimlanes,
-} from '../mcp/epiq-api.js';
+} from '../mcp/ome-api.js';
 import {getEventsFile, setupRepo, useTempHome} from './helpers/git-repo.js';
 
 // Taking a name mid-session works because the actor is resolved per write from

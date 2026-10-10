@@ -8,7 +8,7 @@ const pkg = JSON.parse(
 const outFile = new URL('../version.ts', import.meta.url);
 
 const content = `// Auto-generated. Do not edit.
-export const EPIQ_VERSION = '${pkg.version}';
+export const OME_VERSION = '${pkg.version}';
 `;
 
 fs.writeFileSync(outFile, content);

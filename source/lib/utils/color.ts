@@ -14,9 +14,9 @@ export const colorConfig = {
 
 	gradient: {
 		stops: [
-			[174, 150, 240], // soft lavender
-			[92, 138, 232], // clearer blue
-			[102, 204, 226], // lively cyan
+			[0, 219, 228], // OMP cyan
+			[147, 98, 244], // OMP violet
+			[248, 79, 204], // OMP magenta
 		] as Rgb[],
 	},
 };

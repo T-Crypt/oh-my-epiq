@@ -66,7 +66,7 @@ describe('TUI reboot / event-log replay e2e', () => {
 			// A stable working directory shared by both app processes. The event
 			// log is keyed off the project id stored under this directory, so a
 			// second process rebooted here must replay exactly what the first wrote.
-			const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-e2e-reboot-'));
+			const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-e2e-reboot-'));
 
 			try {
 				// --- First process: create a project and a couple of issues. ---

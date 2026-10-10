@@ -10,16 +10,16 @@ export {
 
 export const isLocal = process.env['IS_LOCAL'] === 'true';
 
-export const EPIQ_DIR_NAME = '.epiq';
+export const OME_DIR_NAME = '.ome';
 export const EVENTS_DIR_NAME = 'events';
 export const MEDIA_DIR_NAME = 'media';
 export const PROJECT_FILE_NAME = 'project.json';
 
-export const getEpiqDirPath = (root: string): string =>
-	path.join(root, EPIQ_DIR_NAME);
+export const getOmeDirPath = (root: string): string =>
+	path.join(root, OME_DIR_NAME);
 
 export const getProjectFilePath = (root: string): string =>
-	path.join(getEpiqDirPath(root), PROJECT_FILE_NAME);
+	path.join(getOmeDirPath(root), PROJECT_FILE_NAME);
 
 /**
  * Authoritative event logs live in the state branch worktree.
@@ -28,7 +28,7 @@ export const getProjectFilePath = (root: string): string =>
  * Do not pass the user repo root unless explicitly working with legacy cache data.
  */
 export const getEventsDirPath = (stateRoot: string): string =>
-	path.join(getEpiqDirPath(stateRoot), EVENTS_DIR_NAME);
+	path.join(getOmeDirPath(stateRoot), EVENTS_DIR_NAME);
 
 /**
  * Content-addressed attachment blobs live next to the event logs in the
@@ -36,13 +36,13 @@ export const getEventsDirPath = (stateRoot: string): string =>
  * in the same commit.
  */
 export const getMediaDirPath = (stateRoot: string): string =>
-	path.join(getEpiqDirPath(stateRoot), MEDIA_DIR_NAME);
+	path.join(getOmeDirPath(stateRoot), MEDIA_DIR_NAME);
 
 export const getExportsDirPath = (repoRoot: string): string =>
-	path.join(repoRoot, EPIQ_DIR_NAME);
+	path.join(repoRoot, OME_DIR_NAME);
 
-const hasLocalEpiqDir = (dir: string): boolean => {
-	const candidate = path.join(dir, EPIQ_DIR_NAME);
+const hasLocalOmeDir = (dir: string): boolean => {
+	const candidate = path.join(dir, OME_DIR_NAME);
 
 	return fs.existsSync(candidate) && fs.statSync(candidate).isDirectory();
 };
@@ -54,22 +54,22 @@ export const hasLocalProjectFile = (dir: string): boolean => {
 };
 
 /**
- * Resolves the closest directory containing `.epiq`.
+ * Resolves the closest directory containing `.ome`.
  *
  * This remains useful for state branch worktrees and legacy paths, but project
- * discovery should prefer `resolveClosestEpiqProjectRoot`.
+ * discovery should prefer `resolveClosestOmeProjectRoot`.
  */
-export const resolveClosestEpiqRoot = (startDir: string): Result<string> => {
+export const resolveClosestOmeRoot = (startDir: string): Result<string> => {
 	let dir = path.resolve(startDir);
 
 	while (true) {
-		if (hasLocalEpiqDir(dir)) {
-			return succeeded('Resolved closest .epiq root', dir);
+		if (hasLocalOmeDir(dir)) {
+			return succeeded('Resolved closest .ome root', dir);
 		}
 
 		const parent = path.dirname(dir);
 		if (parent === dir) {
-			return failed('No .epiq directory found in any parent');
+			return failed('No .ome directory found in any parent');
 		}
 
 		dir = parent;
@@ -78,16 +78,16 @@ export const resolveClosestEpiqRoot = (startDir: string): Result<string> => {
 
 // Named so callers can tell "there is no project here" apart from a boot that
 // failed for some other reason, without matching on prose.
-export const NO_PROJECT_MESSAGE = 'No .epiq/project.json found in any parent';
+export const NO_PROJECT_MESSAGE = 'No .ome/project.json found in any parent';
 
-export const resolveClosestEpiqProjectRoot = (
+export const resolveClosestOmeProjectRoot = (
 	startDir: string,
 ): Result<string> => {
 	let dir = path.resolve(startDir);
 
 	while (true) {
 		if (hasLocalProjectFile(dir)) {
-			return succeeded('Resolved closest epiq project root', dir);
+			return succeeded('Resolved closest ome project root', dir);
 		}
 
 		const parent = path.dirname(dir);

@@ -90,8 +90,8 @@ const addSwimlane = (id: string, name: string): AppEvent<'add.swimlane'> => ({
 
 beforeEach(() => {
 	seq = 0;
-	rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-identity-'));
-	fs.mkdirSync(path.join(rootDir, '.epiq', 'events'), {recursive: true});
+	rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-identity-'));
+	fs.mkdirSync(path.join(rootDir, '.ome', 'events'), {recursive: true});
 
 	startBoard();
 	initProject();
@@ -108,7 +108,7 @@ const persistedIds = (): string[] => {
 
 	return fs
 		.readFileSync(
-			path.join(rootDir, '.epiq', 'events', getPersistFileName(actor)),
+			path.join(rootDir, '.ome', 'events', getPersistFileName(actor)),
 			'utf8',
 		)
 		.trim()

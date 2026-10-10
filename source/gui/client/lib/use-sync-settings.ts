@@ -1,5 +1,5 @@
 // This machine's auto sync preference, as the identity panel reads and writes
-// it. A preference rather than board state: it is in `~/.epiq/config.json` and
+// it. A preference rather than board state: it is in `~/.ome/config.json` and
 // reaches no other clone, so nothing here goes through the mutation gate and
 // no broadcast carries it.
 

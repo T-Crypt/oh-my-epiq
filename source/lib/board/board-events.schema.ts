@@ -16,7 +16,7 @@ import {EventAction} from './board-events.model.js';
  * Two rules shape these schemas:
  *
  * - **Loose, never strict.** Every object accepts unknown keys, because a
- *   newer epiq may add a field to an existing action without bumping
+ *   newer ome may add a field to an existing action without bumping
  *   `SCHEMA_VERSION`. Rejecting those would quarantine events this build can
  *   read perfectly well.
  * - **Require only what a handler dereferences.** These are not a description

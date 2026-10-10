@@ -3,7 +3,7 @@ import path from 'node:path';
 import {Result, succeeded} from '../lib/model/result-types.js';
 import {logger} from '../logger.js';
 
-export const ensureLocalEpiqIgnored = async (
+export const ensureLocalOmeIgnored = async (
 	repoRoot: string,
 ): Promise<Result<boolean>> => {
 	const gitignorePath = path.join(repoRoot, '.gitignore');
@@ -12,7 +12,7 @@ export const ensureLocalEpiqIgnored = async (
 		? fs.readFileSync(gitignorePath, 'utf8')
 		: '';
 
-	const ignorePatterns = ['.epiq/events/', '.epiq/log/'];
+	const ignorePatterns = ['.ome/events/', '.ome/log/'];
 	const lines = content.split('\n').map(line => line.trim());
 
 	const missingPatterns = ignorePatterns.filter(
@@ -27,10 +27,10 @@ export const ensureLocalEpiqIgnored = async (
 	);
 
 	if (missingPatterns.length === 0) {
-		return succeeded('Local epiq paths already ignored', false);
+		return succeeded('Local ome paths already ignored', false);
 	}
 
-	const markerComment = '# [epiq]: local hydrated state is never committed';
+	const markerComment = '# [ome]: local hydrated state is never committed';
 
 	const block = [markerComment, ...missingPatterns].join('\n');
 
@@ -39,8 +39,8 @@ export const ensureLocalEpiqIgnored = async (
 	fs.writeFileSync(gitignorePath, content, 'utf8');
 
 	logger.info(
-		`Added ${missingPatterns.join(', ')} to .gitignore (epiq local state)`,
+		`Added ${missingPatterns.join(', ')} to .gitignore (ome local state)`,
 	);
 
-	return succeeded('Local epiq paths ignored', true);
+	return succeeded('Local ome paths ignored', true);
 };

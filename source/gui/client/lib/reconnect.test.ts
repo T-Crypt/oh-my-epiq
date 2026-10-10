@@ -24,7 +24,7 @@ describe('reconnectDelayMs', () => {
 	});
 
 	it('scales the whole schedule when a test asks it to', () => {
-		Object.assign(globalThis, {window: {__epiqReconnectScale: 0.1}});
+		Object.assign(globalThis, {window: {__omeReconnectScale: 0.1}});
 
 		expect(reconnectDelayMs(0)).toBe(50);
 		expect(reconnectDelayMs(4)).toBe(800);

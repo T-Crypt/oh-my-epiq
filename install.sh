@@ -1,16 +1,16 @@
 #!/bin/sh
-# epiq installer — downloads the prebuilt single-binary.
+# ome installer — downloads the prebuilt single-binary.
 #
-#   curl -fsSL https://raw.githubusercontent.com/ljtn/epiq/main/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/T-Crypt/oh-my-epiq/main/install.sh | sh
 #
 # Env overrides:
-#   EPIQ_INSTALL_DIR   install location (default: $XDG_BIN_HOME or $HOME/.local/bin)
-#   EPIQ_VERSION       tag to install, e.g. v0.7.5 (default: latest release)
+#   OME_INSTALL_DIR   install location (default: $XDG_BIN_HOME or $HOME/.local/bin)
+#   OME_VERSION       tag to install, e.g. v0.7.5 (default: latest release)
 set -eu
 
-REPO="ljtn/epiq"
-BIN_NAME="epiq"
-INSTALL_DIR="${EPIQ_INSTALL_DIR:-${XDG_BIN_HOME:-$HOME/.local/bin}}"
+REPO="T-Crypt/oh-my-epiq"
+BIN_NAME="ome"
+INSTALL_DIR="${OME_INSTALL_DIR:-${XDG_BIN_HOME:-$HOME/.local/bin}}"
 
 err() { printf 'error: %s\n' "$1" >&2; exit 1; }
 
@@ -23,7 +23,7 @@ arch="$(uname -m)"
 case "$os" in
   Darwin) os_name="macos" ;;
   Linux)  os_name="linux" ;;
-  *) err "unsupported OS: $os (use the npm package: npm i -g epiq)" ;;
+  *) err "unsupported OS: $os (use the npm package: npm i -g oh-my-epiq)" ;;
 esac
 
 case "$arch" in
@@ -35,8 +35,8 @@ esac
 asset="${BIN_NAME}-${os_name}-${arch_name}"
 
 # --- Resolve download URL --------------------------------------------------
-if [ -n "${EPIQ_VERSION:-}" ]; then
-  url="https://github.com/${REPO}/releases/download/${EPIQ_VERSION}/${asset}"
+if [ -n "${OME_VERSION:-}" ]; then
+  url="https://github.com/${REPO}/releases/download/${OME_VERSION}/${asset}"
 else
   url="https://github.com/${REPO}/releases/latest/download/${asset}"
 fi
@@ -55,7 +55,7 @@ printf 'Downloading %s...\n' "$asset"
 # the user sees is the one that fits. (Exit codes cannot make that distinction:
 # a 404 on these redirected downloads reports 56, not 22.)
 if ! curl -fsSL "$url" -o "$tmp" 2>"$curl_err"; then
-  if [ -n "${EPIQ_VERSION:-}" ]; then
+  if [ -n "${OME_VERSION:-}" ]; then
     cat "$curl_err" >&2
     err "$missing"
   fi
@@ -68,7 +68,7 @@ if ! curl -fsSL "$url" -o "$tmp" 2>"$curl_err"; then
     # Whatever stopped the download above stopped this too, and curl's account
     # of it is the useful thing to show.
     cat "$curl_err" >&2
-    err "cannot reach the GitHub API to look up $asset. It rate-limits unauthenticated callers, so retry shortly, or name a release directly with EPIQ_VERSION=vX.Y.Z."
+    err "cannot reach the GitHub API to look up $asset. It rate-limits unauthenticated callers, so retry shortly, or name a release directly with OME_VERSION=vX.Y.Z."
   }
   url="$(printf '%s\n' "$releases" \
     | grep -o "\"browser_download_url\": *\"[^\"]*/${asset}\"" \
@@ -89,7 +89,7 @@ chmod +x "$tmp"
 mv "$tmp" "$INSTALL_DIR/$BIN_NAME"
 trap - EXIT
 
-printf 'Installed epiq to %s/%s\n' "$INSTALL_DIR" "$BIN_NAME"
+printf 'Installed ome to %s/%s\n' "$INSTALL_DIR" "$BIN_NAME"
 
 # --- PATH hint -------------------------------------------------------------
 case ":$PATH:" in
@@ -101,4 +101,4 @@ case ":$PATH:" in
     ;;
 esac
 
-printf '\nRun: epiq\n'
+printf '\nRun: ome\n'

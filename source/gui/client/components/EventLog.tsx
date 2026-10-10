@@ -92,7 +92,7 @@ const LOG_WIDTH = 440;
 const MIN_LOG_WIDTH = 280;
 const MAX_LOG_WIDTH = 1000;
 const MAX_LOG_RATIO = 0.6;
-const LOG_WIDTH_STORAGE_KEY = 'epiq.eventLog.width';
+const LOG_WIDTH_STORAGE_KEY = 'ome.eventLog.width';
 // The square an icon button makes, under the inset every pane's header keeps —
 // so this row and the panel's on the other side of the board are one line.
 const LOG_HEADER_HEIGHT = ICON_BUTTON_SIZE;
@@ -612,7 +612,7 @@ const EventLogPanel = ({
 
 				<div
 					ref={scrollRef}
-					className={`epiq-log-pane ${logPaneClassName(fields)} ${
+					className={`ome-log-pane ${logPaneClassName(fields)} ${
 						split ? LOG_SPLIT_CLASS : ''
 					}`
 						.replace(/\s+/g, ' ')

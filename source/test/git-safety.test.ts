@@ -8,7 +8,7 @@ import {ensureInitialCommit, INITIAL_COMMIT_MESSAGE} from '../git/git.js';
 import {GIT_BIN} from '../git/git-utils.js';
 import {isFail} from '../lib/model/result-types.js';
 
-// epiq writes commits in the user's own repository in exactly one place, and
+// ome writes commits in the user's own repository in exactly one place, and
 // that repository may hold unrelated or confidential work. These tests assert
 // the guarantees that make that safe, against real repositories.
 
@@ -19,7 +19,7 @@ const gitIn = (repo: string, args: string[]): string =>
 
 const makeRepo = (): string => {
 	const repo = fs.realpathSync(
-		fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-git-safety-')),
+		fs.mkdtempSync(path.join(os.tmpdir(), 'ome-git-safety-')),
 	);
 
 	// A test that escaped the temp directory would operate on a real
@@ -89,7 +89,7 @@ describe('ensureInitialCommit', () => {
 	});
 
 	// The incident this was written for: a commit swept 17 staged files of
-	// unrelated work into a repo epiq does not own.
+	// unrelated work into a repo ome does not own.
 	it('leaves staged work staged and uncommitted', async () => {
 		const repo = makeRepo();
 		write(repo, 'secret.txt', 'nuclear codes');
@@ -147,7 +147,7 @@ describe('ensureInitialCommit', () => {
 	// `rev-parse --verify HEAD` exits non-zero for an unborn HEAD *and* for a
 	// command that simply failed. Guessing wrong writes in someone's repo.
 	it('fails closed when it cannot tell whether the repo has commits', async () => {
-		const missing = path.join(os.tmpdir(), 'epiq-git-safety-does-not-exist');
+		const missing = path.join(os.tmpdir(), 'ome-git-safety-does-not-exist');
 
 		const result = await ensureInitialCommit(missing);
 
@@ -158,7 +158,7 @@ describe('ensureInitialCommit', () => {
 
 	it('writes nothing to a directory that is not a git repository', async () => {
 		const notARepo = fs.realpathSync(
-			fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-git-safety-plain-')),
+			fs.mkdtempSync(path.join(os.tmpdir(), 'ome-git-safety-plain-')),
 		);
 		created.push(notARepo);
 		write(notARepo, 'file.txt', 'contents');
@@ -178,20 +178,20 @@ describe('git.commit pathspec', () => {
 		gitIn(repo, ['add', 'seed.txt']);
 		gitIn(repo, ['commit', '-q', '-m', 'seed']);
 
-		write(repo, '.epiq/project.json', '{}');
+		write(repo, '.ome/project.json', '{}');
 		write(repo, '.gitignore', 'node_modules\n');
 		write(repo, 'secret.txt', 'not ours to commit');
-		gitIn(repo, ['add', '.epiq/project.json', '.gitignore', 'secret.txt']);
+		gitIn(repo, ['add', '.ome/project.json', '.gitignore', 'secret.txt']);
 
 		const result = await git.commit({
 			cwd: repo,
-			message: '[epiq:init-project]',
-			pathspec: ['.epiq/project.json', '.gitignore'],
+			message: '[ome:init-project]',
+			pathspec: ['.ome/project.json', '.gitignore'],
 		});
 
 		expect(isFail(result)).toBe(false);
 		expect(filesInHead(repo).sort()).toEqual([
-			'.epiq/project.json',
+			'.ome/project.json',
 			'.gitignore',
 		]);
 		expect(stagedFiles(repo)).toEqual(['secret.txt']);

@@ -17,14 +17,14 @@ const ESCAPE = '\x1B';
 
 type Tui = ReturnType<typeof setupTui>;
 
-// The global epiq config lives under os.homedir(), which every e2e session
+// The global ome config lives under os.homedir(), which every e2e session
 // otherwise shares. Parallel files all writing that one config.json race, and a
 // session can read it mid-write and drop back to first-run setup. We give this
 // file its own HOME so it neither suffers nor contributes to that race, and
 // supply a git identity (the isolated HOME has no ~/.gitconfig).
-const E2E_HOME = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-e2e-home-'));
+const E2E_HOME = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-e2e-home-'));
 
-// A non-interactive editor stand-in: `epiq` expands `$EDITOR` through the shell
+// A non-interactive editor stand-in: `ome` expands `$EDITOR` through the shell
 // at edit time, so registering `$EDITOR` and pointing it here makes
 // `edit description` deterministic instead of blocking on a real editor.
 const fakeEditor = path.resolve(
@@ -36,9 +36,9 @@ const EDITED_DESCRIPTION = 'Implemented during the e2e flow';
 const ENV = {
 	HOME: E2E_HOME,
 	EDITOR: fakeEditor,
-	GIT_AUTHOR_NAME: 'Epiq E2E',
+	GIT_AUTHOR_NAME: 'OME E2E',
 	GIT_AUTHOR_EMAIL: 'e2e@example.com',
-	GIT_COMMITTER_NAME: 'Epiq E2E',
+	GIT_COMMITTER_NAME: 'OME E2E',
 	GIT_COMMITTER_EMAIL: 'e2e@example.com',
 };
 

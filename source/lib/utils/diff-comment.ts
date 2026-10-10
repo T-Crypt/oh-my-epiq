@@ -30,7 +30,10 @@ export type DiffCommentMeta = {
 	issueRef?: string;
 };
 
-const DIFF_COMMENT_MARKER = /<!--\s*epiq-diff-comment:(.+?)-->\n?/;
+// Reads the legacy `epiq-diff-comment` marker too, so comments written before
+// the rebrand keep their inline annotation; new markers are always written
+// under the `ome-` name.
+const DIFF_COMMENT_MARKER = /<!--\s*(?:ome|epiq)-diff-comment:(.+?)-->\n?/;
 
 export const stripDiffCommentMarker = (body: string): string =>
 	body.replace(DIFF_COMMENT_MARKER, '');
@@ -40,7 +43,7 @@ export const stripDiffCommentMarker = (body: string): string =>
 // visible as garbage in the rendered comment. JSON.parse decodes > back
 // to `>`, so the round trip is exact.
 export const encodeDiffCommentMarker = (meta: DiffCommentMeta): string =>
-	`<!-- epiq-diff-comment:${JSON.stringify(meta).replaceAll(
+	`<!-- ome-diff-comment:${JSON.stringify(meta).replaceAll(
 		'>',
 		'\\u003e',
 	)} -->`;

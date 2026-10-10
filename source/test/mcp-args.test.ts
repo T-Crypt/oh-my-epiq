@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest';
 import {parseMcpArgs} from '../mcp/args.js';
-import {EPIQ_VERSION} from '../version.js';
+import {OME_VERSION} from '../version.js';
 
 describe('parseMcpArgs', () => {
 	it('reads a bare argument as the name to write under', () => {
@@ -26,7 +26,7 @@ describe('parseMcpArgs', () => {
 	it('prints the version', () => {
 		expect(parseMcpArgs(['--version'])).toEqual({
 			kind: 'print',
-			text: `${EPIQ_VERSION}\n`,
+			text: `${OME_VERSION}\n`,
 		});
 	});
 

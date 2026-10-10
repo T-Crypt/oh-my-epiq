@@ -23,7 +23,7 @@ test('a ticket filed on another board is left out of this board’s log', async 
 }) => {
 	await page.addInitScript(() => {
 		try {
-			localStorage.setItem('epiq.timeScrubber.allBoards', 'true');
+			localStorage.setItem('ome.timeScrubber.allBoards', 'true');
 		} catch {
 			// A private window refuses storage; the assertion below still holds,
 			// it just no longer exercises the foreign-line case.

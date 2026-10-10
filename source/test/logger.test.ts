@@ -16,9 +16,9 @@ let root: string;
 let logPath: string;
 
 beforeEach(() => {
-	root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-logger-'));
-	fs.mkdirSync(path.join(root, '.epiq'));
-	logPath = path.join(root, '.epiq', 'log', 'epiq.log');
+	root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-logger-'));
+	fs.mkdirSync(path.join(root, '.ome'));
+	logPath = path.join(root, '.ome', 'log', 'ome.log');
 	process.chdir(root);
 });
 
@@ -73,21 +73,21 @@ describe('enforceLogHorizon', () => {
 
 describe('logger', () => {
 	// Launched in a repository with no project yet, the MCP server must leave
-	// that repository clean, or `epiq_project_init` refuses it on its next call.
+	// that repository clean, or `ome_project_init` refuses it on its next call.
 	it('logs into the global dir, not the working directory, when the MCP has no project', () => {
-		const bare = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-logger-bare-'));
+		const bare = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-logger-bare-'));
 		process.chdir(bare);
-		process.env['EPIQ_MCP'] = 'true';
+		process.env['OME_MCP'] = 'true';
 
 		try {
 			logger.error('hello');
 
 			expect(fs.readdirSync(bare)).toEqual([]);
 			expect(
-				fs.existsSync(path.join(getGlobalConfigDir(), 'epiq-mcp.log')),
+				fs.existsSync(path.join(getGlobalConfigDir(), 'ome-mcp.log')),
 			).toBe(true);
 		} finally {
-			delete process.env['EPIQ_MCP'];
+			delete process.env['OME_MCP'];
 			process.chdir(root);
 			fs.rmSync(bare, {recursive: true, force: true});
 		}
@@ -113,7 +113,7 @@ describe('logger', () => {
 
 	it('never throws when the log cannot be written', () => {
 		// A file where the log directory should be: mkdir and append both fail.
-		fs.writeFileSync(path.join(root, '.epiq', 'log'), '');
+		fs.writeFileSync(path.join(root, '.ome', 'log'), '');
 
 		expect(() => logger.error('boom')).not.toThrow();
 	});

@@ -18,7 +18,7 @@ import {makeTempDir, useTempHome, writeFile} from './helpers/git-repo.js';
 useTempHome();
 
 const BLOB = `${'a'.repeat(64)}.png`;
-const EVENT_FILE = '.epiq/events/01ksayra4ghekjp888wfbwbrdd.jola.jsonl';
+const EVENT_FILE = '.ome/events/01ksayra4ghekjp888wfbwbrdd.jola.jsonl';
 
 const git = async (cwd: string, args: string[]): Promise<string> => {
 	const result = await execGit({args, cwd});
@@ -30,14 +30,14 @@ const git = async (cwd: string, args: string[]): Promise<string> => {
 const makeStateWorktree = async (): Promise<string> => {
 	const root = makeTempDir();
 
-	await git(root, ['init', '-q', '-b', 'epiq/state', '.']);
+	await git(root, ['init', '-q', '-b', 'ome/state', '.']);
 	await git(root, ['config', 'user.name', 'Test User']);
 	await git(root, ['config', 'user.email', 'test@example.com']);
 
-	writeFile(path.join(root, '.epiq', 'media', BLOB), 'not really a png');
+	writeFile(path.join(root, '.ome', 'media', BLOB), 'not really a png');
 	writeFile(path.join(root, EVENT_FILE), '{"v":1,"id":["A",null]}\n');
 
-	await git(root, ['add', '.epiq']);
+	await git(root, ['add', '.ome']);
 	await git(root, ['commit', '-qm', 'seed']);
 
 	return root;
@@ -55,12 +55,12 @@ describe('stageStateBranchMediaFiles', () => {
 		const root = await makeStateWorktree();
 		const second = `${'b'.repeat(64)}.png`;
 
-		writeFile(path.join(root, '.epiq', 'media', second), 'another');
+		writeFile(path.join(root, '.ome', 'media', second), 'another');
 
 		const result = await stageStateBranchMediaFiles({stateBranchRoot: root});
 		expect(isFail(result)).toBe(false);
 
-		expect(await staged(root)).toEqual([`A\t.epiq/media/${second}`]);
+		expect(await staged(root)).toEqual([`A\t.ome/media/${second}`]);
 	});
 
 	/**
@@ -72,7 +72,7 @@ describe('stageStateBranchMediaFiles', () => {
 	it('does not commit a blob that has gone missing from the worktree', async () => {
 		const root = await makeStateWorktree();
 
-		fs.rmSync(path.join(root, '.epiq', 'media', BLOB));
+		fs.rmSync(path.join(root, '.ome', 'media', BLOB));
 
 		const result = await stageStateBranchMediaFiles({stateBranchRoot: root});
 		expect(isFail(result)).toBe(false);
@@ -82,7 +82,7 @@ describe('stageStateBranchMediaFiles', () => {
 });
 
 describe('ensureStateBranchIsStorageOnly', () => {
-	it('leaves a branch that already holds only .epiq alone', async () => {
+	it('leaves a branch that already holds only .ome alone', async () => {
 		const root = await makeStateWorktree();
 
 		const result = await ensureStateBranchIsStorageOnly(root);
@@ -121,7 +121,7 @@ describe('ensureStateBranchIsStorageOnly', () => {
 
 		// The stray file is gone from HEAD...
 		const tracked = await git(root, ['ls-tree', '--name-only', 'HEAD']);
-		expect(tracked.split('\n').filter(Boolean)).toEqual(['.epiq']);
+		expect(tracked.split('\n').filter(Boolean)).toEqual(['.ome']);
 
 		// ...and the log content is still only staged, never published.
 		expect(await staged(root)).toEqual([`M\t${EVENT_FILE}`]);

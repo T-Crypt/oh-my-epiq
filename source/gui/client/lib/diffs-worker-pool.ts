@@ -11,7 +11,7 @@
 // entry point beside `main.js`, under the name below.
 
 import {useSyncExternalStore} from 'react';
-import {EPIQ_DIFF_THEME} from './diff-theme';
+import {OME_DIFF_THEME} from './diff-theme';
 
 // Served from the GUI root, beside main.js — see `serveStatic`.
 const WORKER_URL = '/diffs-worker.js';
@@ -79,5 +79,5 @@ export const DIFF_WORKER_POOL_OPTIONS = {
 // ask for, and registered on the main thread by `diff-theme`, which the pool
 // resolves there and ships to each worker as an object rather than a name.
 export const DIFF_WORKER_HIGHLIGHTER_OPTIONS = {
-	theme: EPIQ_DIFF_THEME,
+	theme: OME_DIFF_THEME,
 };

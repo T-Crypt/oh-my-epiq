@@ -3,29 +3,29 @@ import {parseLogLinesMessage, parseLogWindowMessage} from './log-window';
 
 describe('parseLogWindowMessage', () => {
 	it('reads the four things a window can say', () => {
-		expect(parseLogWindowMessage({type: 'epiq-log:ready'})).toEqual({
-			type: 'epiq-log:ready',
+		expect(parseLogWindowMessage({type: 'ome-log:ready'})).toEqual({
+			type: 'ome-log:ready',
 		});
-		expect(parseLogWindowMessage({type: 'epiq-log:closed'})).toEqual({
-			type: 'epiq-log:closed',
+		expect(parseLogWindowMessage({type: 'ome-log:closed'})).toEqual({
+			type: 'ome-log:closed',
 		});
 		expect(
 			parseLogWindowMessage({
-				type: 'epiq-log:open',
+				type: 'ome-log:open',
 				destination: {kind: 'commit', sha: 'abc'},
 			}),
 		).toEqual({
-			type: 'epiq-log:open',
+			type: 'ome-log:open',
 			destination: {kind: 'commit', sha: 'abc'},
 			replace: false,
 		});
 		expect(
 			parseLogWindowMessage({
-				type: 'epiq-log:open',
+				type: 'ome-log:open',
 				destination: {kind: 'ticket', issueId: 'i1', tab: 'comments'},
 			}),
 		).toEqual({
-			type: 'epiq-log:open',
+			type: 'ome-log:open',
 			destination: {kind: 'ticket', issueId: 'i1', tab: 'comments'},
 			replace: false,
 		});
@@ -35,18 +35,18 @@ describe('parseLogWindowMessage', () => {
 	// so anything not shaped exactly as one of ours is nothing.
 	it('is null for anything else on the channel', () => {
 		expect(parseLogWindowMessage(null)).toBeNull();
-		expect(parseLogWindowMessage('epiq-log:ready')).toBeNull();
-		expect(parseLogWindowMessage({type: 'epiq-log:lines'})).toBeNull();
-		expect(parseLogWindowMessage({type: 'epiq-log:open'})).toBeNull();
+		expect(parseLogWindowMessage('ome-log:ready')).toBeNull();
+		expect(parseLogWindowMessage({type: 'ome-log:lines'})).toBeNull();
+		expect(parseLogWindowMessage({type: 'ome-log:open'})).toBeNull();
 		expect(
 			parseLogWindowMessage({
-				type: 'epiq-log:open',
+				type: 'ome-log:open',
 				destination: {kind: 'ticket', issueId: 'i1', tab: 'code'},
 			}),
 		).toBeNull();
 		expect(
 			parseLogWindowMessage({
-				type: 'epiq-log:open',
+				type: 'ome-log:open',
 				destination: {kind: 'commit'},
 			}),
 		).toBeNull();
@@ -59,7 +59,7 @@ describe('a destination crossing the window boundary', () => {
 	it('keeps the comment a ticket destination points at', () => {
 		expect(
 			parseLogWindowMessage({
-				type: 'epiq-log:open',
+				type: 'ome-log:open',
 				destination: {
 					kind: 'ticket',
 					issueId: 'i1',
@@ -73,7 +73,7 @@ describe('a destination crossing the window boundary', () => {
 	it('refuses a comment that is not a string', () => {
 		expect(
 			parseLogWindowMessage({
-				type: 'epiq-log:open',
+				type: 'ome-log:open',
 				destination: {
 					kind: 'ticket',
 					issueId: 'i1',
@@ -89,12 +89,12 @@ describe('parseLogLinesMessage', () => {
 	it('reads a slice, moment included', () => {
 		expect(
 			parseLogLinesMessage({
-				type: 'epiq-log:lines',
+				type: 'ome-log:lines',
 				entries: [],
 				moment: Infinity,
 			}),
 		).toEqual({
-			type: 'epiq-log:lines',
+			type: 'ome-log:lines',
 			entries: [],
 			moment: Infinity,
 			// Absent from an older board, which followed nothing.
@@ -109,7 +109,7 @@ describe('parseLogLinesMessage', () => {
 	it('carries word of a window too crowded to list', () => {
 		expect(
 			parseLogLinesMessage({
-				type: 'epiq-log:lines',
+				type: 'ome-log:lines',
 				entries: [],
 				moment: Infinity,
 				eventsUnlisted: true,
@@ -120,7 +120,7 @@ describe('parseLogLinesMessage', () => {
 	it('carries the line the board is standing on', () => {
 		expect(
 			parseLogLinesMessage({
-				type: 'epiq-log:lines',
+				type: 'ome-log:lines',
 				entries: [],
 				moment: 1,
 				followedLine: 'event-7',
@@ -129,10 +129,10 @@ describe('parseLogLinesMessage', () => {
 	});
 
 	it('is null for anything else', () => {
-		expect(parseLogLinesMessage({type: 'epiq-log:lines'})).toBeNull();
+		expect(parseLogLinesMessage({type: 'ome-log:lines'})).toBeNull();
 		expect(
-			parseLogLinesMessage({type: 'epiq-log:lines', entries: [], moment: '1'}),
+			parseLogLinesMessage({type: 'ome-log:lines', entries: [], moment: '1'}),
 		).toBeNull();
-		expect(parseLogLinesMessage({type: 'epiq-log:ready'})).toBeNull();
+		expect(parseLogLinesMessage({type: 'ome-log:ready'})).toBeNull();
 	});
 });

@@ -1,6 +1,6 @@
 export {
 	sync,
-	getEpiqState,
+	getOmeState,
 	deriveGuiState,
 	getGuiState,
 	getIssueDescription,

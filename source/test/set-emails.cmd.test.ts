@@ -14,7 +14,7 @@ import {getState} from '../lib/state/state.js';
 // typed argument and the event.
 vi.mock('../git/git-utils.js', () => ({execGitAllowFail: vi.fn()}));
 vi.mock('../git/git-constants.js', () => ({
-	getStateBranch: vi.fn(() => succeeded('Branch', '__epiq_state__')),
+	getStateBranch: vi.fn(() => succeeded('Branch', '__ome_state__')),
 	ORIGIN: 'origin',
 }));
 vi.mock('../git/git-storage.js', () => ({
@@ -22,9 +22,9 @@ vi.mock('../git/git-storage.js', () => ({
 }));
 vi.mock('../lib/storage/paths.js', async importOriginal => ({
 	...(await importOriginal<typeof import('../lib/storage/paths.js')>()),
-	// The worktree itself: booting a board reads a real `.epiq/project.json`,
+	// The worktree itself: booting a board reads a real `.ome/project.json`,
 	// and every git call here is mocked, so nothing touches the repository.
-	resolveClosestEpiqProjectRoot: vi.fn(() =>
+	resolveClosestOmeProjectRoot: vi.fn(() =>
 		succeeded('Resolved', process.cwd()),
 	),
 }));
@@ -47,7 +47,7 @@ vi.mock('../lib/config/user-config.js', () => ({
 	setConfig: vi.fn(() => succeeded('Wrote', null)),
 	// The decline list is rebuilt from disk rather than from this process's
 	// boot-time copy, so the command reads it back.
-	readEpiqConfig: vi.fn(() => succeeded('Read', {})),
+	readOmeConfig: vi.fn(() => succeeded('Read', {})),
 }));
 vi.mock('../lib/board/board-log.js', async importOriginal => ({
 	...(await importOriginal<typeof import('../lib/board/board-log.js')>()),
@@ -59,7 +59,7 @@ vi.mock('../lib/state/cmd.state.js', () => ({
 }));
 
 const {execGitAllowFail} = await import('../git/git-utils.js');
-const {readEpiqConfig, setConfig} = await import(
+const {readOmeConfig, setConfig} = await import(
 	'../lib/config/user-config.js'
 );
 const {materializeAndPersistAll} = await import('../lib/board/board-log.js');
@@ -122,7 +122,7 @@ describe(':config emails', () => {
 			succeeded('Wrote', []) as never,
 		);
 		boardExists = true;
-		vi.mocked(readEpiqConfig).mockReturnValue(succeeded('Read', {}));
+		vi.mocked(readOmeConfig).mockReturnValue(succeeded('Read', {}));
 		patchSettingsState({
 			userId: ALICE,
 			userName: 'jola',
@@ -246,11 +246,11 @@ describe(':config emails', () => {
 		});
 
 		// Per board, so a refusal in one repository says nothing about the next.
-		// Read back from disk, not merged into this process's copy: another epiq
+		// Read back from disk, not merged into this process's copy: another ome
 		// running in another repository may have declined since this one booted,
 		// and `setConfig` merges keys rather than the contents of the array.
 		it('keeps the boards declined by another instance since boot', async () => {
-			vi.mocked(readEpiqConfig).mockReturnValue(
+			vi.mocked(readOmeConfig).mockReturnValue(
 				succeeded('Read', {declinedEmailBoards: ['DECLINED-ELSEWHERE']}),
 			);
 			patchSettingsState({declinedEmailBoards: []});
@@ -402,7 +402,7 @@ describe(':config emails', () => {
 		});
 	});
 
-	// `:init` commits `.epiq/project.json`, so by the time this step runs the
+	// `:init` commits `.ome/project.json`, so by the time this step runs the
 	// user's own address is in the history whatever else the repository holds.
 	it('offers the address the init commit was signed with in a fresh repository', async () => {
 		history([['Jonatan Lampa', 'jola@example.com']]);

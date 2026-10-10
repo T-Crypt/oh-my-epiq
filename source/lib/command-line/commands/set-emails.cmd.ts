@@ -17,9 +17,9 @@ import {
 	patchSettingsState,
 } from '../../state/settings.state.js';
 import {getSafeState, patchState} from '../../state/state.js';
-import {readEpiqConfig, setConfig} from '../../config/user-config.js';
+import {readOmeConfig, setConfig} from '../../config/user-config.js';
 import {currentBoardId, hasClaimedAnEmail} from '../../config/setup-utils.js';
-import {resolveClosestEpiqProjectRoot} from '../../storage/paths.js';
+import {resolveClosestOmeProjectRoot} from '../../storage/paths.js';
 
 /**
  * Remembers that this board's question was refused, so the step stops asking.
@@ -38,10 +38,10 @@ const declineEmailSetup = (): Result<null> => {
 	if (!boardId) return succeeded('Nothing here to decline', null);
 
 	// Read back from disk rather than added to this process's boot-time copy.
-	// Two epiq instances in two repositories both hold a list from their own
+	// Two ome instances in two repositories both hold a list from their own
 	// boot, and merging into a stale one drops whatever the other declined
 	// since — `setConfig` merges keys, not the contents of this array.
-	const stored = readEpiqConfig();
+	const stored = readOmeConfig();
 	const onDisk = isFail(stored) ? [] : stored.value.declinedEmailBoards ?? [];
 
 	const declined = [...new Set([...onDisk, boardId])];
@@ -91,7 +91,7 @@ export const setEmailsCommand = async () => {
 	const stateResult = getSafeState();
 	if (isFail(stateResult)) return failed('Board is not loaded');
 
-	const repoRootResult = resolveClosestEpiqProjectRoot(process.cwd());
+	const repoRootResult = resolveClosestOmeProjectRoot(process.cwd());
 	if (isFail(repoRootResult)) return failed(repoRootResult.message);
 
 	const branchResult = getStateBranch(repoRootResult.value);

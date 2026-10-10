@@ -39,12 +39,12 @@ export const LOG_FIELD_NAMES: Readonly<Record<LogField, string>> = {
 	label: 'Label',
 };
 
-const storageKeyFor = (field: LogField): string => `epiq.eventLog.${field}`;
+const storageKeyFor = (field: LogField): string => `ome.eventLog.${field}`;
 
 // The class the pane wears for a field that is off. Named for what is
 // missing, so the default pane wears none of them.
 export const logFieldOffClass = (field: LogField): string =>
-	`epiq-log--no-${field}`;
+	`ome-log--no-${field}`;
 
 export const logPaneClassName = (fields: LogFields): string =>
 	LOG_FIELD_ORDER.filter(field => !fields[field])

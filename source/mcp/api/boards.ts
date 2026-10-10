@@ -23,7 +23,7 @@ import {
 import {MAX_TITLE_LENGTH, tooLong} from '../../lib/utils/text.limits.js';
 import {nodeRef} from '../../lib/utils/node-ref.js';
 import {sanitizeInlineText} from '../../lib/utils/string.utils.js';
-import {getTimeTravelStatus} from '../epiq-time-travel.js';
+import {getTimeTravelStatus} from '../ome-time-travel.js';
 import {
 	ToolInput,
 	bootLocal,

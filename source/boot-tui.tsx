@@ -15,7 +15,7 @@ import {
 	succeeded,
 } from './lib/model/result-types.js';
 import {patchSettingsState} from './lib/state/settings.state.js';
-import {resolveClosestEpiqProjectRoot} from './lib/storage/paths.js';
+import {resolveClosestOmeProjectRoot} from './lib/storage/paths.js';
 import {failAt, formatUnknownError} from './lib/utils/logger.utils.js';
 
 export async function bootTui(): Promise<Result<void>> {
@@ -29,7 +29,7 @@ export async function bootTui(): Promise<Result<void>> {
 		const settings = loadSettingsFromConfig();
 		if (isSuccess(settings)) patchSettingsState(settings.value);
 
-		const repoRootResult = resolveClosestEpiqProjectRoot(process.cwd());
+		const repoRootResult = resolveClosestOmeProjectRoot(process.cwd());
 
 		// The same fill `boot()` does for the MCP and the GUI. From the working
 		// directory rather than the project root, because the name is proposed at
@@ -56,7 +56,7 @@ export async function bootTui(): Promise<Result<void>> {
 			refreshProjectInBackground(repoRootResult.value);
 		}
 
-		return succeeded('Booted Epiq', undefined);
+		return succeeded('Booted OME', undefined);
 	} catch (error) {
 		return failAt(0, formatUnknownError(error));
 	}

@@ -20,11 +20,11 @@ let reads = 0;
 let failFrom = Number.POSITIVE_INFINITY;
 
 vi.mock('../lib/config/user-config.js', () => ({
-	readEpiqConfig: vi.fn(() => {
+	readOmeConfig: vi.fn(() => {
 		reads += 1;
 
 		return reads >= failFrom
-			? failed('Invalid ~/.epiq-global/config.json JSON')
+			? failed('Invalid ~/.ome-global/config.json JSON')
 			: succeeded('config', {
 					autoSync: false,
 					autoSyncDebounceMs: 20_000,

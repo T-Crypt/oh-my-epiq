@@ -104,7 +104,7 @@ export function AttachmentListUI({ticket, width, height}: Props) {
 				<Text color={theme.primary}>No attachments yet.</Text>
 				<Box paddingTop={1}>
 					<Text color={theme.primary}>Attach images from the browser GUI</Text>
-					<Text color={theme.accent}> epiq gui </Text>
+					<Text color={theme.accent}> ome gui </Text>
 					<Text color={theme.primary}>by dropping or pasting them.</Text>
 				</Box>
 			</Box>

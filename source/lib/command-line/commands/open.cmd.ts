@@ -12,7 +12,7 @@ import {
 import {failed, isFail, Result, succeeded} from '../../model/result-types.js';
 import {getCmdArg, replaceCmdInput} from '../../state/cmd.state.js';
 import {getState} from '../../state/state.js';
-import {resolveClosestEpiqProjectRoot} from '../../storage/paths.js';
+import {resolveClosestOmeProjectRoot} from '../../storage/paths.js';
 
 const expandHome = (input: string): string =>
 	input === '~' || input.startsWith('~/')
@@ -41,11 +41,11 @@ export const resolveOpenTarget = (
 		return succeeded('Resolved recent project', entry.root);
 	}
 
-	const rootResult = resolveClosestEpiqProjectRoot(
+	const rootResult = resolveClosestOmeProjectRoot(
 		path.resolve(expandHome(trimmed)),
 	);
 	if (isFail(rootResult)) {
-		return failed(`No epiq project at ${trimmed}`);
+		return failed(`No ome project at ${trimmed}`);
 	}
 
 	return succeeded('Resolved project path', rootResult.value);
@@ -58,7 +58,7 @@ export const openProjectCommand = async (): Promise<Result<null>> => {
 	// Loading materialises onto whatever state is live, and nothing upstream
 	// stops a keyword the init screen did not offer from being typed.
 	if (getState().hasProjectDefinition) {
-		return failed('Already in a project; run epiq from another directory');
+		return failed('Already in a project; run ome from another directory');
 	}
 
 	const recentResult = listRecentProjects({exclude: process.cwd()});

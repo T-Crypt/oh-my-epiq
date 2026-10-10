@@ -3,12 +3,12 @@ import path from 'node:path';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {ACTOR_NAME_ENV} from '../../lib/config/actor-env.js';
 import {
-	getEpiqConfigPath,
-	readEpiqConfig,
+	getOmeConfigPath,
+	readOmeConfig,
 } from '../../lib/config/user-config.js';
 import {isFail} from '../../lib/model/result-types.js';
-import {listBoards} from '../epiq-api.js';
-import {initProjectTool} from '../epiq-init.js';
+import {listBoards} from '../ome-api.js';
+import {initProjectTool} from '../ome-init.js';
 import {
 	cloneRepo,
 	commitFile,
@@ -23,13 +23,13 @@ useTempHome();
 let originalGlobalDir: string | undefined;
 
 beforeEach(() => {
-	originalGlobalDir = process.env['EPIQ_GLOBAL_DIR'];
-	process.env['EPIQ_GLOBAL_DIR'] = makeTempDir();
+	originalGlobalDir = process.env['OME_GLOBAL_DIR'];
+	process.env['OME_GLOBAL_DIR'] = makeTempDir();
 	delete process.env[ACTOR_NAME_ENV];
 });
 
 afterEach(() => {
-	process.env['EPIQ_GLOBAL_DIR'] = originalGlobalDir;
+	process.env['OME_GLOBAL_DIR'] = originalGlobalDir;
 	delete process.env[ACTOR_NAME_ENV];
 	vi.restoreAllMocks();
 });
@@ -51,14 +51,14 @@ const setupPlainRepo = async () => {
 };
 
 const readConfig = () => {
-	const result = readEpiqConfig();
+	const result = readOmeConfig();
 	if (isFail(result)) throw new Error(result.message);
 	return result.value;
 };
 
 const answers = {userName: 'Jo', preferredEditor: 'vim', autoSync: false};
 
-describe('epiq_project_init', () => {
+describe('ome_project_init', () => {
 	it('asks for every setup answer when the machine has none, writing nothing', async () => {
 		const {repoRoot} = await setupPlainRepo();
 
@@ -69,8 +69,8 @@ describe('epiq_project_init', () => {
 		expect(result.message).toContain('userName');
 		expect(result.message).toContain('preferredEditor');
 		expect(result.message).toContain('autoSync');
-		expect(fs.existsSync(path.join(repoRoot, '.epiq'))).toBe(false);
-		expect(fs.existsSync(getEpiqConfigPath())).toBe(false);
+		expect(fs.existsSync(path.join(repoRoot, '.ome'))).toBe(false);
+		expect(fs.existsSync(getOmeConfigPath())).toBe(false);
 	});
 
 	it('keeps a partial answer and asks only for the rest', async () => {
@@ -86,7 +86,7 @@ describe('epiq_project_init', () => {
 		const config = readConfig();
 		expect(config.userName).toBe('Jo');
 		expect(config.userId).toMatch(/^[0-9A-HJKMNP-TV-Z]{26}$/);
-		expect(fs.existsSync(path.join(repoRoot, '.epiq'))).toBe(false);
+		expect(fs.existsSync(path.join(repoRoot, '.ome'))).toBe(false);
 	});
 
 	it('treats autoSync false as answered', async () => {
@@ -152,7 +152,7 @@ describe('epiq_project_init', () => {
 		expect(otherSync.message).toContain('autoSync false');
 
 		expect(readConfig()).toMatchObject(answers);
-		expect(fs.existsSync(path.join(secondRepo, '.epiq'))).toBe(false);
+		expect(fs.existsSync(path.join(secondRepo, '.ome'))).toBe(false);
 	});
 
 	it('accepts the answers it already has, and keeps the user id', async () => {
@@ -169,9 +169,9 @@ describe('epiq_project_init', () => {
 
 	it('mints an id for a configured name that has none', async () => {
 		const {repoRoot} = await setupPlainRepo();
-		fs.mkdirSync(path.dirname(getEpiqConfigPath()), {recursive: true});
+		fs.mkdirSync(path.dirname(getOmeConfigPath()), {recursive: true});
 		fs.writeFileSync(
-			getEpiqConfigPath(),
+			getOmeConfigPath(),
 			JSON.stringify({logLevel: 'info', userName: 'Jo'}),
 		);
 
@@ -199,7 +199,7 @@ describe('epiq_project_init', () => {
 
 		expect(isFail(result)).toBe(true);
 		expect(result.message).toContain("this agent's own identity");
-		expect(fs.existsSync(getEpiqConfigPath())).toBe(false);
+		expect(fs.existsSync(getOmeConfigPath())).toBe(false);
 	});
 
 	it("passes the init core's refusal through", async () => {
@@ -210,6 +210,6 @@ describe('epiq_project_init', () => {
 		const second = await initProjectTool({repoRoot});
 
 		expect(isFail(second)).toBe(true);
-		expect(second.message).toBe('[4] Epiq project already initialized');
+		expect(second.message).toBe('[4] OME project already initialized');
 	});
 });

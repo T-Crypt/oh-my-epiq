@@ -1,7 +1,7 @@
 import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import {readReviewedFiles} from './reviewed-files';
 
-const STORAGE_KEY = 'epiq.commits.reviewedFiles';
+const STORAGE_KEY = 'ome.commits.reviewedFiles';
 
 describe('readReviewedFiles', () => {
 	// No DOM under vitest here: the store only needs get/set/clear.

@@ -13,7 +13,7 @@ import {
 // A real directory, because what the cache watches is the log's own files and a
 // mocked filesystem would prove nothing about a teammate's arriving in it.
 let root = '';
-const eventsDir = () => path.join(root, '.epiq', 'events');
+const eventsDir = () => path.join(root, '.ome', 'events');
 
 const fileFor = (actor: string) => `${actor}.person.jsonl`;
 
@@ -45,7 +45,7 @@ const baseTime = 1_700_000_000_000;
 describe('the causal edge', () => {
 	beforeEach(() => {
 		clearEdgeCache();
-		root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-edge-'));
+		root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-edge-'));
 		fs.mkdirSync(eventsDir(), {recursive: true});
 	});
 
@@ -160,8 +160,8 @@ describe('the causal edge', () => {
 		const tail = writeChain('u-1', 4, baseTime);
 		expect(getEdgeRef(root).value).toBe(tail);
 
-		const other = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-edge-'));
-		fs.mkdirSync(path.join(other, '.epiq', 'events'), {recursive: true});
+		const other = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-edge-'));
+		fs.mkdirSync(path.join(other, '.ome', 'events'), {recursive: true});
 
 		expect(getEdgeRef(other).value).toBeNull();
 

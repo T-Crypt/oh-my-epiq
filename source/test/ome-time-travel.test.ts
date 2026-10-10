@@ -7,11 +7,11 @@ vi.mock('../git/git-storage.js', () => ({
 }));
 
 vi.mock('../lib/storage/paths.js', () => ({
-	resolveClosestEpiqProjectRoot: vi.fn(),
+	resolveClosestOmeProjectRoot: vi.fn(),
 	// The timeline index stats the log files to notice when they move. These
 	// tests hand it events through the mocked loader instead, so it must find no
 	// directory — and clearTimelineCache below is what stands in for a signature.
-	getEventsDirPath: vi.fn(() => '/epiq-timeline-index-no-such-dir'),
+	getEventsDirPath: vi.fn(() => '/ome-timeline-index-no-such-dir'),
 }));
 
 vi.mock('../lib/board/board-log.js', async () => ({
@@ -71,7 +71,7 @@ vi.mock('../lib/storage/private-temp-dir.js', () => ({
 	privateTempDir: (...segments: string[]) => ({
 		status: 'success',
 		message: 'Prepared private temp dir',
-		value: ['/tmp/epiq', ...segments].join('/'),
+		value: ['/tmp/ome', ...segments].join('/'),
 	}),
 }));
 
@@ -89,7 +89,7 @@ import {
 	openEditorDiffNonBlocking,
 	openEditorOnFileNonBlocking,
 } from '../lib/editor/editor.js';
-import {resolveClosestEpiqProjectRoot} from '../lib/storage/paths.js';
+import {resolveClosestOmeProjectRoot} from '../lib/storage/paths.js';
 import {clearTimelineCache} from '../mcp/timeline-index.js';
 import {
 	loadEffectiveEventTimes,
@@ -127,9 +127,9 @@ import {
 	getTimeTravelStatus,
 	returnToLive,
 	runExclusive,
-} from '../mcp/epiq-time-travel.js';
+} from '../mcp/ome-time-travel.js';
 
-describe('epiq-time-travel', () => {
+describe('ome-time-travel', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		resetCommitTimelineCacheForTests();
@@ -142,19 +142,19 @@ describe('epiq-time-travel', () => {
 			error: vi.fn(),
 		};
 
-		vi.mocked(resolveClosestEpiqProjectRoot).mockReturnValue(
+		vi.mocked(resolveClosestOmeProjectRoot).mockReturnValue(
 			succeeded('root', '/repo'),
 		);
 
 		vi.mocked(getStateBranchRoot).mockReturnValue(
-			succeeded('branch', '/repo/.epiq'),
+			succeeded('branch', '/repo/.ome'),
 		);
 
 		vi.mocked(resetState).mockReturnValue(succeeded('reset', ''));
 		vi.mocked(materializeAll).mockReturnValue([]);
 
 		vi.mocked(readProjectFile).mockReturnValue(
-			succeeded('project', {stateBranch: '__epiq_state__'} as never),
+			succeeded('project', {stateBranch: '__ome_state__'} as never),
 		);
 
 		// Non-VS-Code by default, so tests land on the unified-diff fallback.
@@ -801,7 +801,7 @@ describe('epiq-time-travel', () => {
 			]);
 		});
 
-		it('excludes the epiq state branch via --not <stateBranch>', async () => {
+		it('excludes the ome state branch via --not <stateBranch>', async () => {
 			vi.mocked(readProjectFile).mockReturnValue(
 				succeeded('project', {stateBranch: '__custom_state__'} as never),
 			);
@@ -964,7 +964,7 @@ describe('epiq-time-travel', () => {
 
 			await getCommitTimeline();
 
-			vi.mocked(resolveClosestEpiqProjectRoot).mockReturnValue(
+			vi.mocked(resolveClosestOmeProjectRoot).mockReturnValue(
 				succeeded('root', '/other-repo'),
 			);
 			await getCommitTimeline();
@@ -2069,7 +2069,7 @@ describe('epiq-time-travel', () => {
 
 			const result = await checkoutStateAt({targetTime: 1234});
 
-			expect(loadMergedEventsBefore).toHaveBeenCalledWith('/repo/.epiq', 1234);
+			expect(loadMergedEventsBefore).toHaveBeenCalledWith('/repo/.ome', 1234);
 			expect(resetState).toHaveBeenCalled();
 			expect(materializeAll).toHaveBeenCalledWith([{id: '1'}]);
 
@@ -2204,7 +2204,7 @@ describe('epiq-time-travel', () => {
 
 			const result = await checkoutStateAtEvent({eventId: 'evt-1'});
 
-			expect(loadMergedEventsBefore).toHaveBeenCalledWith('/repo/.epiq', 5001);
+			expect(loadMergedEventsBefore).toHaveBeenCalledWith('/repo/.ome', 5001);
 			expect(isSuccess(result)).toBe(true);
 			if (isFail(result)) return;
 			expect(result.value.asOfTime).toBe(5001);
@@ -2220,7 +2220,7 @@ describe('epiq-time-travel', () => {
 
 			await checkoutStateAtEvent({eventId: 'poisoned'});
 
-			expect(loadMergedEventsBefore).toHaveBeenCalledWith('/repo/.epiq', 1001);
+			expect(loadMergedEventsBefore).toHaveBeenCalledWith('/repo/.ome', 1001);
 		});
 
 		it('fails without touching state when the event is not in the log', async () => {

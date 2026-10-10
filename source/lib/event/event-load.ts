@@ -636,7 +636,7 @@ export const createLoader = <M extends EventMap>(catalog: EventCatalog<M>) => {
 				.map(([action, count]) => `${action} (x${count})`)
 				.join(', ');
 			logger.info(
-				`Skipped events with unknown actions, likely created by a newer epiq version: ${summary}. Upgrade to apply them.`,
+				`Skipped events with unknown actions, likely created by a newer ome version: ${summary}. Upgrade to apply them.`,
 			);
 		}
 
@@ -645,7 +645,7 @@ export const createLoader = <M extends EventMap>(catalog: EventCatalog<M>) => {
 				.map(([version, count]) => `v${version} (x${count})`)
 				.join(', ');
 			logger.info(
-				`Skipped events with unsupported schema versions, created by a newer epiq version: ${summary}. Upgrade to apply them.`,
+				`Skipped events with unsupported schema versions, created by a newer ome version: ${summary}. Upgrade to apply them.`,
 			);
 		}
 

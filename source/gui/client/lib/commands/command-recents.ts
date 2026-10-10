@@ -9,7 +9,7 @@ import {useState} from 'react';
  * would otherwise show the whole list in declaration order — a tail nobody
  * remembers is not a shortcut.
  */
-const STORAGE_KEY = 'epiq.gui.recentCommands';
+const STORAGE_KEY = 'ome.gui.recentCommands';
 
 const CAP = 6;
 

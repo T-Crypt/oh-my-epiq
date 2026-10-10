@@ -134,7 +134,7 @@ describe('encodeDiffCommentMarker / parseDiffCommentMeta', () => {
 
 	it('returns null for malformed JSON inside the marker', () => {
 		expect(
-			parseDiffCommentMeta('<!-- epiq-diff-comment:{not json} -->'),
+			parseDiffCommentMeta('<!-- ome-diff-comment:{not json} -->'),
 		).toBeNull();
 	});
 
@@ -161,7 +161,7 @@ describe('encodeDiffCommentMarker / parseDiffCommentMeta', () => {
 		const incomplete = JSON.stringify({filePath: 'a.ts', start: 1});
 
 		expect(
-			parseDiffCommentMeta(`<!-- epiq-diff-comment:${incomplete} -->`),
+			parseDiffCommentMeta(`<!-- ome-diff-comment:${incomplete} -->`),
 		).toBeNull();
 	});
 });
@@ -381,7 +381,7 @@ describe('issueRef', () => {
 	it('rejects a marker whose issueRef is not a string', () => {
 		expect(
 			parseDiffCommentMeta(
-				`<!-- epiq-diff-comment:${JSON.stringify({...meta, issueRef: 7})} -->`,
+				`<!-- ome-diff-comment:${JSON.stringify({...meta, issueRef: 7})} -->`,
 			),
 		).toBeNull();
 	});
@@ -420,7 +420,7 @@ describe('withDiffCommentNote', () => {
 	it('drops the leading text when the note is emptied', () => {
 		const next = withDiffCommentNote(body, '  ');
 
-		expect(next!.startsWith('<!-- epiq-diff-comment:')).toBe(true);
+		expect(next!.startsWith('<!-- ome-diff-comment:')).toBe(true);
 		expect(parseDiffCommentMeta(next!)?.note).toBe('');
 		expect(extractCommentSnippet(next!)).toBe('after two\nafter three');
 	});

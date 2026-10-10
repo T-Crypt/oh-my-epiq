@@ -13,7 +13,7 @@ import {midRank} from '../lib/utils/rank.js';
 
 // `readOnly` is set by a time-travel checkout, and enforced on the write path
 // itself so every caller is covered — the GUI and the MCP tools reach the event
-// log through epiq-api without passing the TUI's command layer.
+// log through ome-api without passing the TUI's command layer.
 
 const IDS = {
 	root: '01H00000000000000000000000',
@@ -43,7 +43,7 @@ const addSwimlane = (id: string, name: string): AppEvent<'add.swimlane'> => ({
 let rootDir = '';
 
 beforeEach(() => {
-	rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-write-guard-'));
+	rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-write-guard-'));
 
 	initWorkspaceState(nodes.workspace(IDS.root, 'Test Root', rank()));
 	materializeAll([

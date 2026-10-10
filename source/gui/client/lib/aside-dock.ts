@@ -10,7 +10,7 @@ import {useState} from 'react';
  */
 export type AsideDock = 'right' | 'bottom';
 
-const DOCK_STORAGE_KEY = 'epiq.aside.dock';
+const DOCK_STORAGE_KEY = 'ome.aside.dock';
 
 export const readStoredAsideDock = (): AsideDock =>
 	localStorage.getItem(DOCK_STORAGE_KEY) === 'bottom' ? 'bottom' : 'right';

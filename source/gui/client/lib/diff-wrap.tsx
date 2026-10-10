@@ -9,7 +9,7 @@ const DiffWrapContext = createContext<DiffWrap>([false, () => {}]);
 
 // Mounted above the app, so it re-renders only when the flag changes.
 export const DiffWrapProvider = ({children}: {children: React.ReactNode}) => (
-	<DiffWrapContext.Provider value={usePersistedFlag('epiq.diff.wrap', false)}>
+	<DiffWrapContext.Provider value={usePersistedFlag('ome.diff.wrap', false)}>
 		{children}
 	</DiffWrapContext.Provider>
 );

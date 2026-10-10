@@ -10,7 +10,7 @@ const tempDirs: string[] = [];
 
 const makeTempDir = (): string => {
 	const dir = fs.realpathSync(
-		fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-worktree-')),
+		fs.mkdtempSync(path.join(os.tmpdir(), 'ome-worktree-')),
 	);
 	tempDirs.push(dir);
 	return dir;
@@ -30,7 +30,7 @@ describe('ensureStateBranchWorktree', () => {
 			const base = makeTempDir();
 			const repoRoot = path.join(base, 'repo');
 			const worktreeRoot = path.join(base, 'worktrees', 'project');
-			const stateBranchName = 'epiq/state';
+			const stateBranchName = 'ome/state';
 
 			fs.mkdirSync(repoRoot);
 			execSync('git init', {cwd: repoRoot, stdio: 'ignore'});
