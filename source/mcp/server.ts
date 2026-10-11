@@ -72,11 +72,27 @@ const exclusiveTool =
 	(input: I) =>
 		runExclusive(async () => resultJson(await fn(input)));
 
+// Sent to every client on connect. This is the whole board workflow an agent
+// needs: the server works on its own, with no skill installed in the project.
+const OME_INSTRUCTIONS = [
+	'OME is a git-backed issue board. Use these tools for every board read and write; never edit the state branch, its worktree or the event log by hand.',
+	'Take an identity before your first write: ome_actor_assume with provider/name (e.g. claude/peter), reusing one from ome_contributor_list.',
+	'Only ome_sync touches the network. Call it to see remote changes and to publish yours.',
+	'Picking up a ticket: read its comments, assign yourself, move it to the in-progress lane. Ask before taking one assigned to someone else.',
+	'Keep tickets small and their lane, tags and description current. A small follow-up goes on its existing ticket.',
+	'Start commit subjects with the ticket ref returned by these tools; never derive the ref from the id.',
+	'When a ticket is done, add a comment starting with "Solution:". Ask the user before closing tickets, and file decisions that are theirs as a ticket tagged human-input-needed.',
+	'Do not install a skill to use the board. ome_skill_install is only for a user who asks for the longer written workflow in one clone.',
+].join('\n');
+
 export const createMcpServer = () => {
-	const server = new McpServer({
-		name: 'ome',
-		version: OME_VERSION,
-	});
+	const server = new McpServer(
+		{
+			name: 'ome',
+			version: OME_VERSION,
+		},
+		{instructions: OME_INSTRUCTIONS},
+	);
 
 	// `ome_state_get` is deliberately not registered: it dumps the whole board
 	// plus the event log, and agents use `ome_issue_list`/`ome_issue_get`. The
@@ -575,7 +591,7 @@ export const createMcpServer = () => {
 		'ome_skill_install',
 		{
 			description:
-				'Write the official OME workflow skill into the repository at .claude/skills/ome/SKILL.md, so agents working there follow the same board rules. Run it after ome_project_init, not before: the new file is an uncommitted change that init refuses. In a project that already has a board, run it any time. Refuses to overwrite a differing file unless force is true; an identical file is left alone.',
+				'Optional, and only when the user asks for it: write the longer OME workflow skill into this clone at .claude/skills/ome/SKILL.md. The board does not need it. The file is local to the clone and added to .git/info/exclude, so it is never committed. Refuses to overwrite a differing file unless force is true; an identical file is left alone.',
 			inputSchema: z.object({
 				repoRoot: z.string().optional(),
 				force: z.boolean().optional(),

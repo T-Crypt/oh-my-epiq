@@ -11,7 +11,10 @@ operator-only and gitignored, so it may be absent in a fresh clone.
 ## Read first
 
 - `UPSTREAM.md` — what this fork is and how it relates to upstream.
-- `.claude/skills/ome/SKILL.md` — the board workflow every agent follows.
+- `skills/ome/SKILL.md` — the board workflow, in full. It is the source of the
+  optional skill `ome_skill_install` writes; the MCP server's instructions
+  (`OME_INSTRUCTIONS` in `source/mcp/server.ts`) carry the short form to every
+  client. Change one, check the other.
 - `docs/VISION.md` — where the product is going (local only, if present).
 
 ## Remotes
