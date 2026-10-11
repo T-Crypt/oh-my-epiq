@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {getRepoRootDir} from '../git/git-storage.js';
+import {execGit} from '../git/git-utils.js';
 import {failed, isFail, Result, succeeded} from '../lib/model/result-types.js';
 import {OME_SKILL, OME_SKILL_PATH} from './skill-content.js';
 
@@ -9,11 +10,55 @@ type InstallSkillInput = {
 	force?: boolean;
 };
 
+const SKILL_DIR_PATTERN = `${path.posix.dirname(OME_SKILL_PATH)}/`;
+
 /**
- * Writes the ome workflow skill into the repository, where an agent's harness
- * picks it up. The text ships inside the server, so a project set up from an
- * agent gets the same rules as this repository's own copy. Never boots: a
- * repository gets its skill before or after it gets its board.
+ * Lists the skill directory in the clone's own exclude file, so the installed
+ * copy stays out of `git status` and can never be committed by accident. The
+ * exclude file is local to the clone: nothing about the project changes.
+ */
+const excludeSkillLocally = async (repoRoot: string): Promise<Result<void>> => {
+	const excludeResult = await execGit({
+		args: ['rev-parse', '--git-path', 'info/exclude'],
+		cwd: repoRoot,
+	});
+	if (isFail(excludeResult)) return failed(excludeResult.message);
+
+	const excludePath = path.resolve(repoRoot, excludeResult.value.stdout.trim());
+
+	try {
+		const existing = fs.existsSync(excludePath)
+			? fs.readFileSync(excludePath, 'utf8')
+			: '';
+		const listed = existing
+			.split('\n')
+			.some(line => line.trim() === SKILL_DIR_PATTERN);
+		if (listed) return succeeded('Skill already excluded', undefined);
+
+		const separator = existing === '' || existing.endsWith('\n') ? '' : '\n';
+		fs.mkdirSync(path.dirname(excludePath), {recursive: true});
+		fs.writeFileSync(
+			excludePath,
+			`${existing}${separator}${SKILL_DIR_PATTERN}\n`,
+			'utf8',
+		);
+	} catch (error) {
+		return failed(
+			error instanceof Error
+				? `Failed to update ${excludePath}: ${error.message}`
+				: `Failed to update ${excludePath}`,
+		);
+	}
+
+	return succeeded('Excluded skill from commits', undefined);
+};
+
+/**
+ * Writes the optional ome workflow skill into one clone, for a session that
+ * wants the written rules at hand. The board works without it: the server's
+ * own instructions carry the rules every client needs. The copy is local to
+ * the clone and excluded from commits. Never boots: a repository gets its
+ * skill before or after it gets its board.
  */
 export const installSkill = async (
 	input: InstallSkillInput = {},
@@ -22,6 +67,9 @@ export const installSkill = async (
 	if (isFail(repoRootResult)) return failed(repoRootResult.message);
 
 	const skillPath = path.join(repoRootResult.value, OME_SKILL_PATH);
+
+	const excluded = await excludeSkillLocally(repoRootResult.value);
+	if (isFail(excluded)) return failed(excluded.message);
 
 	if (fs.existsSync(skillPath)) {
 		const existing = fs.readFileSync(skillPath, 'utf8');
@@ -51,8 +99,11 @@ export const installSkill = async (
 		);
 	}
 
-	return succeeded(`Installed skill at ${OME_SKILL_PATH}`, {
-		path: skillPath,
-		written: true,
-	});
+	return succeeded(
+		`Installed skill at ${OME_SKILL_PATH}, local to this clone and excluded from commits`,
+		{
+			path: skillPath,
+			written: true,
+		},
+	);
 };

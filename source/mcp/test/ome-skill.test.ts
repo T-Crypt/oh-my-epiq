@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {describe, expect, it} from 'vitest';
+import {execGit} from '../../git/git-utils.js';
 import {isFail} from '../../lib/model/result-types.js';
 import {installSkill} from '../ome-skill.js';
 import {OME_SKILL, OME_SKILL_PATH} from '../skill-content.js';
@@ -34,6 +35,27 @@ describe('ome_skill_install', () => {
 		expect(result.value.written).toBe(true);
 		expect(fs.readFileSync(skillPath, 'utf8')).toBe(OME_SKILL);
 		expect(fs.readFileSync(skillPath, 'utf8')).toMatch(/^---\nname: ome\n/);
+	});
+
+	it('keeps the installed copy out of commits', async () => {
+		const repoRoot = await setupPlainRepo();
+		const excludePath = path.join(repoRoot, '.git', 'info', 'exclude');
+
+		await installSkill({repoRoot});
+		await installSkill({repoRoot});
+
+		const lines = fs
+			.readFileSync(excludePath, 'utf8')
+			.split('\n')
+			.filter(line => line === '.claude/skills/ome/');
+		expect(lines).toHaveLength(1);
+
+		const status = await execGit({
+			args: ['status', '--porcelain'],
+			cwd: repoRoot,
+		});
+		if (isFail(status)) throw new Error(status.message);
+		expect(status.value.stdout).not.toContain('.claude');
 	});
 
 	it('leaves an identical file alone', async () => {

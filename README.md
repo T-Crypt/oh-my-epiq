@@ -33,8 +33,10 @@ Every upstream Epiq feature, plus the operator and agent surface:
 - **An OMP sibling theme** — the GUI and TUI wear the Oh-My-Pi visual language
   (near-black ground, magenta accent, cyan→violet→magenta mark), so the two
   products read as one family.
-- **A board workflow skill** — `.claude/skills/ome/SKILL.md` teaches an agent
-  to take an identity, sync on demand and keep tickets current.
+- **The MCP server is all an agent needs** — it sends the board workflow
+  (take an identity, sync on demand, keep tickets current) to every client on
+  connect, so a project carries no agent files. A longer written skill is
+  offered at `skills/ome/SKILL.md` for anyone who wants it.
 
 ![The OME terminal UI: the same board in a terminal, with the command palette](source/assets/tui.jpeg)
 
@@ -185,8 +187,11 @@ Tools are namespaced `ome_*` (`ome_issue_create`, `ome_issue_move`,
 `ome_sync` is the only tool that touches the network; sync is on demand. Take
 an identity (`ome_actor_assume`, `provider/name`) before your first write.
 
-The board workflow skill lives at `.claude/skills/ome/SKILL.md`;
-`ome_skill_install` writes it into any repo that lacks it.
+The server sends the board workflow as its MCP instructions, so nothing has to
+be installed in a project. The longer written skill is optional: it lives at
+`skills/ome/SKILL.md`, and `ome_skill_install` copies it into one clone at
+`.claude/skills/ome/SKILL.md` and lists it in `.git/info/exclude`, so it is
+never committed. See `CONTRIBUTING.md`.
 
 ## How state is synchronized
 
