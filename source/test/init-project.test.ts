@@ -104,16 +104,69 @@ describe('initProject', () => {
 		).toMatchObject({id: user.userId, name: user.userName});
 	});
 
-	it('refuses a repository with uncommitted changes', async () => {
+	it('initializes beside unrelated uncommitted work and leaves it alone', async () => {
 		const {repoRoot} = await setupPlainRepo();
+		writeFile(path.join(repoRoot, 'README.md'), 'edited\n');
 		writeFile(path.join(repoRoot, 'dirty.txt'), 'dirty\n');
+
+		const result = await initProject({cwd: repoRoot, user});
+		if (isFail(result)) throw new Error(result.message);
+
+		const committed = await gitStdout(repoRoot, [
+			'show',
+			'--name-only',
+			'--format=',
+			'HEAD',
+		]);
+		expect(committed.trim().split('\n').sort()).toEqual([
+			'.gitignore',
+			'.ome/project.json',
+		]);
+		const status = await gitStdout(repoRoot, ['status', '--porcelain']);
+		expect(status).toContain('M README.md');
+		expect(status).toContain('?? dirty.txt');
+		expect(fs.readFileSync(path.join(repoRoot, 'README.md'), 'utf8')).toBe(
+			'edited\n',
+		);
+	});
+
+	it('refuses when .gitignore already carries uncommitted changes', async () => {
+		const {repoRoot} = await setupPlainRepo();
+		writeFile(path.join(repoRoot, '.gitignore'), 'mine\n');
 
 		const result = await initProject({cwd: repoRoot, user});
 
 		expect(isFail(result)).toBe(true);
 		expect(result.message).toMatch(
-			/^\[3\] .*uncommitted changes \(dirty.txt\)/,
+			/^\[3\] .*uncommitted changes .*\(\.gitignore\)/,
 		);
+	});
+
+	it('refuses when a tracked .gitignore has local edits', async () => {
+		const {repoRoot} = await setupPlainRepo();
+		await commitFile({
+			repoRoot,
+			fileName: '.gitignore',
+			content: 'node_modules\n',
+			message: 'ignore',
+		});
+		writeFile(path.join(repoRoot, '.gitignore'), 'node_modules\nmine\n');
+
+		const result = await initProject({cwd: repoRoot, user});
+
+		expect(isFail(result)).toBe(true);
+		expect(result.message).toMatch(/\(\.gitignore\)/);
+	});
+
+	it('refuses when something is already under .ome/', async () => {
+		const {repoRoot} = await setupPlainRepo();
+		fs.mkdirSync(path.join(repoRoot, '.ome'), {recursive: true});
+		writeFile(path.join(repoRoot, '.ome', 'stray.json'), '{}\n');
+
+		const result = await initProject({cwd: repoRoot, user});
+
+		expect(isFail(result)).toBe(true);
+		expect(result.message).toMatch(/^\[3\] .*\.ome\/stray\.json/);
 	});
 
 	it('refuses a repository that is already a project', async () => {

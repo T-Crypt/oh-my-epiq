@@ -50,11 +50,23 @@ export type InitProjectOutcome = {
 	warnings: string[];
 };
 
-// The paths `git status` reports, so a refusal can name what is in the way.
-const dirtyPaths = async (repoRoot: string): Promise<Result<string[]>> => {
+// The only paths init commits on the user's branch (step 13).
+const INIT_PATHS = ['.ome/project.json', '.gitignore'];
+
+// The pending changes init would sweep into its own commit: those to the paths
+// it commits, or anywhere under .ome/. Everything else the user has in flight
+// stays out of a pathspec commit, so it is not in the way.
+const blockingPaths = async (repoRoot: string): Promise<Result<string[]>> => {
 	const result = await execGit({
 		cwd: repoRoot,
-		args: ['status', '--porcelain'],
+		args: [
+			'status',
+			'--porcelain',
+			'--untracked-files=all',
+			'--',
+			...INIT_PATHS,
+			'.ome',
+		],
 	});
 
 	if (isFail(result)) return result;
@@ -106,8 +118,9 @@ export const initProject = async ({
 		);
 	}
 
-	// 3. fail if there are files in the diff
-	const diffResult = await dirtyPaths(repoRoot);
+	// 3. fail if the paths init commits already carry changes. Other
+	// uncommitted work is left alone: the commit in step 13 is pathspec-limited.
+	const diffResult = await blockingPaths(repoRoot);
 	if (isFail(diffResult)) {
 		return failAt(2.5, diffResult.message);
 	}
@@ -115,9 +128,9 @@ export const initProject = async ({
 	if (diffResult.value.length > 0) {
 		return failAt(
 			3,
-			`Cannot initialize OME with uncommitted changes (${diffResult.value.join(
+			`Cannot initialize OME with uncommitted changes to the files it commits (${diffResult.value.join(
 				', ',
-			)}). Commit or stash your changes first.`,
+			)}). Commit or stash those first.`,
 		);
 	}
 
@@ -275,7 +288,7 @@ export const initProject = async ({
 	// 13. commit .ome/project.json on original branch
 	const stageProjectResult = await git.stage({
 		cwd: repoRoot,
-		pathspec: ['.ome/project.json', '.gitignore'],
+		pathspec: INIT_PATHS,
 	});
 	if (isFail(stageProjectResult)) {
 		return failAt(13, stageProjectResult.message);
@@ -286,7 +299,7 @@ export const initProject = async ({
 	const commitProjectResult = await git.commit({
 		cwd: repoRoot,
 		message: '[ome:init-project]',
-		pathspec: ['.ome/project.json', '.gitignore'],
+		pathspec: INIT_PATHS,
 	});
 	if (isFail(commitProjectResult)) {
 		return failAt(13, commitProjectResult.message);
