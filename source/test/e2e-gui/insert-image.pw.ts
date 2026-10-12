@@ -1,6 +1,7 @@
 import type {Page} from '@playwright/test';
 import {expect, test} from './fixtures.js';
 import {addTicket} from './ticket.js';
+import {themeRgb} from './theme-colour.js';
 
 // A real 64x64 PNG. The store sniffs magic bytes rather than trusting the
 // name, so this has to be a genuine one — and it has to have real dimensions,
@@ -107,7 +108,7 @@ test('dropping an image on the comment composer inserts it', async ({
 	// The composer says it will take it, rather than leaving the drag to guess.
 	// toHaveCSS resolves the computed value, so no DOM types are needed here.
 	await expect(composer).toHaveCSS('border-style', 'dashed');
-	await expect(composer).toHaveCSS('border-color', 'rgb(118, 212, 255)');
+	await expect(composer).toHaveCSS('border-color', themeRgb('accent'));
 
 	await composer.dispatchEvent('drop', {dataTransfer: handle});
 

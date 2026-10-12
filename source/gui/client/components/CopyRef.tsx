@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from 'react';
-import {GUI_THEME} from '../lib/gui-theme';
+import {GUI_THEME, UI_FONT} from '../lib/gui-theme';
 
 // The clipboard API needs a secure context, which localhost is; copying
 // silently does nothing on e.g. plain-http LAN hosts.
@@ -35,7 +35,7 @@ export const CopyRef = ({refValue}: {refValue: string}) => {
 				}
 			}}
 			style={{
-				fontFamily: 'monospace',
+				fontFamily: UI_FONT,
 				fontSize: 'inherit',
 				color: copied ? GUI_THEME.green : GUI_THEME.dim,
 				background: 'transparent',

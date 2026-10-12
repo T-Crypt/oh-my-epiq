@@ -28,6 +28,11 @@ One npm package.
 
 - `source/mcp/` — the MCP server (`ome_*` tools) and its API layer.
 - `source/gui/` — the browser board (API server plus React client).
+  The look and the phone layout follow Oh-My-Pocket: `source/gui/ome.css` (the
+  shell), `client/components/PocketShell.tsx` (rail, phone tabs, lane pager,
+  Devices), and the palette in `client/lib/gui-theme.tsx`. Remote access (owner
+  token, pairing codes, host allowlist, access modes) is
+  `api/lib/remote-access.ts`; keep its rules and `origin-guard.ts` in step.
 - `source/lib/` — model, state, board/event log, storage, config, utilities,
   and `lib/migration/` (Epiq → OME migration).
 - `source/git/` — the state-branch worktree and sync.

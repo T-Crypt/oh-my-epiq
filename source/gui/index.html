@@ -2,25 +2,47 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
+		/>
+		<meta name="color-scheme" content="dark" />
+		<meta name="theme-color" content="#13141c" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta
+			name="apple-mobile-web-app-status-bar-style"
+			content="black-translucent"
+		/>
+		<meta name="apple-mobile-web-app-title" content="OME" />
 		<title>Oh-My-Epiq</title>
-		<style>
-			html,
-			body,
-			#root {
-				height: 100%;
-				width: 100%;
-				margin: 0;
-				padding: 0;
-				background: #070708;
-			}
-		</style>
+		<link
+			rel="manifest"
+			href="/manifest.webmanifest"
+			crossorigin="use-credentials"
+		/>
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<link
+			rel="preload"
+			href="/JetBrainsMono.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+		<link rel="stylesheet" href="/ome.css" />
 	</head>
 
 	<body>
-		<div id="root"></div>
+		<!-- The boot screen the app replaces, as Oh-My-Pocket draws it: nothing jumps when the script takes over. -->
+		<div id="root">
+			<div class="boot" role="status">
+				<div class="boot-mark" aria-hidden="true">:ome</div>
+				<div class="boot-bar" aria-hidden="true"><span></span></div>
+				<div class="boot-caption">starting</div>
+			</div>
+		</div>
 		<script type="module" src="/main.js"></script>
 	</body>
 </html>

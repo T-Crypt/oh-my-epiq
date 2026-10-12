@@ -4,6 +4,7 @@ import React, {
 	useCallback,
 	useEffect,
 	useLayoutEffect,
+	useContext,
 	useRef,
 	useState,
 } from 'react';
@@ -70,6 +71,16 @@ export type AsideRenderApi = {
 // place.
 export const AsideHeaderSlot = createContext<HTMLDivElement | null>(null);
 
+// On a phone every panel is a sheet over the whole screen rather than a column
+// beside a board there is no room for: `.phone-sheet` in ome.css pins it, and
+// the resize handle has nothing to resize. `bar` is drawn above the panel's own
+// header — the ticket's lane picker, which a touch screen needs because it
+// cannot drag a card.
+export const PhoneSheetContext = createContext<{
+	phone: boolean;
+	bar?: React.ReactNode;
+}>({phone: false});
+
 export const Aside = forwardRef<
 	HTMLElement,
 	{
@@ -87,7 +98,8 @@ export const Aside = forwardRef<
 	// State rather than the ref below: the handle re-renders on its own hover
 	// and reads this as a prop, so a drag ending has to reach it as a render.
 	const [dragging, setDragging] = useState(false);
-	const bottom = dock === 'bottom';
+	const sheet = useContext(PhoneSheetContext);
+	const bottom = dock === 'bottom' && !sheet.phone;
 
 	// Mirrors the sizes synchronously: handlePointerMove/handleDragEnd are
 	// memoized once (empty deps, so the pointermove/pointerup listeners stay
@@ -199,26 +211,39 @@ export const Aside = forwardRef<
 		});
 	}, []);
 
-	// window.innerWidth is only read at render time, so without this the panel
-	// would stay pinned to whatever width the browser happened to be when
-	// fullscreen was toggled on, ignoring a resize of the window itself while
-	// it's active. Tracked for a bottom dock too, which is window-wide by
-	// construction rather than by its own stored size.
-	const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
+	// In fullscreen or docked to the bottom the panel's width is whatever the
+	// board row gives it, not its stored size — so it is measured, not assumed.
+	// The window's width used to stand in for it, which held only while the
+	// board filled the window; beside the rail it is the rail and the gaps too
+	// wide, and a fullscreen panel laid its lanes out past the window's edge.
+	// Observed rather than read once, so a resize while it is open is followed.
+	const [panelElement, setPanelElement] = useState<HTMLElement | null>(null);
+	const setPanelRef = useCallback(
+		(element: HTMLElement | null) => {
+			setPanelElement(element);
+			if (typeof ref === 'function') ref(element);
+			else if (ref) ref.current = element;
+		},
+		[ref],
+	);
+	const [drawnWidth, setDrawnWidth] = useState(() => window.innerWidth);
 
-	useEffect(() => {
-		if (!isFullscreen && !bottom) return;
+	useLayoutEffect(() => {
+		if ((!isFullscreen && !bottom) || !panelElement) return;
 
-		setWindowWidth(window.innerWidth);
-		const onResize = () => setWindowWidth(window.innerWidth);
-		window.addEventListener('resize', onResize);
-		return () => window.removeEventListener('resize', onResize);
-	}, [isFullscreen, bottom]);
+		const read = () =>
+			setDrawnWidth(Math.round(panelElement.getBoundingClientRect().width));
+		read();
+		const observer = new ResizeObserver(read);
+		observer.observe(panelElement);
 
-	const effectiveWidth = isFullscreen || bottom ? windowWidth : width;
+		return () => observer.disconnect();
+	}, [isFullscreen, bottom, panelElement]);
+
+	const effectiveWidth = isFullscreen || bottom ? drawnWidth : width;
 
 	// Reports the width the panel is actually drawn at — in fullscreen or
-	// docked to the bottom the window's, not the stored one — so layout
+	// docked to the bottom the measured one, not the stored one — so layout
 	// decisions track what is on screen. Fires on mount too, not just on drag,
 	// so a caller that only reads this (rather than also calling
 	// readStoredAsideWidth itself) sees the persisted width immediately. A
@@ -231,7 +256,8 @@ export const Aside = forwardRef<
 
 	return (
 		<aside
-			ref={ref}
+			ref={setPanelRef}
+			className={sheet.phone ? 'phone-sheet' : undefined}
 			style={{
 				boxSizing: 'border-box',
 				// Fullscreen overlays the row rather than growing inside it: the
@@ -270,11 +296,15 @@ export const Aside = forwardRef<
 				overflow: 'hidden',
 			}}
 		>
-			<ResizeHandle
-				edge={bottom ? 'top' : 'left'}
-				active={dragging}
-				onPointerDown={handlePointerDown}
-			/>
+			{sheet.phone ? (
+				sheet.bar
+			) : (
+				<ResizeHandle
+					edge={bottom ? 'top' : 'left'}
+					active={dragging}
+					onPointerDown={handlePointerDown}
+				/>
+			)}
 			{/* Where FormHeader lands, whichever panel drew it — above the pane
 			    rather than in it, as the log's header is. A header inside the
 			    scroller would have the scrollbar running up beside it, and would

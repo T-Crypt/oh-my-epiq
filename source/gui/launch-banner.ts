@@ -41,11 +41,14 @@ export const launchBanner = ({
 	repoRoot,
 	version,
 	reused,
+	remote,
 }: {
 	url: string;
 	repoRoot: string;
 	version: string;
 	reused: boolean;
+	// How another device gets in, when the server answers to more than loopback.
+	remote?: {access: string; signIn: string | null; qr: string[]};
 }): string =>
 	[
 		'',
@@ -55,6 +58,27 @@ export const launchBanner = ({
 		'',
 		row('Local', chalk.hex(theme.accent).bold(url)),
 		row('Project', tildify(repoRoot)),
+		...(remote
+			? [
+					row('Access', remote.access),
+					...(remote.signIn
+						? [
+								row('Sign in', remote.signIn),
+								'',
+								...remote.qr.map(line => INDENT + line),
+								INDENT +
+									quiet(
+										'scan to sign this phone in · treat the link as a password',
+									),
+						  ]
+						: [
+								row(
+									'Sign in',
+									quiet('open Devices on this machine’s board to pair a phone'),
+								),
+						  ]),
+			  ]
+			: []),
 		'',
 		INDENT +
 			quiet(

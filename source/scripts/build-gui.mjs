@@ -33,18 +33,25 @@ const diffsWorkerEntry = relative(
 // a dead copy of every chunk that ever changed.
 rmSync(resolve(root, 'dist/gui'), {recursive: true, force: true});
 mkdirSync(resolve(root, 'dist/gui'), {recursive: true});
-copyFileSync(
-	resolve(root, 'source/gui/index.html'),
-	resolve(root, 'dist/gui/index.html'),
-);
-copyFileSync(
-	resolve(root, 'source/gui/favicon.ico'),
-	resolve(root, 'dist/gui/favicon.ico'),
-);
-copyFileSync(
-	resolve(root, 'source/gui/favicon.svg'),
-	resolve(root, 'dist/gui/favicon.svg'),
-);
+// The page, its stylesheet and font, and what a phone installs it with: the
+// manifest and the icons a home screen shows.
+for (const asset of [
+	'index.html',
+	'ome.css',
+	'favicon.ico',
+	'favicon.svg',
+	'manifest.webmanifest',
+	'apple-touch-icon.png',
+	'icon-192.png',
+	'icon-512.png',
+	'JetBrainsMono.woff2',
+	'JetBrainsMono-OFL.txt',
+]) {
+	copyFileSync(
+		resolve(root, `source/gui/${asset}`),
+		resolve(root, `dist/gui/${asset}`),
+	);
+}
 
 // React reads `process.env.NODE_ENV` to decide which of its two runtimes it is.
 // Nothing defined it, so esbuild left the expression alone and the bundle got

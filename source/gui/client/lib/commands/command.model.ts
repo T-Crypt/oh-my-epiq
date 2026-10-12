@@ -50,6 +50,10 @@ export type CommandContext = {
 	tags: GuiTag[];
 	// Every ticket in every board, for the project-wide search.
 	tickets: SearchableTicket[];
+	// The lanes of the board on screen, and which one the open ticket is in, for
+	// `move`.
+	swimlanes: {id: string; title: string}[];
+	issueSwimlaneId: string | null;
 	contributors: GuiContributor[];
 	handlers: CommandHandlers;
 };
@@ -63,6 +67,7 @@ export type CommandHandlers = {
 	removeIssueTag: (issueId: string, tagId: string) => void;
 	addIssueAssignee: (issueId: string, assigneeId: string) => void;
 	removeIssueAssignee: (issueId: string, assigneeId: string) => void;
+	moveIssue: (issueId: string, swimlaneId: string) => void;
 	commentOnIssue: (issueId: string) => void;
 	copyRef: (ref: string) => void;
 	sync: () => void;

@@ -2,6 +2,7 @@ import type {Page} from '@playwright/test';
 import {expect, test} from './fixtures.js';
 import {addTicket} from './ticket.js';
 import {commitLinkedFile, linkedFileName} from './linked-commit.js';
+import {themeRgb} from './theme-colour.js';
 
 // Opens the commit and its file if they aren't open already — once a diff
 // link has been followed the URL keeps pointing at the spot, and the tab then
@@ -132,7 +133,7 @@ test('selecting lines opens one composer under them; write, then comment or file
 			return getComputedStyle(host).backgroundColor;
 		})()
 	`);
-	expect(snippetBackground).toBe('rgb(6, 7, 10)');
+	expect(snippetBackground).toBe(themeRgb('bg'));
 
 	// Editing a diff comment edits its note; the link and snippet stay.
 	await page.getByTestId('edit-comment').click();

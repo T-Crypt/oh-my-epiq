@@ -1,0 +1,771 @@
+/*
+ * OME's shell, after Oh-My-Pocket's (itself after Omarchy): a flat palette mixed from one theme's colors, square
+ * tiles, 2px window borders with Hyprland's gaps, no glow, JetBrains Mono everywhere, and Hyprland's curves for motion.
+ *
+ * The board itself is drawn with inline styles from client/lib/gui-theme.tsx, which holds the same palette as hex.
+ * This file is what those cannot reach: the font, the page ground, the boot and sign-in screens (the server's pages
+ * use it too), the rail and window frame on a desktop, and the whole phone layout. Base element rules are scoped to
+ * the shell's own classes, so they never fight the board's inline styles.
+ *
+ *   Fonts and tokens       the Tokyo Night palette Oh-My-Pocket ships by default
+ *   Reset                  page ground, scrollbars, square corners
+ *   Loaders                the boot screen
+ *   Controls               buttons, fields, kbd
+ *   Sign in                the server's sign-in page
+ *   Desktop                the rail and the window frame
+ *   Sheets                 Devices, and every panel on a phone
+ *   Phone                  top bar, lane tabs, the lane pager, the tab bar
+ */
+
+/* ─── Fonts and tokens ───────────────────────────────────────── */
+
+@font-face {
+	font-family: 'JetBrains Mono';
+	src: url('/JetBrainsMono.woff2') format('woff2');
+	font-weight: 100 800;
+	font-display: swap;
+}
+
+:root {
+	--o-bg: #1a1b26;
+	--o-bg-dark: #13141c;
+	--o-bg-darker: #0e0e14;
+	--o-bg-light: #24283b;
+	--o-fg: #a9b1d6;
+	--o-fg-dim: #565f89;
+	--o-fg-bright: #c0caf5;
+	--o-accent: #7aa2f7;
+	--o-red: #f7768e;
+	--o-yellow: #e0af68;
+	--o-orange: #eb927b;
+	--o-green: #9ece6a;
+	--o-cyan: #7dcfff;
+	--o-magenta: #bb9af7;
+	--o-inactive: rgba(89, 89, 89, 0.67);
+
+	--desk: var(--o-bg-darker);
+	--bg: var(--o-bg);
+	--card: color-mix(in srgb, var(--o-fg) 4%, var(--o-bg));
+	--card-2: color-mix(in srgb, var(--o-fg) 8%, var(--o-bg));
+	--raised: color-mix(in srgb, var(--o-fg) 11%, var(--o-bg));
+	--hover: color-mix(in srgb, var(--o-fg) 8%, transparent);
+	--line: color-mix(in srgb, var(--o-fg) 13%, var(--o-bg));
+	--line-strong: color-mix(in srgb, var(--o-fg) 26%, var(--o-bg));
+	--text: var(--o-fg-bright);
+	--body: var(--o-fg);
+	--muted: color-mix(in oklab, var(--o-fg) 62%, var(--o-bg));
+	--faint: color-mix(in oklab, var(--o-fg) 38%, var(--o-bg));
+	--accent: var(--o-accent);
+	--accent-ink: var(--o-bg);
+	--accent-soft: color-mix(in srgb, var(--o-accent) 13%, transparent);
+	--err: var(--o-red);
+	--scrim: color-mix(in srgb, var(--o-bg-darker) 62%, transparent);
+	--mark: linear-gradient(
+		100deg,
+		var(--o-cyan) 0%,
+		var(--o-accent) 52%,
+		var(--o-magenta) 100%
+	);
+
+	/* Hyprland's look as Omarchy sets it: gaps_out 10, gaps_in 5, border_size 2. */
+	--gap-out: 10px;
+	--gap-in: 5px;
+	--border: 2px;
+
+	--ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+	--ease-in-out: cubic-bezier(0.65, 0.05, 0.36, 1);
+	--t-in: 410ms;
+	--t-out: 150ms;
+	--t-hover: 140ms;
+
+	--mono: 'JetBrains Mono', 'JetBrainsMono Nerd Font', ui-monospace, 'SF Mono',
+		Menlo, Consolas, monospace;
+
+	/* What a phone keeps clear: the notch, the home indicator. */
+	--safe-top: env(safe-area-inset-top, 0px);
+	--safe-bottom: env(safe-area-inset-bottom, 0px);
+	--tabbar: 56px;
+	color-scheme: dark;
+}
+
+/* ─── Reset ──────────────────────────────────────────────────── */
+
+html,
+body {
+	margin: 0;
+	height: 100%;
+	background: var(--desk);
+	color: var(--body);
+	font-family: var(--mono);
+	font-variant-ligatures: none;
+	-webkit-text-size-adjust: 100%;
+	-webkit-tap-highlight-color: transparent;
+}
+
+#root {
+	height: 100dvh;
+	width: 100%;
+}
+
+/* Square tiles throughout, as Omarchy draws them. The board's inline radii included: one rule here rather than a
+   radius threaded through ninety style objects. */
+*,
+*::before,
+*::after {
+	border-radius: 0 !important;
+}
+
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--line-strong) transparent;
+}
+
+::selection {
+	background: color-mix(in srgb, var(--o-accent) 35%, transparent);
+	color: var(--text);
+}
+
+/* iOS zooms into any text field smaller than 16px when it takes focus. */
+@media (pointer: coarse) {
+	input,
+	textarea,
+	select {
+		font-size: 16px !important;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 1ms !important;
+		transition-duration: 1ms !important;
+	}
+}
+
+/* ─── Loaders ────────────────────────────────────────────────── */
+
+.boot {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 1.1rem;
+	height: 100dvh;
+	padding: 1.5rem;
+	color: var(--muted);
+	text-align: center;
+	background: var(--bg);
+}
+
+.boot-mark,
+.signin-mark {
+	font: 700 3.2rem/1 var(--mono);
+	background: var(--mark);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.boot-mark {
+	animation: boot-breathe 2.4s var(--ease-in-out) infinite;
+}
+
+@keyframes boot-breathe {
+	50% {
+		opacity: 0.55;
+	}
+}
+
+.boot-bar {
+	width: min(300px, 64vw);
+	height: 8px;
+	background: var(--line);
+	overflow: hidden;
+}
+
+.boot-bar span {
+	display: block;
+	width: 0;
+	height: 100%;
+	background: var(--body);
+	animation: boot-fill 15s cubic-bezier(0.12, 0.6, 0.3, 1) forwards;
+}
+
+@keyframes boot-fill {
+	to {
+		width: 70%;
+	}
+}
+
+.boot-caption {
+	font-size: 0.75rem;
+	letter-spacing: 0.14em;
+}
+
+/* ─── Controls ───────────────────────────────────────────────── */
+
+.button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.35rem;
+	border: 1px solid var(--line-strong);
+	background: var(--card-2);
+	padding: 0.55rem 0.9rem;
+	font: inherit;
+	font-size: 0.85rem;
+	text-decoration: none;
+	color: var(--text);
+	white-space: nowrap;
+	cursor: pointer;
+	transition: background-color var(--t-hover) var(--ease-out),
+		border-color var(--t-hover) var(--ease-out), transform 90ms var(--ease-out);
+}
+
+.button:hover {
+	border-color: var(--accent);
+	background: var(--raised);
+}
+
+.button:active:not(:disabled) {
+	transform: scale(0.97);
+}
+
+.button.primary {
+	background: var(--accent);
+	border-color: var(--accent);
+	color: var(--accent-ink);
+	font-weight: 700;
+}
+
+.button.ghost {
+	background: none;
+}
+
+.button.wide {
+	width: 100%;
+}
+
+.button:disabled {
+	opacity: 0.5;
+	cursor: default;
+}
+
+.field {
+	width: 100%;
+	box-sizing: border-box;
+	background: var(--card);
+	border: 1px solid var(--line);
+	padding: 0.6rem 0.75rem;
+	font: inherit;
+	color: var(--text);
+	outline: none;
+}
+
+.field:focus {
+	border-color: var(--accent);
+}
+
+.muted {
+	color: var(--muted);
+}
+
+.notice {
+	border: 2px solid var(--accent);
+	background: var(--bg);
+	padding: 0.6rem 0.85rem;
+	font-size: 0.82rem;
+	color: var(--text);
+	margin: 0;
+}
+
+.notice.err {
+	border-color: var(--err);
+}
+
+/* ─── Sign in ────────────────────────────────────────────────── */
+
+body.plain-page {
+	height: auto;
+	min-height: 100dvh;
+	background: var(--bg);
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+.signin {
+	max-width: 440px;
+	margin: 0 auto;
+	padding: calc(var(--safe-top) + 3rem) 1.2rem 3rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.9rem;
+	animation: rise-in 0.5s var(--ease-out);
+}
+
+.signin-mark {
+	text-align: center;
+}
+
+.signin h1 {
+	margin: 0;
+	text-align: center;
+	font-size: 1.3rem;
+	color: var(--text);
+}
+
+.signin code {
+	color: var(--text);
+}
+
+.signin .row {
+	display: flex;
+	gap: 0.4rem;
+	border: 2px solid var(--accent);
+	padding: 0.4rem;
+	background: var(--bg);
+}
+
+.signin .row input {
+	flex: 1;
+	min-width: 0;
+	border: 0;
+	background: none;
+	padding: 0.5rem;
+	font: inherit;
+	color: var(--text);
+	outline: none;
+}
+
+@keyframes rise-in {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+}
+
+/* ─── Desktop: the rail and the window frame ─────────────────── */
+
+.ome-desk {
+	display: flex;
+	gap: var(--gap-out);
+	height: 100dvh;
+	padding: var(--gap-out);
+	box-sizing: border-box;
+	background: var(--desk);
+}
+
+/* A window: Hyprland's 2px border, inactive grey, the accent while it holds focus. */
+.ome-window {
+	position: relative;
+	min-width: 0;
+	min-height: 0;
+	border: var(--border) solid var(--o-inactive);
+	background: var(--bg);
+	overflow: hidden;
+	transition: border-color var(--t-hover) var(--ease-out);
+}
+
+.ome-window.main {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.ome-window:focus-within,
+.ome-window.active {
+	border-color: var(--accent);
+}
+
+.rail {
+	width: 56px;
+	flex: none;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	padding: 10px 0;
+	background: var(--o-bg-dark);
+	overflow-y: auto;
+	scrollbar-width: none;
+}
+
+.rail-brand,
+.rail-button {
+	position: relative;
+	flex: none;
+	width: 44px;
+	height: 44px;
+	display: grid;
+	place-items: center;
+	background: none;
+	border: 0;
+	padding: 0;
+	cursor: pointer;
+	color: var(--muted);
+	font-family: var(--mono);
+	transition: background-color var(--t-hover) var(--ease-out),
+		color var(--t-hover) var(--ease-out);
+}
+
+.rail-brand {
+	font-weight: 800;
+	font-size: 0.95rem;
+	background: var(--mark);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	cursor: default;
+}
+
+.rail-button:hover {
+	background: var(--hover);
+	color: var(--text);
+}
+
+.rail-button.on {
+	color: var(--text);
+	background: var(--hover);
+}
+
+.rail-button.on::before {
+	content: '';
+	position: absolute;
+	left: -6px;
+	top: 9px;
+	bottom: 9px;
+	width: 2px;
+	background: var(--accent);
+}
+
+.rail-fill {
+	flex: 1;
+}
+
+.rail-button svg {
+	width: 20px;
+	height: 20px;
+}
+
+/* ─── Sheets ─────────────────────────────────────────────────── */
+
+.sheet-scrim {
+	position: fixed;
+	inset: 0;
+	z-index: 900;
+	background: var(--scrim);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	animation: fade var(--t-out) linear;
+}
+
+.sheet {
+	width: min(440px, calc(100vw - 2 * var(--gap-out)));
+	max-height: calc(100dvh - 2 * var(--gap-out));
+	overflow: auto;
+	background: var(--bg);
+	border: var(--border) solid var(--accent);
+	color: var(--body);
+	font-family: var(--mono);
+	font-size: 0.85rem;
+	line-height: 1.55;
+	animation: rise-in var(--t-in) var(--ease-out);
+}
+
+.sheet-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	padding: 0.8rem 1rem;
+	border-bottom: 1px solid var(--line);
+	color: var(--text);
+	font-weight: 700;
+}
+
+.sheet-body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.8rem;
+	padding: 1rem;
+}
+
+.sheet-body h3 {
+	margin: 0.4rem 0 0;
+	font-size: 0.7rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.qr {
+	align-self: center;
+	width: min(260px, 70vw);
+	aspect-ratio: 1;
+	background: #fff;
+	padding: 0;
+}
+
+.qr svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.pair-code {
+	text-align: center;
+	font-size: 1.4rem;
+	letter-spacing: 0.18em;
+	color: var(--text);
+}
+
+.kv {
+	display: grid;
+	grid-template-columns: max-content 1fr;
+	gap: 0.2rem 1rem;
+	margin: 0;
+}
+
+.kv dt {
+	color: var(--accent);
+}
+
+.kv dd {
+	margin: 0;
+	color: var(--text);
+	overflow-wrap: anywhere;
+}
+
+@keyframes fade {
+	from {
+		opacity: 0;
+	}
+}
+
+/* ─── Phone ──────────────────────────────────────────────────── */
+
+.ome-phone {
+	display: flex;
+	flex-direction: column;
+	height: 100dvh;
+	background: var(--bg);
+	color: var(--body);
+	font-family: var(--mono);
+	overflow: hidden;
+}
+
+.phone-top {
+	flex: none;
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	padding: calc(var(--safe-top) + 8px) 10px 8px;
+	background: var(--o-bg-dark);
+	border-bottom: 1px solid var(--line);
+}
+
+.phone-top .rail-brand {
+	width: auto;
+	height: auto;
+	font-size: 1rem;
+}
+
+.phone-top .board-pick {
+	flex: 1;
+	min-width: 0;
+}
+
+.conn {
+	flex: none;
+	width: 8px;
+	height: 8px;
+	background: var(--o-green);
+}
+
+.conn.off {
+	background: var(--o-yellow);
+}
+
+.conn.lost {
+	background: var(--err);
+}
+
+.lane-tabs {
+	flex: none;
+	display: flex;
+	gap: 0;
+	overflow-x: auto;
+	scrollbar-width: none;
+	border-bottom: 1px solid var(--line);
+	background: var(--o-bg-dark);
+}
+
+.lane-tab {
+	flex: none;
+	position: relative;
+	padding: 0.7rem 0.9rem;
+	background: none;
+	border: 0;
+	color: var(--muted);
+	font: inherit;
+	font-size: 0.82rem;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.lane-tab .count {
+	margin-left: 0.4rem;
+	color: var(--faint);
+}
+
+.lane-tab.on {
+	color: var(--text);
+}
+
+.lane-tab.on::after {
+	content: '';
+	position: absolute;
+	left: 0.9rem;
+	right: 0.9rem;
+	bottom: 0;
+	height: 2px;
+	background: var(--accent);
+}
+
+/* One lane per screen, swiped sideways and snapping to each. The board's own columns, stretched to the pager. */
+.lane-pager {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	overflow-x: auto;
+	overflow-y: hidden;
+	scroll-snap-type: x mandatory;
+	overscroll-behavior-x: contain;
+	scrollbar-width: none;
+}
+
+.lane-page {
+	flex: none;
+	width: 100%;
+	height: 100%;
+	padding: var(--gap-in);
+	box-sizing: border-box;
+	scroll-snap-align: start;
+	scroll-snap-stop: always;
+}
+
+.lane-page > section {
+	width: 100% !important;
+	min-width: 0 !important;
+}
+
+.phone-pane {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.tabbar {
+	flex: none;
+	display: grid;
+	grid-auto-flow: column;
+	grid-auto-columns: 1fr;
+	height: calc(var(--tabbar) + var(--safe-bottom));
+	padding-bottom: var(--safe-bottom);
+	background: var(--o-bg-dark);
+	border-top: 1px solid var(--line);
+}
+
+.tab {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 3px;
+	background: none;
+	border: 0;
+	color: var(--muted);
+	font: inherit;
+	font-size: 0.68rem;
+	cursor: pointer;
+}
+
+.tab svg {
+	width: 20px;
+	height: 20px;
+}
+
+.tab.on {
+	color: var(--text);
+}
+
+.tab.on::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 30%;
+	right: 30%;
+	height: 2px;
+	background: var(--accent);
+}
+
+/* Every side panel — a ticket, a diff, a lane's figures — opens over the whole screen on a phone. */
+.phone-sheet {
+	position: fixed !important;
+	inset: 0 !important;
+	width: 100% !important;
+	min-width: 0 !important;
+	max-width: none !important;
+	height: 100dvh !important;
+	z-index: 800;
+	padding-top: var(--safe-top);
+	padding-bottom: var(--safe-bottom);
+	box-sizing: border-box;
+	background: var(--bg);
+	animation: rise-in var(--t-in) var(--ease-out);
+}
+
+.phone-sheet-bar {
+	display: flex;
+	gap: 0.4rem;
+	align-items: center;
+	padding: 0.5rem 0.7rem;
+	border-bottom: 1px solid var(--line);
+	background: var(--o-bg-dark);
+}
+
+.phone-sheet-bar select {
+	flex: 1;
+	min-width: 0;
+}
+
+.phone-me {
+	flex: 1;
+	min-height: 0;
+	overflow: auto;
+	padding: 0.8rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.8rem;
+}
+
+.phone-me .tile {
+	border: var(--border) solid var(--o-inactive);
+	background: var(--bg);
+}
+
+.phone-me .tile > * {
+	width: 100% !important;
+	max-width: 100% !important;
+	box-sizing: border-box;
+}
+
+.signin code,
+.sheet code {
+	font-family: inherit;
+}

@@ -75,6 +75,7 @@ import {
 } from './gui-project.js';
 import {GuiMessage} from './websocket.model.js';
 import {isForeignOrigin} from './origin-guard.js';
+import {authorize, type RemoteAccess} from './remote-access.js';
 import {parseGuiMessage} from './websocket.schema.js';
 import {issueDetail, issuePreview, slimStateResult} from './slim-state.js';
 
@@ -172,11 +173,7 @@ const sendMutationResult = async (
 export const setupWebsocket = (
 	server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>,
 	project: GuiProject,
-	{
-		onStateChanged,
-		onSyncSettingsChanged,
-		getPort,
-	}: {
+	options: {
 		onStateChanged: () => void;
 		/**
 		 * The auto sync cadence changed under the loop. Distinct from
@@ -185,8 +182,11 @@ export const setupWebsocket = (
 		 */
 		onSyncSettingsChanged: () => void;
 		getPort: () => number;
+		// Who may open a socket from elsewhere. Absent, loopback pages only.
+		access?: RemoteAccess;
 	},
 ) => {
+	const {onStateChanged, onSyncSettingsChanged, getPort} = options;
 	const wss = new WebSocketServer({
 		server,
 		path: '/ws',
@@ -202,8 +202,15 @@ export const setupWebsocket = (
 		// A handshake is not bound by the same-origin policy, so without this any
 		// page the user has open reaches every message below — including `sync`,
 		// which pushes to the shared remote.
-		verifyClient: (info: {origin: string}) =>
-			!isForeignOrigin(info.origin, getPort()),
+		// And a socket from anywhere but this machine's own browser has to be
+		// signed in: the board, and `sync`, are behind the same token as the page.
+		verifyClient: (info: {origin: string; req: http.IncomingMessage}) =>
+			!isForeignOrigin(
+				info.origin,
+				getPort(),
+				options.access ? {req: info.req, access: options.access} : undefined,
+			) &&
+			(!options.access || authorize(info.req, options.access) !== null),
 	});
 
 	wss.on('connection', socket => {
