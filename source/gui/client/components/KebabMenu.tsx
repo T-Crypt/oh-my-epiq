@@ -77,7 +77,7 @@ export const KebabMenu = ({
 						background: GUI_THEME.bg,
 						border: `1px solid ${GUI_THEME.line}`,
 						borderRadius: 8,
-						boxShadow: '0 12px 32px rgba(0, 0, 0, 0.35)',
+						boxShadow: `0 12px 32px ${GUI_THEME.shadow}`,
 						padding: 6,
 						zIndex: 20,
 					}}

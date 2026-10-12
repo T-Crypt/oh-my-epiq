@@ -22,6 +22,7 @@ import {
 	Rail,
 	useIsPhone,
 } from './components/PocketShell';
+import {ThemeSheet} from './components/ThemeSheet';
 import {Button} from './components/Button';
 import {CreateNodeModal} from './components/CreateNodeModal';
 import {AddSwimlaneColumn} from './components/AddSwimlaneColumn';
@@ -131,7 +132,9 @@ import {useBoardEditing} from './lib/use-board-editing';
 import {useSwimlaneEditing} from './lib/use-swimlane-editing';
 import {createHistoryBuffer} from './lib/history-buffer';
 import {SyncStatus} from './lib/gui-sync-statusmodel';
-import {GUI_THEME, UI_FONT} from './lib/gui-theme';
+import {GUI_THEME, UI_FONT} from './lib/gui-theme.js';
+import {savedThemeId, applyTheme} from './lib/theme.js';
+import {subscribeThemeChange} from './lib/theme-subscribe.js';
 import {issueActivityLogEntries} from './lib/event-log';
 import {plural} from './lib/gui-format.helper';
 import {REVEAL_MS, useReveal} from './lib/use-reveal';
@@ -235,6 +238,30 @@ export const App = () => {
 	// Assignable people for the board on screen, unlike state.contributors, which
 	// is the registry and stays empty until somebody is explicitly assigned.
 	const [contributors, setContributors] = useState<GuiContributor[]>([]);
+
+	// Apply the saved theme on mount (the FOUC guard already applied it in the
+	// inline script in index.html; this picks up any change the guard missed).
+	useEffect(() => {
+		applyTheme(savedThemeId());
+		// Exposed for e2e assertions that prove JS-sourced colours repaint on
+		// theme switch without reloading the page.
+		if (typeof window !== 'undefined') {
+			(window as unknown as Record<string, unknown>).__omeApplyTheme =
+				applyTheme;
+		}
+	}, []);
+
+	// Repaint the whole tree when the theme changes: a theme switch updates CSS
+	// variables on :root, but every component that reads colours from inline
+	// styles needs a re-render to pick them up.  This bumps a counter on every
+	// theme change, causing the entire React tree to re-render and re-read the
+	// CSS variables at render time.
+	const [_themeTick, setThemeTick] = useState(0);
+	useEffect(() => {
+		return subscribeThemeChange(() => {
+			setThemeTick(t => t + 1);
+		});
+	}, []);
 
 	// One value, not two: the scrubber derives its coordinate system from both,
 	// so applying either alone draws the chart against a range it doesn't match.
@@ -1667,6 +1694,7 @@ export const App = () => {
 	const phone = useIsPhone();
 	const [phoneTab, setPhoneTab] = useState<PhoneTab>('board');
 	const [devicesOpen, setDevicesOpen] = useState(false);
+	const [themeSheetOpen, setThemeSheetOpen] = useState(false);
 
 	// The phone's Activity tab is the log, so it is open while that tab shows:
 	// the log only loads its lines while open.
@@ -2592,6 +2620,10 @@ export const App = () => {
 						<DevicesSheet onClose={() => setDevicesOpen(false)} />
 					)}
 
+					{themeSheetOpen && (
+						<ThemeSheet onClose={() => setThemeSheetOpen(false)} />
+					)}
+
 					{commandPalette.open && (
 						<CommandPalette
 							commands={commands}
@@ -2609,6 +2641,7 @@ export const App = () => {
 						onToggleLog={() => setLogOpen(!logOpen)}
 						onOpenCommands={() => commandPalette.setOpen(true)}
 						onOpenDevices={() => setDevicesOpen(true)}
+						onOpenTheme={() => setThemeSheetOpen(true)}
 					/>
 					<div className="ome-window main active">
 						<div

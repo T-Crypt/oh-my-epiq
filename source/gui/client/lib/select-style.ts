@@ -18,7 +18,7 @@ export const selectTriggerStyle = (
 	justifyContent: 'space-between',
 	gap: 6,
 	boxSizing: 'border-box',
-	background: 'rgba(208, 223, 255, 0.08)',
+	background: 'var(--o-selection)',
 	// None, but padded as though there were, so it sits at the same height as
 	// the bordered toggles on either side.
 	border: 'none',
@@ -57,12 +57,13 @@ export const popoverStyle: React.CSSProperties = {
 	minWidth: 178,
 	// Slightly sheer over a blur, so what it covers stays legible beneath it
 	// rather than being covered outright.
-	background: 'rgba(21, 26, 36, 0.88)',
+	background: 'var(--o-bg-dark)',
 	backdropFilter: 'blur(12px)',
 	WebkitBackdropFilter: 'blur(12px)',
 	border: `1px solid ${GUI_THEME.line}`,
 	borderRadius: 8,
-	boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45)',
+	// Shadow that works on both dark and light themes.
+	boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
 	// Above the scrubber's dots and needle, which sit at 1 and 2.
 	zIndex: 30,
 	whiteSpace: 'nowrap',

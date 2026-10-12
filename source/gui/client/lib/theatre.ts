@@ -322,14 +322,28 @@ export const THEATRE_CARD_IN_ANIMATION = 'omeTheatreCardIn 260ms ease-out';
 // The spotlight on the ticket an event just landed on. Web-animation frames
 // rather than a keyframes rule: the card's own entrance owns its `animation`
 // property, and this has to be able to run twice in a row on one card.
+import {resolvePalette} from './theme.js';
+
+const _t = resolvePalette();
+const _tc = _t.colors;
+function _hexRgb(hex: string | undefined): string {
+	if (!hex) return '0, 0, 0';
+	const h = hex.replace('#', '');
+	return `${Number.parseInt(h.slice(0, 2), 16)}, ${Number.parseInt(
+		h.slice(2, 4),
+		16,
+	)}, ${Number.parseInt(h.slice(4, 6), 16)}`;
+}
+const _accent = _hexRgb(_tc.accent);
+
 export const THEATRE_FLASH_FRAMES: Keyframe[] = [
 	{
-		boxShadow: '0 0 0 0 rgba(118, 212, 255, 0.6)',
-		background: 'rgba(118, 212, 255, 0.24)',
+		boxShadow: `0 0 0 0 rgba(${_accent}, 0.6)`,
+		background: `rgba(${_accent}, 0.24)`,
 	},
 	{
-		boxShadow: '0 0 0 12px rgba(118, 212, 255, 0)',
-		background: 'rgba(118, 212, 255, 0)',
+		boxShadow: `0 0 0 12px rgba(${_accent}, 0)`,
+		background: `rgba(${_accent}, 0)`,
 	},
 ];
 

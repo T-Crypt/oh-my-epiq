@@ -9,6 +9,12 @@
 
 import {GUI_THEME} from './gui-theme';
 import {menuBlueGrey} from './select-style';
+import {resolvePalette} from './theme';
+
+const _t = resolvePalette();
+const _c = _t.colors;
+// COMMENT_YELLOW: bright yellow for comments, 14.5:1 on dark, 12.2:1 on green.
+export const COMMENT_YELLOW = _c.bright_yellow ?? '#ffe066';
 
 // One size for every stat, so a row of them is a row of equal squares.
 export const STAT_SIZE = 116;
@@ -152,14 +158,3 @@ export const SERIES_REST = GUI_THEME.dim2;
 
 export const seriesColor = (index: number): string =>
 	SERIES[index] ?? SERIES_REST;
-
-/**
- * What a comment is, wherever one is drawn: the yellow the diff paints comment
- * lines and the yellow the comment bar fills with.
- *
- * Defined here rather than beside the diff theme so both sides read one value
- * — a bar that disagreed with the file it describes would be worse than no bar.
- * Bright on purpose: 14.5:1 against the code background, and still 12.2:1 on
- * the green of an added row.
- */
-export const COMMENT_YELLOW = '#ffe066';

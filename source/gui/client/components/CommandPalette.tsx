@@ -171,7 +171,7 @@ export const CommandPalette = ({
 			style={{
 				position: 'fixed',
 				inset: 0,
-				background: 'rgba(0, 0, 0, 0.35)',
+				background: GUI_THEME.scrim,
 				backdropFilter: 'blur(1px)',
 				display: 'flex',
 				alignItems: 'flex-start',
@@ -191,7 +191,7 @@ export const CommandPalette = ({
 					background: GUI_THEME.panel,
 					border: `1px solid ${GUI_THEME.edge}`,
 					borderRadius: 8,
-					boxShadow: '0 16px 48px rgba(0, 0, 0, 0.55)',
+					boxShadow: `0 16px 48px ${GUI_THEME.shadow}`,
 					overflow: 'hidden',
 				}}
 			>

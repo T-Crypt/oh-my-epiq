@@ -79,6 +79,16 @@ export const IconClose = () => (
 	</Icon>
 );
 
+export const IconPalette = () => (
+	<Icon>
+		<circle cx="12" cy="12" r="9" />
+		<circle cx="9" cy="10" r="1.5" fill="currentColor" />
+		<circle cx="15" cy="10" r="1.5" fill="currentColor" />
+		<circle cx="11" cy="15" r="1.5" fill="currentColor" />
+		<circle cx="16" cy="15" r="1.5" fill="currentColor" />
+	</Icon>
+);
+
 // ─── Desktop: the rail ────────────────────────────────────────────────
 
 export const Rail = ({
@@ -86,11 +96,13 @@ export const Rail = ({
 	onToggleLog,
 	onOpenCommands,
 	onOpenDevices,
+	onOpenTheme,
 }: {
 	logOpen: boolean;
 	onToggleLog: () => void;
 	onOpenCommands: () => void;
 	onOpenDevices: () => void;
+	onOpenTheme: () => void;
 }) => (
 	<nav className="rail" aria-label="OME">
 		<span className="rail-brand" aria-hidden="true">
@@ -115,6 +127,9 @@ export const Rail = ({
 			<IconSearch />
 		</button>
 		<div className="rail-fill" />
+		<button className="rail-button" title="Theme" onClick={onOpenTheme}>
+			<IconPalette />
+		</button>
 		<button
 			className="rail-button"
 			title="Devices: open this board on a phone"

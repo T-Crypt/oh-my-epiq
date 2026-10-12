@@ -276,11 +276,11 @@ export const Aside = forwardRef<
 				...(bottom && !isFullscreen
 					? {
 							borderTop: `1px solid ${GUI_THEME.edge}`,
-							boxShadow: '0 -10px 24px rgba(0, 0, 0, 0.45)',
+							boxShadow: `0 -10px 24px ${GUI_THEME.shadow}`,
 					  }
 					: {
 							borderLeft: `1px solid ${GUI_THEME.edge}`,
-							boxShadow: '-10px 0 24px rgba(0, 0, 0, 0.45)',
+							boxShadow: `-10px 0 24px ${GUI_THEME.shadow}`,
 					  }),
 				background: GUI_THEME.panel,
 				// None at the top: the header band below carries the inset that puts

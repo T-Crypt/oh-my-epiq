@@ -10,6 +10,10 @@
 import {registerCustomTheme, resolveTheme} from '@pierre/diffs';
 import {COMMENT_YELLOW} from './issue-stats.style';
 
+// The diff highlighter is third-party; github-dark is the only base we ship.
+// A light-mode variant (github-light) would need its own custom theme and would
+// only be useful when the user has already switched to a light palette. That is
+// a separate ticket: the diff viewer is a tool panel, not the general chrome.
 const BASE_THEME = 'github-dark';
 
 export const OME_DIFF_THEME = 'ome-dark';

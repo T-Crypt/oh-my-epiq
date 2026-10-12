@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {CONTENT_FONT, GUI_THEME, TEXT} from '../lib/gui-theme';
+import {tagColorToThemeHue} from '../lib/tag-colors';
 import {
 	GuiContributor,
 	GuiUser,
@@ -758,37 +759,45 @@ export const IssueDetails = ({
 								{issue.tags.length === 0 ? (
 									<Empty>No tags</Empty>
 								) : (
-									issue.tags.map(tag => (
-										<Button
-											key={tag.id}
-											variant="chip"
-											disabled={issue.readonly}
-											onClick={() => onRemoveTag(issue.id, tag.id)}
-											title="Remove tag"
-											tint={tag.color}
-											style={{color: tag.color}}
-										>
-											{tag.name} {!issue.readonly && '×'}
-										</Button>
-									))
+									issue.tags.map(tag => {
+										const hue = tagColorToThemeHue(tag.color);
+										const tagTextColor = hue ? `var(--o-${hue})` : tag.color;
+										return (
+											<Button
+												key={tag.id}
+												variant="chip"
+												disabled={issue.readonly}
+												onClick={() => onRemoveTag(issue.id, tag.id)}
+												title="Remove tag"
+												tint={tag.color}
+												style={{color: tagTextColor}}
+											>
+												{tag.name} {!issue.readonly && '×'}
+											</Button>
+										);
+									})
 								)}
 							</ChipRow>
 
 							{addingTag && (
 								<ChipRow>
-									{availableTags.map(tag => (
-										<Button
-											key={tag.id}
-											variant="chip"
-											disabled={issue.readonly}
-											onClick={() => onAddTag(issue.id, tag.name)}
-											title="Add existing tag"
-											tint={tag.color}
-											style={{color: tag.color, opacity: 0.55}}
-										>
-											+ {tag.name}
-										</Button>
-									))}
+									{availableTags.map(tag => {
+										const hue = tagColorToThemeHue(tag.color);
+										const tagTextColor = hue ? `var(--o-${hue})` : tag.color;
+										return (
+											<Button
+												key={tag.id}
+												variant="chip"
+												disabled={issue.readonly}
+												onClick={() => onAddTag(issue.id, tag.name)}
+												title="Add existing tag"
+												tint={tag.color}
+												style={{color: tagTextColor, opacity: 0.55}}
+											>
+												+ {tag.name}
+											</Button>
+										);
+									})}
 								</ChipRow>
 							)}
 

@@ -30,6 +30,11 @@ Every upstream Epiq feature, plus the operator and agent surface:
   `ref`; adding a tag or an assignee a ticket already has is an idempotent
   no-op; removals accept a name; errors say what to pass. The footguns and the
   four admin tools agents never call are pruned from the surface.
+- **A theme switcher** — 23 bundled palettes ported from Oh-My-Pocket, opened
+  from the rail or phone tab bar. Picking one updates CSS variables on `:root`
+  and re-reads every JavaScript-driven colour at render time, so the whole
+  board repaints instantly without a reload. A pre-paint guard stops any flash
+  of the wrong look on first load.
 - **The Oh-My-Pocket look** — the browser board wears the same shell as
   [Oh-My-Pocket](https://github.com/T-Crypt/oh-my-pocket): the Tokyo Night
   palette, square tiles, 2px window borders with Hyprland's gaps, no glow, a
@@ -154,7 +159,10 @@ ome gui
 ```
 
 On a machine with no display, or with `--no-open`, it serves without opening a
-browser; open the URL it prints. The board serves on loopback by default
+browser; open the URL it prints. Without a terminal attached it also stays shut,
+so a script or an agent driving it never takes your desktop; `OME_GUI_OPEN=1`
+opens one anyway (a keybind has no terminal), and `OME_GUI_NO_OPEN=1` never
+opens one whatever else is set. The board serves on loopback by default
 (port 3710). To open it from a phone or another machine, see
 [Remote and mobile](#remote-and-mobile).
 

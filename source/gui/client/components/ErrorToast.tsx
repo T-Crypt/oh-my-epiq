@@ -26,7 +26,7 @@ export const ErrorToast = ({message, onDismiss}: Props) => (
 			border: `1px solid ${GUI_THEME.red}`,
 			borderRadius: 8,
 			padding: '10px 12px',
-			boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
+			boxShadow: `0 4px 16px ${GUI_THEME.shadow}`,
 		}}
 	>
 		<span style={{flex: 1, minWidth: 0, overflowWrap: 'anywhere'}}>
