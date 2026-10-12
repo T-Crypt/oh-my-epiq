@@ -33,17 +33,53 @@ describe('openBrowser', () => {
 
 describe('canOpenBrowser', () => {
 	it('opens on macOS and Windows', () => {
-		expect(canOpenBrowser('darwin', {})).toBe(true);
-		expect(canOpenBrowser('win32', {})).toBe(true);
+		expect(canOpenBrowser('darwin', {}, true)).toBe(true);
+		expect(canOpenBrowser('win32', {}, true)).toBe(true);
 	});
 
 	it('opens on Linux only with a display', () => {
-		expect(canOpenBrowser('linux', {})).toBe(false);
-		expect(canOpenBrowser('linux', {DISPLAY: ':0'})).toBe(true);
-		expect(canOpenBrowser('linux', {WAYLAND_DISPLAY: 'wayland-0'})).toBe(true);
+		expect(canOpenBrowser('linux', {}, true)).toBe(false);
+		expect(canOpenBrowser('linux', {DISPLAY: ':0'}, true)).toBe(true);
+		expect(canOpenBrowser('linux', {WAYLAND_DISPLAY: 'wayland-0'}, true)).toBe(
+			true,
+		);
 	});
 
 	it('opens without a display when $BROWSER names one, as on WSL', () => {
-		expect(canOpenBrowser('linux', {BROWSER: 'wslview'})).toBe(true);
+		expect(canOpenBrowser('linux', {BROWSER: 'wslview'}, true)).toBe(true);
+	});
+
+	// A script's pipe and an agent's spawn are not a person at a terminal, and
+	// the window they must not open is the operator's own browser.
+	it('refuses when the caller is not interactive', () => {
+		expect(canOpenBrowser('linux', {DISPLAY: ':0'}, false)).toBe(false);
+		expect(canOpenBrowser('darwin', {}, false)).toBe(false);
+	});
+
+	// A pty hands the launcher a tty, so this is the switch that stops a harness
+	// that would otherwise pass the interactivity test.
+	it('refuses when $OME_GUI_NO_OPEN is set, however interactive', () => {
+		expect(
+			canOpenBrowser('linux', {DISPLAY: ':0', OME_GUI_NO_OPEN: '1'}, true),
+		).toBe(false);
+		expect(canOpenBrowser('darwin', {OME_GUI_NO_OPEN: '1'}, true)).toBe(false);
+	});
+
+	// A keybind launches with no terminal attached, and that is still a person
+	// asking for the board.
+	it('opens without a tty when $OME_GUI_OPEN is set', () => {
+		expect(
+			canOpenBrowser('linux', {DISPLAY: ':0', OME_GUI_OPEN: '1'}, false),
+		).toBe(true);
+	});
+
+	it('lets $OME_GUI_NO_OPEN win over $OME_GUI_OPEN', () => {
+		expect(
+			canOpenBrowser(
+				'linux',
+				{DISPLAY: ':0', OME_GUI_OPEN: '1', OME_GUI_NO_OPEN: '1'},
+				true,
+			),
+		).toBe(false);
 	});
 });
