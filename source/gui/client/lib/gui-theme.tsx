@@ -38,7 +38,9 @@ export const GUI_THEME = {
 	line: 'rgba(169, 177, 214, 0.13)',
 	// The detail panel's own outer edge. `line` divides sections inside one
 	// surface; this one has to hold the panel apart from the board behind it.
-	edge: 'rgba(169, 177, 214, 0.25)',
+	// Kept above 0.4 (panel-edge.pw.ts): at the section rule's strength the
+	// panel was hard to pick out against the board.
+	edge: 'rgba(169, 177, 214, 0.45)',
 	// The same edge over the chrome's darker ground, where a translucent line
 	// lands on more contrast and reads brighter at the same value.
 	edgeOnChrome: 'rgba(169, 177, 214, 0.16)',

@@ -24,18 +24,23 @@ const edges = (page: Page) =>
 		asideLeft: number;
 		mainBottom: number;
 		mainRight: number;
+		rowLeft: number;
 	}>(`
 		(() => {
 			const main = document.querySelector('main');
 			const aside = document.querySelector('aside');
 			const m = main.getBoundingClientRect();
 			const a = aside.getBoundingClientRect();
+			// The row the board and the panel share. Its left edge is where "the
+			// full width" starts: the rail and the window's gap sit before it.
+			const row = aside.parentElement.getBoundingClientRect();
 
 			return {
 				asideTop: Math.round(a.top),
 				asideLeft: Math.round(a.left),
 				mainBottom: Math.round(m.bottom),
 				mainRight: Math.round(m.right),
+				rowLeft: Math.round(row.left),
 			};
 		})()
 	`);
@@ -54,13 +59,21 @@ test('the panel moves under the board and back beside it', async ({
 	await dockTo(page, 'bottom');
 
 	// Docked bottom: the same seam, rotated. The board now runs full width.
-	await expect.poll(async () => (await edges(page)).asideLeft).toBe(0);
+	await expect
+		.poll(async () => {
+			const at = await edges(page);
+			return at.asideLeft - at.rowLeft;
+		})
+		.toBe(0);
 	const under = await edges(page);
 	expect(under.mainBottom).toBe(under.asideTop);
 
 	await dockTo(page, 'right');
 	await expect
-		.poll(async () => (await edges(page)).asideLeft)
+		.poll(async () => {
+			const at = await edges(page);
+			return at.asideLeft - at.rowLeft;
+		})
 		.toBeGreaterThan(0);
 
 	expect(pageErrors).toEqual([]);
@@ -93,7 +106,12 @@ test('the dock side survives a reload', async ({page, appUrl, pageErrors}) => {
 	await page.reload();
 	await expect(page.locator('aside')).toBeVisible();
 
-	await expect.poll(async () => (await edges(page)).asideLeft).toBe(0);
+	await expect
+		.poll(async () => {
+			const at = await edges(page);
+			return at.asideLeft - at.rowLeft;
+		})
+		.toBe(0);
 
 	expect(pageErrors).toEqual([]);
 });

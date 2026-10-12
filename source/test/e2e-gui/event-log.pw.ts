@@ -5,6 +5,7 @@ import type {Page} from '@playwright/test';
 import {expect, test} from './fixtures.js';
 import {trackWithWindow} from './track.js';
 import {openBoard, returnToLive} from './live-board.js';
+import {themeRgb} from './theme-colour.js';
 
 // The log draws the commits the chart plots, and the chart opens on the ones
 // linked to a ticket. A test reading the seeded repository's own commits — none
@@ -205,7 +206,7 @@ test('the log obeys the bar\u2019s own filters', async ({
 
 	// Commits go with the box that draws them.
 	const code = page.getByTestId('show-commits');
-	const commitColour = 'rgb(140, 233, 154)';
+	const commitColour = themeRgb('green');
 	const greens = async () =>
 		(
 			(await page.evaluate(
@@ -504,6 +505,18 @@ test('the log is dragged to size, and keeps its width', async ({
 	// is what this grabs: measured mid-arrival, the handle is at a place it has
 	// already left by the time the pointer gets there.
 	await expect(log).toHaveAttribute('data-settled', 'true');
+	// And still: `data-settled` flips on the reveal's timer, which can land a
+	// frame before the width transition does, and a pane measured at 439.7 of
+	// its 441 reads as a drag that went 121px. Two equal reads in a row.
+	let last = -1;
+	await expect
+		.poll(async () => {
+			const width = (await log.boundingBox())!.width;
+			const still = width === last;
+			last = width;
+			return still;
+		})
+		.toBe(true);
 	const before = (await log.boundingBox())!;
 
 	const handle = (await page.getByTestId('event-log-resize').boundingBox())!;
