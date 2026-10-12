@@ -13,9 +13,9 @@ coverage
 .ome/project.json
 .DS_Store
 
-# [ome]: operator-only docs, local and never committed
-docs/VISION.md
-docs/PROMPT.md
+# [ome]: operator-only docs and agent worktrees, local and never committed
+docs/
+.claude/worktrees/
 
 # playwright
 test-results
