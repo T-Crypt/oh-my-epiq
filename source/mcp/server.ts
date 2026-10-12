@@ -72,17 +72,17 @@ const exclusiveTool =
 // Sent to every client on connect. This is the whole board workflow an agent
 // needs: the server works on its own, with no skill installed in the project.
 const OME_INSTRUCTIONS = [
-	'OME is a git-backed issue board. Use these tools for every board read and write; never edit the state branch, its worktree or the event log by hand.',
-	'Take an identity before your first write: ome_actor_assume with provider/name (e.g. claude/peter), reusing one from ome_contributor_list.',
-	'Only ome_sync touches the network. Call it to see remote changes and to publish yours.',
-	'Prefix commit subjects with the ticket ref returned by these tools; never derive the ref from the id.',
-	'Keep tickets small and their lane, tags and description current. A small follow-up goes on its existing ticket.',
-	'When a ticket is done, add a comment starting with "Solution:". Ask the user before closing tickets, and file decisions that are theirs as a ticket tagged human-input-needed.',
+	'OME is a git-backed issue board. Use these tools for every read and write — never edit the state branch, its worktree or the event log by hand.',
+	'Take an identity first: ome_actor_assume with provider/name (e.g. claude/peter). Reuse one from ome_contributor_list.',
+	'Only ome_sync touches the network. Call it on demand to pull or publish.',
+	'Prefix commit subjects with the ticket ref returned by these tools.',
+	'Keep tickets small; put a follow-up on its existing ticket.',
+	'When done, add a comment starting with "Solution:". Ask before closing.',
 ].join('\n');
 
-// When true, administrative tools are absent from the surface.
-// Set OME_MCP_GATED=true to enable gating.
-const GATED = process.env['OME_MCP_GATED'] === 'true';
+// When false, only the core tool set is available. Set OME_MCP_FULL=true
+// to enable the full surface including administrative tools.
+const FULL = process.env['OME_MCP_FULL'] === 'true';
 
 export const createMcpServer = () => {
 	const server = new McpServer(
@@ -93,9 +93,18 @@ export const createMcpServer = () => {
 		{instructions: OME_INSTRUCTIONS},
 	);
 
-	const registerGated = (name: string, desc: string, schema: z.ZodTypeAny, fn: unknown) => {
-		if (GATED) return;
-		server.registerTool(name, {description: desc, inputSchema: schema}, exclusiveTool(fn as never));
+	const registerFull = (
+		name: string,
+		desc: string,
+		schema: z.ZodTypeAny,
+		fn: unknown,
+	) => {
+		if (!FULL) return;
+		server.registerTool(
+			name,
+			{description: desc, inputSchema: schema},
+			exclusiveTool(fn as never),
+		);
 	};
 
 	// `ome_state_get` is deliberately not registered: it dumps the whole board
@@ -162,7 +171,7 @@ export const createMcpServer = () => {
 		exclusiveTool(listBoards),
 	);
 
-	registerGated(
+	registerFull(
 		'ome_board_create',
 		'Create an OME board. It comes out without swimlanes; add them with ome_swimlane_create. Refused while time travelling.',
 		z.object({
@@ -184,7 +193,7 @@ export const createMcpServer = () => {
 		exclusiveTool(listSwimlanes),
 	);
 
-	registerGated(
+	registerFull(
 		'ome_swimlane_create',
 		'Create an OME swimlane on a board',
 		z.object({
@@ -195,7 +204,7 @@ export const createMcpServer = () => {
 		createSwimlane,
 	);
 
-	registerGated(
+	registerFull(
 		'ome_swimlane_title_edit',
 		'Edit an OME swimlane title',
 		z.object({
@@ -206,7 +215,7 @@ export const createMcpServer = () => {
 		editSwimlaneTitle,
 	);
 
-	registerGated(
+	registerFull(
 		'ome_board_title_edit',
 		'Edit an OME board title. Refused while time travelling.',
 		z.object({
@@ -244,7 +253,7 @@ export const createMcpServer = () => {
 		exclusiveTool(moveSwimlane),
 	);
 
-	registerGated(
+	registerFull(
 		'ome_swimlane_delete',
 		'Delete (archive) an OME swimlane. This also archives every issue contained in it.',
 		z.object({
@@ -286,9 +295,7 @@ export const createMcpServer = () => {
 				issueId: z.string().min(1),
 				title: z.string().min(1).max(MAX_TITLE_LENGTH).optional(),
 				description: z.string().max(MAX_DESCRIPTION_LENGTH).optional(),
-				tagsToAdd: z
-					.array(z.string().max(MAX_TAG_NAME_LENGTH))
-					.optional(),
+				tagsToAdd: z.array(z.string().max(MAX_TAG_NAME_LENGTH)).optional(),
 				tagsToRemove: z.array(z.string()).optional(),
 				assigneesToAdd: z.array(z.string()).optional(),
 				assigneesToRemove: z.array(z.string()).optional(),
@@ -313,7 +320,7 @@ export const createMcpServer = () => {
 		exclusiveTool(getBoardContributors),
 	);
 
-	registerGated(
+	registerFull(
 		'ome_contributor_remove',
 		'Remove an external contributor from the assignee suggestion lists. Their id and every reference to it survive, so existing assignments stay intact and the event log is untouched. Refused for anyone who has authored events, since their name is in the log regardless.',
 		z.object({
@@ -323,7 +330,7 @@ export const createMcpServer = () => {
 		tombstoneContributor,
 	);
 
-	registerGated(
+	registerFull(
 		'ome_tag_remove',
 		'Delete a tag from the whole workspace. It disappears from every ticket, picker and filter, but its id and history stay in the event log, and the name is free for a new tag.',
 		z.object({
@@ -333,7 +340,7 @@ export const createMcpServer = () => {
 		tombstoneTag,
 	);
 
-	registerGated(
+	registerFull(
 		'ome_tag_restore',
 		'Put back a tag deleted with ome_tag_remove, on every ticket that still carried it.',
 		z.object({
@@ -343,7 +350,7 @@ export const createMcpServer = () => {
 		restoreTag,
 	);
 
-	registerGated(
+	registerFull(
 		'ome_contributor_restore',
 		'Put a contributor removed with ome_contributor_remove back into the suggestion lists, under the name they were created with.',
 		z.object({
@@ -366,7 +373,7 @@ export const createMcpServer = () => {
 		exclusiveTool(addIssueComment),
 	);
 
-	registerGated(
+	registerFull(
 		'ome_issue_attachment_add',
 		'Attach an image file to an OME issue. Returns `markdown` — paste it into a comment or description body to render the image inline.',
 		z.object({
@@ -470,8 +477,6 @@ export const createMcpServer = () => {
 		exclusiveTool(closeIssue),
 	);
 
-
-
 	server.registerTool(
 		'ome_actor_assume',
 		{
@@ -489,7 +494,7 @@ export const createMcpServer = () => {
 	// call it (zero uses mined from session logs), the operator's GUI does. The
 	// functions stay exported from api/emails.js for the websocket.
 
-	registerGated(
+	registerFull(
 		'ome_project_init',
 		'Set up a new OME board in a git repository without the TUI. Runs in the repository at repoRoot (default: the current directory), which may carry uncommitted work: init commits only .ome/project.json and .gitignore, and refuses only if those (or anything under .ome/) already have changes. The first time on a machine it also records the user\'s setup: ask the user for userName (how they want to appear on the board), preferredEditor (e.g. "vim" or "code --wait") and autoSync (whether the TUI and GUI sync with the remote on their own) and pass them here; called without them it fails naming what is still missing, keeping whatever was given. It fills in answers the machine lacks and refuses to change ones it has. Pass the user\'s name, never your own agent identity. Commits the state branch and .ome/project.json and tries to push both; a push that fails is a warning, not an error. The board is titled boardTitle (default: the repository folder name) and gets the swimlanes listed in swimlanes, in order; the reply carries the board id and each lane id. Afterwards the other tools work in that repository, and calls that leave repoRoot off mean it.',
 		z.object({
@@ -503,7 +508,7 @@ export const createMcpServer = () => {
 		initProjectTool,
 	);
 
-	registerGated(
+	registerFull(
 		'ome_skill_install',
 		'Optional, and only when the user asks for it: write the longer OME workflow skill into this clone at .claude/skills/ome/SKILL.md. The board does not need it. The file is local to the clone and added to .git/info/exclude, so it is never committed. Refuses to overwrite a differing file unless force is true; an identical file is left alone.',
 		z.object({

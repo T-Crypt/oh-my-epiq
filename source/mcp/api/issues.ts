@@ -12,7 +12,11 @@ import {
 } from '../../lib/board/board-events.model.js';
 import {resolveReopenParentFromLog} from '../../lib/board/log-utils.js';
 import {CLOSED_SWIMLANE_ID} from '../../lib/board/static-ids.js';
-import {isTicketNode, isSwimlaneNode, Ticket} from '../../lib/model/context.model.js';
+import {
+	isTicketNode,
+	isSwimlaneNode,
+	Ticket,
+} from '../../lib/model/context.model.js';
 import {AppState} from '../../lib/model/app-state.model.js';
 import {identityOf} from '../../lib/model/identity.js';
 import {
@@ -138,7 +142,9 @@ type UpdateIssueInput = ToolInput & {
  * ticket meant listing the whole board and filtering, and on a board of any
  * age that response is large enough to be unusable for reading one field.
  */
-export const getIssue = async (input: GetIssueInput) => {
+export const getIssue = async (
+	input: GetIssueInput,
+): Promise<Result<ApiIssueBrief | ApiIssueDetail>> => {
 	const bootResult = await bootLocal(input.repoRoot);
 	if (isFail(bootResult)) return bootResult;
 
@@ -177,25 +183,22 @@ export const getIssue = async (input: GetIssueInput) => {
 	const view = input.view ?? 'brief';
 
 	if (view === 'brief') {
-		return succeeded(
-			'Found issue',
-			{
-				id: issue.id,
-				ref: nodeRef(issue.id),
-				title: sanitizeInlineText(issue.title),
-				swimlane: sanitizeInlineText(
-					(issue.parentNodeId
-						? stateResult.value.nodes[issue.parentNodeId]?.title ?? ''
-						: ''),
-				),
-				tags: getIssueTags(issue).map(t => t.name),
-				assignees: getIssueAssignees(issue).map(a => a.name),
-				commentCount: getIssueComments(issue.id).length,
-				noteCount: getIssueNotes(issue.id).length,
-				createdAt: ulidTimeMs(issue.id),
-				enteredLaneAt: laneEntryTime(issue.log ?? [], ulidTimeMs(issue.id)),
-			} satisfies ApiIssueBrief,
-		);
+		return succeeded('Found issue', {
+			id: issue.id,
+			ref: nodeRef(issue.id),
+			title: sanitizeInlineText(issue.title),
+			swimlane: sanitizeInlineText(
+				issue.parentNodeId
+					? stateResult.value.nodes[issue.parentNodeId]?.title ?? ''
+					: '',
+			),
+			tags: getIssueTags(issue).map(t => t.name),
+			assignees: getIssueAssignees(issue).map(a => a.name),
+			commentCount: getIssueComments(issue.id).length,
+			noteCount: getIssueNotes(issue.id).length,
+			createdAt: ulidTimeMs(issue.id),
+			enteredLaneAt: laneEntryTime(issue.log ?? [], ulidTimeMs(issue.id)),
+		} satisfies ApiIssueBrief);
 	}
 
 	return succeeded('Found issue', {
@@ -225,7 +228,9 @@ export function listIssues(
 export function listIssues(
 	input: ListIssuesInput & {view: 'brief'},
 ): Promise<Result<ApiIssueBrief[]>>;
-export function listIssues(input: ListIssuesInput): Promise<Result<ApiIssue[] | ApiIssueBrief[]>>;
+export function listIssues(
+	input: ListIssuesInput,
+): Promise<Result<ApiIssue[] | ApiIssueBrief[]>>;
 export async function listIssues(
 	input: ListIssuesInput,
 ): Promise<Result<ApiIssue[] | ApiIssueBrief[]>> {
@@ -275,17 +280,22 @@ export async function listIssues(
 	if (!isFull) {
 		return succeeded(
 			'Listed issues',
-			tickets.map(
-				n =>
-					({
-						id: n.id,
-						ref: nodeRef(n.id),
-						title: sanitizeInlineText(n.title),
-						swimlane: swimlaneTitle(n),
-						tags: getIssueTags(n).map(tag => tag.name),
-						assignees: getIssueAssignees(n).map(a => a.name),
-					} satisfies ApiIssueBrief),
-			),
+			tickets.map(n => {
+				const comments = getIssueComments(n.id);
+				const notes = getIssueNotes(n.id);
+				return {
+					id: n.id,
+					ref: nodeRef(n.id),
+					title: sanitizeInlineText(n.title),
+					swimlane: swimlaneTitle(n),
+					tags: getIssueTags(n).map(tag => tag.name),
+					assignees: getIssueAssignees(n).map(a => a.name),
+					commentCount: comments.length,
+					noteCount: notes.length,
+					createdAt: ulidTimeMs(n.id),
+					enteredLaneAt: laneEntryTime(n.log ?? [], ulidTimeMs(n.id)),
+				} satisfies ApiIssueBrief;
+			}),
 		);
 	}
 
@@ -297,7 +307,7 @@ export async function listIssues(
 					id: n.id,
 					ref: nodeRef(n.id),
 					title: sanitizeInlineText(n.title),
-					description: n.props.description ?? '',
+					description: n.props?.description ?? '',
 					createdAt: ulidTimeMs(n.id),
 					enteredLaneAt: laneEntryTime(n.log ?? [], ulidTimeMs(n.id)),
 					parentNodeId: n.parentNodeId!,
@@ -1088,7 +1098,9 @@ const resolveAssigneeToken = (
 
 	if (matches.length > 1) {
 		return failed(
-			`"${trimmed}" matches ${matches.length} contributors (${matches.map(c => c.id).join(', ')}). Pass an id.`,
+			`"${trimmed}" matches ${matches.length} contributors (${matches
+				.map(c => c.id)
+				.join(', ')}). Pass an id.`,
 		);
 	}
 
@@ -1129,7 +1141,8 @@ const resolveLaneId = (
 		);
 	});
 
-	if (refMatches.length === 1) return succeeded('Found swimlane', refMatches[0]!);
+	if (refMatches.length === 1)
+		return succeeded('Found swimlane', refMatches[0]!);
 
 	// Name match.
 	const nameMatches = Object.values(nodes).filter(n => {
@@ -1144,11 +1157,11 @@ const resolveLaneId = (
 
 	if (nameMatches.length > 1) {
 		return failed(
-			`"${trimmed}" matches ${nameMatches.length} swimlanes: ${nameMatches.map(n => `${n.title} (${n.id})`).join(', ')}. Use an id or ref.`,
+			`"${trimmed}" matches ${nameMatches.length} swimlanes: ${nameMatches
+				.map(n => `${n.title} (${n.id})`)
+				.join(', ')}. Use an id or ref.`,
 		);
 	}
 
-	return failed(
-		`Swimlane not found — pass the id, ref, or name`,
-	);
+	return failed(`Swimlane not found — pass the id, ref, or name`);
 };
