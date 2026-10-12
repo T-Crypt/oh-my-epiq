@@ -10,7 +10,11 @@ import {
 	themeVars,
 	varsStyle,
 	THEMES,
-} from '../lib/theme';
+} from '../lib/theme.js';
+import {
+	subscribeThemeChange,
+	notifyThemeChange,
+} from '../lib/theme-subscribe.js';
 
 const DOTS = [
 	'--o-red',
@@ -21,17 +25,11 @@ const DOTS = [
 	'--o-magenta',
 ];
 
-const listeners = new Set<() => void>();
-
-export function subscribeThemeChange(fn: () => void) {
-	listeners.add(fn);
-	return () => {
-		listeners.delete(fn);
-	};
-}
+// Re-export the shared theme-change subscription so the app root can use it.
+export {subscribeThemeChange};
 
 function triggerThemeChange() {
-	for (const fn of listeners) fn();
+	notifyThemeChange();
 }
 
 /** A single theme card: a tiny desktop preview with the theme's colors. */
@@ -46,10 +44,7 @@ function ThemeCard({id, index}: {id: string; index: number}) {
 			);
 		};
 		fn();
-		listeners.add(fn);
-		return () => {
-			listeners.delete(fn);
-		};
+		return subscribeThemeChange(fn);
 	}, [id]);
 
 	const palette = THEMES[id];

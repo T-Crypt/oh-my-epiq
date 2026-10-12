@@ -1,10 +1,8 @@
-// Map a stored tag color (from the TUI palette) to the active theme's hue.
+// Map a stored tag color (hex from the TUI palette) to the active theme's hue.
 // The TUI uses six fixed hues; the theme has the same six under --o-red .. --o-magenta.
 // We match by comparing hue angles and pick the nearest theme hue.
 
-import {resolvePalette} from './theme';
-
-const HUES = [
+export const HUES = [
 	'red',
 	'orange',
 	'yellow',
@@ -13,7 +11,18 @@ const HUES = [
 	'blue',
 	'magenta',
 ] as const;
-type HueKey = (typeof HUES)[number];
+export type HueKey = (typeof HUES)[number];
+
+/** Theme hue angles in degrees — matches the TUI palette ordering. */
+const THEME_HUE_ANGLES: Record<HueKey, number> = {
+	red: 0,
+	orange: 30,
+	yellow: 50,
+	green: 130,
+	cyan: 180,
+	blue: 220,
+	magenta: 280,
+};
 
 function hexToHue(hex: string): number {
 	const h = hex.replace('#', '');
@@ -31,15 +40,22 @@ function hexToHue(hex: string): number {
 	return hAngle * 60;
 }
 
-const THEME_HUE_ANGLES: Record<HueKey, number> = {
-	red: 0,
-	orange: 30,
-	yellow: 50,
-	green: 130,
-	cyan: 180,
-	blue: 220,
-	magenta: 280,
-};
+/**
+ * Given a TUI color name (e.g. 'red'), return the corresponding theme hue key.
+ * Returns null if the name is not recognized.
+ */
+export function resolveTagColorHue(tuiColorName: string): HueKey | null {
+	const mapping: Record<string, HueKey> = {
+		red: 'red',
+		orange: 'orange',
+		yellow: 'yellow',
+		green: 'green',
+		cyan: 'cyan',
+		blue: 'blue',
+		magenta: 'magenta',
+	};
+	return mapping[tuiColorName] ?? null;
+}
 
 /**
  * Given a stored tag color (hex from the TUI palette), return the
@@ -47,21 +63,16 @@ const THEME_HUE_ANGLES: Record<HueKey, number> = {
  * if no theme hue is close enough.
  */
 export function tagColorToThemeHue(tagColor: string): HueKey | null {
-	const theme = resolvePalette();
-	const tc = theme.colors;
 	const tagHue = hexToHue(tagColor);
 
 	let best: HueKey | null = null;
 	let bestDist = 999;
 
 	for (const hue of HUES) {
-		const themeKey = `--o-${hue}`;
-		const cssVar = getComputedStyle(document.documentElement)
-			.getPropertyValue(themeKey)
-			.trim();
-		if (!cssVar || !cssVar.startsWith('#')) continue;
-		const themeHue = hexToHue(cssVar);
-		const dist = Math.abs(tagHue - themeHue);
+		const themeHue = THEME_HUE_ANGLES[hue];
+		// Account for circular distance on the hue wheel
+		const rawDist = Math.abs(tagHue - themeHue);
+		const dist = Math.min(rawDist, 360 - rawDist);
 		if (dist < bestDist) {
 			bestDist = dist;
 			best = hue;

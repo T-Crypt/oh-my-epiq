@@ -718,6 +718,9 @@ export function applyTheme(id: string): void {
 	} catch {
 		// storage full
 	}
+
+	// Notify React subscribers so useTheme() triggers a repaint.
+	notifyThemeChange();
 }
 
 /** Apply a cached look from the FOUC guard (before first paint). */
@@ -742,3 +745,20 @@ export function applyCachedTheme(): void {
 }
 
 export {THEMES, FALLBACK, KEY as THEME_KEY};
+
+// ─── Theme change subscription (module-level, non-React) ─────────
+
+const themeChangeListeners = new Set<() => void>();
+
+/** Subscribe to theme changes. Returns an unsubscribe function. */
+export function subscribeThemeChange(fn: () => void) {
+	themeChangeListeners.add(fn);
+	return () => {
+		themeChangeListeners.delete(fn);
+	};
+}
+
+/** Notify all listeners that the theme changed. */
+export function notifyThemeChange(): void {
+	for (const fn of themeChangeListeners) fn();
+}

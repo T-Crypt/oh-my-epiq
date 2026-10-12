@@ -132,8 +132,9 @@ import {useBoardEditing} from './lib/use-board-editing';
 import {useSwimlaneEditing} from './lib/use-swimlane-editing';
 import {createHistoryBuffer} from './lib/history-buffer';
 import {SyncStatus} from './lib/gui-sync-statusmodel';
-import {GUI_THEME, UI_FONT} from './lib/gui-theme';
-import {savedThemeId, applyTheme} from './lib/theme';
+import {GUI_THEME, UI_FONT} from './lib/gui-theme.js';
+import {savedThemeId, applyTheme} from './lib/theme.js';
+import {subscribeThemeChange} from './lib/theme-subscribe.js';
 import {issueActivityLogEntries} from './lib/event-log';
 import {plural} from './lib/gui-format.helper';
 import {REVEAL_MS, useReveal} from './lib/use-reveal';
@@ -242,6 +243,18 @@ export const App = () => {
 	// inline script in index.html; this picks up any change the guard missed).
 	useEffect(() => {
 		applyTheme(savedThemeId());
+	}, []);
+
+	// Repaint the whole tree when the theme changes: a theme switch updates CSS
+	// variables on :root, but every component that reads colours from inline
+	// styles needs a re-render to pick them up.  This bumps a counter on every
+	// theme change, causing the entire React tree to re-render and re-read the
+	// CSS variables at render time.
+	const [_themeTick, setThemeTick] = useState(0);
+	useEffect(() => {
+		return subscribeThemeChange(() => {
+			setThemeTick(t => t + 1);
+		});
 	}, []);
 
 	// One value, not two: the scrubber derives its coordinate system from both,

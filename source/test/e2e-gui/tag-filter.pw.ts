@@ -95,7 +95,8 @@ test('a bare board link picks up the last selection, and a link wins over it', a
 // The card's tag used to be a hand-rolled button: its own radius, padding, type
 // size and a flat `#ffffff08` fill, while the panel drew the same tag as a
 // washed chip. One component now, and the isolated state — which used to *be*
-// the wash — reads as a step above it instead.
+// the wash — reads as a step above it instead. The tag text follows the theme
+// so it repaints on theme switch.
 test('a card draws its tag as the same washed chip the panel does', async ({
 	page,
 	appUrl,
@@ -130,7 +131,8 @@ test('a card draws its tag as the same washed chip the panel does', async ({
 
 	const [resting, text] = await read();
 	const [, r, g, b, restingAlpha] = rgba.exec(resting) ?? [];
-	expect(`rgb(${r}, ${g}, ${b})`).toBe(text);
+	// Fill is the tag's own colour (washed); text is a theme hue.
+	expect(text).not.toBe(`rgb(${r}, ${g}, ${b})`);
 	expect(Number(restingAlpha)).toBeGreaterThan(0);
 	expect(Number(restingAlpha)).toBeLessThan(0.2);
 

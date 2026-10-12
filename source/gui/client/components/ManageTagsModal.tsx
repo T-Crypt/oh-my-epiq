@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {GuiTag} from '../lib/gui-state.model';
 import {GUI_THEME} from '../lib/gui-theme';
+import {tagColorToThemeHue} from '../lib/tag-colors';
 import {manageRowStyle} from '../lib/manage-row.style';
 import {Button} from './Button';
 import {IconTrash} from './IconTrash';
@@ -87,7 +88,15 @@ export const ManageTagsModal = ({tags, onDelete, onClose}: Props) => {
 								}
 								style={manageRowStyle({armed, hovered})}
 							>
-								<span style={{fontSize: 12, color: tag.color}}>{tag.name}</span>
+								{(() => {
+									const hue = tagColorToThemeHue(tag.color);
+									const tagTextColor = hue ? `var(--o-${hue})` : tag.color;
+									return (
+										<span style={{fontSize: 12, color: tagTextColor}}>
+											{tag.name}
+										</span>
+									);
+								})()}
 
 								<Button
 									variant="ghost"

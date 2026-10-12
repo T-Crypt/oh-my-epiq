@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {GuiComment, GuiIssue} from '../lib/gui-state.model';
 import {GUI_THEME} from '../lib/gui-theme';
+import {tagColorToThemeHue} from '../lib/tag-colors';
 import {
 	THEATRE_CARD_IN_ANIMATION,
 	THEATRE_FLASH_FRAMES,
@@ -336,6 +337,8 @@ export const TicketCard = ({
 					>
 						{ticket.tags.map(tag => {
 							const isolated = tag.id === isolatedTagId;
+							const hue = tagColorToThemeHue(tag.color);
+							const tagTextColor = hue ? `var(--o-${hue})` : tag.color;
 
 							return (
 								<Button
@@ -356,7 +359,7 @@ export const TicketCard = ({
 										event.stopPropagation();
 										onFilterByTag(tag.id);
 									}}
-									style={{color: tag.color}}
+									style={{color: tagTextColor}}
 								>
 									{tag.name}
 								</Button>

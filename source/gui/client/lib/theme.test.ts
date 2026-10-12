@@ -47,7 +47,7 @@ describe('themeIds', () => {
 			'rose-pine',
 			'white',
 		];
-		const lastDark = ids.lastIndexOf(id => !lightIds.includes(id));
+		const lastDark = [...ids].findLastIndex(id => !lightIds.includes(id));
 		const firstLight = ids.indexOf(lightIds[0]);
 		expect(lastDark).toBeLessThan(firstLight);
 	});

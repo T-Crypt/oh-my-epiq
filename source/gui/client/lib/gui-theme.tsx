@@ -23,26 +23,15 @@ export const TEXT = {
 
 // ─── Theme-driven palette ─────────────────────────────────────────
 
-// The chrome's own face. Set once on the tree the app draws into, and again by
-// anything drawn outside it: a window of its own, the screen shown before there
-// is a board, and any popover portalled to the body, which inherits from there
-// rather than from the control it belongs to.
-
 import {resolvePalette} from './theme.js';
 
+// Frozen snapshot of the default palette (tokyo-night), used by e2e colour
+// assertions and by code that does not need a repaint on theme switch.
 const palette = resolvePalette();
-
-// Oh-My-Pocket's palette — Tokyo Night, the theme it ships by default — so the
-// board and the agent harness read as one family on the same phone. Surfaces
-// are the foreground laid over the ground at a few percent, the way Pocket
-// mixes them (ome.css carries the same values as variables); hex rather than
-// variables here because canvases and `${colour}33` alphas read these too.
 
 const c = palette.colors;
 const bg = c['background'] ?? '#1a1b26';
 const fg = c['foreground'] ?? '#a9b1d6';
-// Scrims and shadows: mix the theme's darker background with transparency so
-// they adapt to light themes without a separate light-mode code path.
 const bgDark = c['darker_background'] ?? '#0e0e14';
 
 const hex = (key: string, fallback: string): string => c[key] ?? fallback;
@@ -55,6 +44,11 @@ const shadow = `rgba(${hexToRgb(bgDark)}, ${
 	c['mode'] === 'light' ? 0.35 : 0.45
 })`;
 
+/**
+ * Frozen GUI_THEME for e2e assertions and code that does not need
+ * a repaint on theme switch.  The live values are read at render
+ * time via `resolveThemeColors()` (CSS variables on :root).
+ */
 export const GUI_THEME = {
 	bg: bg,
 	// The instrumentation around the work: the top bar, the timeline and the
