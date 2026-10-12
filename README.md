@@ -287,10 +287,18 @@ For hand-edited clients:
 }
 ```
 
-Tools are namespaced `ome_*` (`ome_issue_create`, `ome_issue_move`,
+Tools are namespaced `ome_*` (`ome_issue_create`, `ome_issue_update`,
 `ome_board_list`, …). Every write accepts a ticket by full id or by `ref`.
 `ome_sync` is the only tool that touches the network; sync is on demand. Take
 an identity (`ome_actor_assume`, `provider/name`) before your first write.
+
+**Core surface by default** — reads, issue create/update/comment/note, sync,
+and assume are always available. Set `OME_MCP_FULL=true` to enable the full
+surface including board/swimlane management, tag/contributor administration,
+attachments, `ome_project_init`, and `ome_skill_install`.
+
+`ome_issue_list` and `ome_issue_get` accept `view:brief` (default) for a
+lean response or `view:full` for descriptions, comments, and notes.
 
 The server sends the board workflow as its MCP instructions, so nothing has to
 be installed in a project. The longer written skill is optional: it lives at

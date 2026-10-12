@@ -12,7 +12,12 @@ import {
 } from '../../lib/board/board-events.model.js';
 import {resolveReopenParentFromLog} from '../../lib/board/log-utils.js';
 import {CLOSED_SWIMLANE_ID} from '../../lib/board/static-ids.js';
-import {isTicketNode, Ticket} from '../../lib/model/context.model.js';
+import {
+	isTicketNode,
+	isSwimlaneNode,
+	Ticket,
+} from '../../lib/model/context.model.js';
+import {AppState} from '../../lib/model/app-state.model.js';
 import {identityOf} from '../../lib/model/identity.js';
 import {
 	failed,
@@ -38,6 +43,8 @@ import {
 import {laneEntryTime} from '../../lib/utils/lane-dwell.js';
 import {nodeRef, nodeRefMatches} from '../../lib/utils/node-ref.js';
 import {sanitizeInlineText} from '../../lib/utils/string.utils.js';
+import {contributorDirectory} from '../../lib/repository/contributor-directory.js';
+import {findEventLogAuthor} from './contributors.js';
 import {
 	ApiBatchOutcome,
 	ApiIssue,
@@ -73,6 +80,7 @@ import {
 	findWritableSwimlane,
 	resolveIssueId,
 } from './node-targets.js';
+import {loadActorNames} from '../../lib/board/board-log.js';
 
 type MoveIssueInput = ToolInput &
 	IssueTargets & {
@@ -87,12 +95,12 @@ type ListIssuesInput = ToolInput & {
 	tag?: string;
 	assignee?: string;
 	query?: string;
-	brief?: boolean;
+	view?: 'brief' | 'full';
 };
 
 type CreateIssueInput = ToolInput & {
 	title: string;
-	parentId: string;
+	parentId?: string;
 	description?: string;
 	tagNames?: string[];
 	assigneeNames?: string[];
@@ -112,6 +120,19 @@ type EditIssueTitleInput = ToolInput & {
 
 type GetIssueInput = ToolInput & {
 	idOrRef: string;
+	view?: 'brief' | 'full';
+};
+
+type UpdateIssueInput = ToolInput & {
+	issueId: string;
+	title?: string;
+	description?: string;
+	tagsToAdd?: string[];
+	tagsToRemove?: string[];
+	assigneesToAdd?: string[];
+	assigneesToRemove?: string[];
+	lane?: string;
+	board?: string;
 };
 
 /**
@@ -121,7 +142,9 @@ type GetIssueInput = ToolInput & {
  * ticket meant listing the whole board and filtering, and on a board of any
  * age that response is large enough to be unusable for reading one field.
  */
-export const getIssue = async (input: GetIssueInput) => {
+export const getIssue = async (
+	input: GetIssueInput,
+): Promise<Result<ApiIssueBrief | ApiIssueDetail>> => {
 	const bootResult = await bootLocal(input.repoRoot);
 	if (isFail(bootResult)) return bootResult;
 
@@ -157,6 +180,27 @@ export const getIssue = async (input: GetIssueInput) => {
 
 	const issue = matches[0] as Ticket;
 
+	const view = input.view ?? 'brief';
+
+	if (view === 'brief') {
+		return succeeded('Found issue', {
+			id: issue.id,
+			ref: nodeRef(issue.id),
+			title: sanitizeInlineText(issue.title),
+			swimlane: sanitizeInlineText(
+				issue.parentNodeId
+					? stateResult.value.nodes[issue.parentNodeId]?.title ?? ''
+					: '',
+			),
+			tags: getIssueTags(issue).map(t => t.name),
+			assignees: getIssueAssignees(issue).map(a => a.name),
+			commentCount: getIssueComments(issue.id).length,
+			noteCount: getIssueNotes(issue.id).length,
+			createdAt: ulidTimeMs(issue.id),
+			enteredLaneAt: laneEntryTime(issue.log ?? [], ulidTimeMs(issue.id)),
+		} satisfies ApiIssueBrief);
+	}
+
 	return succeeded('Found issue', {
 		id: issue.id,
 		ref: nodeRef(issue.id),
@@ -179,9 +223,14 @@ const sameName = (a: string, b: string) =>
 	a.trim().toLowerCase() === b.trim().toLowerCase();
 
 export function listIssues(
-	input: ListIssuesInput & {brief: true},
+	input: ListIssuesInput & {view?: 'full'},
+): Promise<Result<ApiIssue[]>>;
+export function listIssues(
+	input: ListIssuesInput & {view: 'brief'},
 ): Promise<Result<ApiIssueBrief[]>>;
-export function listIssues(input: ListIssuesInput): Promise<Result<ApiIssue[]>>;
+export function listIssues(
+	input: ListIssuesInput,
+): Promise<Result<ApiIssue[] | ApiIssueBrief[]>>;
 export async function listIssues(
 	input: ListIssuesInput,
 ): Promise<Result<ApiIssue[] | ApiIssueBrief[]>> {
@@ -226,20 +275,27 @@ export async function listIssues(
 			(n.parentNodeId ? nodes[n.parentNodeId]?.title : undefined) ?? '',
 		);
 
-	if (input.brief) {
+	const isFull = input.view === 'full';
+
+	if (!isFull) {
 		return succeeded(
 			'Listed issues',
-			tickets.map(
-				n =>
-					({
-						id: n.id,
-						ref: nodeRef(n.id),
-						title: sanitizeInlineText(n.title),
-						swimlane: swimlaneTitle(n),
-						tags: getIssueTags(n).map(tag => tag.name),
-						assignees: getIssueAssignees(n).map(a => a.name),
-					} satisfies ApiIssueBrief),
-			),
+			tickets.map(n => {
+				const comments = getIssueComments(n.id);
+				const notes = getIssueNotes(n.id);
+				return {
+					id: n.id,
+					ref: nodeRef(n.id),
+					title: sanitizeInlineText(n.title),
+					swimlane: swimlaneTitle(n),
+					tags: getIssueTags(n).map(tag => tag.name),
+					assignees: getIssueAssignees(n).map(a => a.name),
+					commentCount: comments.length,
+					noteCount: notes.length,
+					createdAt: ulidTimeMs(n.id),
+					enteredLaneAt: laneEntryTime(n.log ?? [], ulidTimeMs(n.id)),
+				} satisfies ApiIssueBrief;
+			}),
 		);
 	}
 
@@ -251,7 +307,7 @@ export async function listIssues(
 					id: n.id,
 					ref: nodeRef(n.id),
 					title: sanitizeInlineText(n.title),
-					description: n.props.description ?? '',
+					description: n.props?.description ?? '',
 					createdAt: ulidTimeMs(n.id),
 					enteredLaneAt: laneEntryTime(n.log ?? [], ulidTimeMs(n.id)),
 					parentNodeId: n.parentNodeId!,
@@ -294,11 +350,44 @@ export const createIssue = async (input: CreateIssueInput) => {
 		);
 	}
 
-	const laneResult = findWritableSwimlane(input.parentId);
+	// Resolve the parent lane: required when named, defaults to the first open
+	// lane of the first board when omitted.
+	let parentId = input.parentId;
+
+	if (!parentId) {
+		const boards = Object.values(ready.value.state.nodes)
+			.filter(n => n.context === 'BOARD' && !n.isDeleted)
+			.sort((a, b) => (a.id < b.id ? -1 : 1));
+
+		if (boards.length === 0) {
+			return failed('No boards found — create one first');
+		}
+
+		const firstBoard = boards[0]!;
+
+		const lanes = Object.values(ready.value.state.nodes)
+			.filter(
+				n =>
+					n.context === 'SWIMLANE' &&
+					!n.isDeleted &&
+					n.parentNodeId === firstBoard.id,
+			)
+			.sort((a, b) => (a.id < b.id ? -1 : 1));
+
+		if (lanes.length === 0) {
+			return failed(
+				`Board "${firstBoard.title}" has no lanes — create one first, or pass parentId`,
+			);
+		}
+
+		parentId = lanes[0]!.id;
+	}
+
+	const laneResult = findWritableSwimlane(parentId);
 	if (isFail(laneResult)) return laneResult;
 
 	const rankResult = resolveAndPersistRankForCreate(
-		input.parentId,
+		parentId,
 		ready.value.actor,
 		ready.value.boot.stateBranchRoot,
 	);
@@ -306,7 +395,7 @@ export const createIssue = async (input: CreateIssueInput) => {
 
 	const issueEventsResult = createIssueEvents({
 		name: title,
-		parent: input.parentId,
+		parent: parentId,
 		user: ready.value.actor,
 		rank: rankResult.value,
 	});
@@ -748,4 +837,331 @@ export const editIssueTitle = async (input: EditIssueTitleInput) => {
 		ref: nodeRef(issueId),
 		title,
 	});
+};
+
+/**
+ * One tool for the common ticket edits: title, description, tags, assignees,
+ * and lane — all in a single call, all atomic.
+ *
+ * Adding a tag or an assignee the ticket already has is an idempotent no-op,
+ * never an error. Removing one it does not have is also a no-op.
+ *
+ * The lane field accepts a swimlane id, its 7-char ref, or a name. When the
+ * name alone is ambiguous, pass the board to disambiguate.
+ */
+export const updateIssue = async (input: UpdateIssueInput) => {
+	const ready = await bootedWithActorAndState(input.repoRoot);
+	if (isFail(ready)) return ready;
+
+	const issueResult = findWritableIssue(input.issueId);
+	if (isFail(issueResult)) return issueResult;
+	const issue = issueResult.value;
+	const issueId = issue.id;
+
+	const stateResult = getStateResult();
+	if (isFail(stateResult)) return stateResult;
+
+	const changes: string[] = [];
+	const events: AppEvent[] = [];
+
+	// --- title ---
+	if (input.title !== undefined) {
+		const title = sanitizeInlineText(input.title);
+		if (!title.trim()) return failed('Issue title cannot be empty');
+
+		const overLong = tooLong('Issue title', title, MAX_TITLE_LENGTH);
+		if (overLong) return failed(overLong);
+
+		if (issue.title !== title) {
+			events.push({
+				id: ulid(),
+				...actorOf(ready.value.actor),
+				action: 'edit.title',
+				payload: {id: issueId, name: title},
+			} satisfies AppEvent<'edit.title'>);
+			changes.push('title');
+		}
+	}
+
+	// --- description ---
+	if (input.description !== undefined) {
+		const overLong = tooLong(
+			'Issue description',
+			input.description,
+			MAX_DESCRIPTION_LENGTH,
+		);
+		if (overLong) return failed(overLong);
+
+		const currentDesc = issue.props.description ?? '';
+		if (currentDesc !== input.description) {
+			events.push({
+				id: ulid(),
+				...actorOf(ready.value.actor),
+				action: 'edit.description',
+				payload: {id: issueId, md: input.description},
+			} satisfies AppEvent<'edit.description'>);
+			changes.push('description');
+		}
+	}
+
+	// --- tags to add ---
+	if (input.tagsToAdd?.length) {
+		for (const raw of input.tagsToAdd) {
+			const tagName = sanitizeInlineText(raw).trim();
+			if (!tagName) continue;
+
+			const existing = nodeRepo.findTagByName(tagName);
+			const tagId = existing?.id ?? ulid();
+
+			if (!existing) {
+				events.push({
+					id: ulid(),
+					...actorOf(ready.value.actor),
+					action: 'create.tag',
+					payload: {id: tagId, name: tagName},
+				} satisfies AppEvent<'create.tag'>);
+			}
+
+			// Idempotent: skip if the ticket already has this tag.
+			const currentTags = issue.props.tags ?? [];
+			if (currentTags.includes(tagId)) continue;
+
+			events.push({
+				id: ulid(),
+				...actorOf(ready.value.actor),
+				action: 'add.issue.tag',
+				payload: {id: issueId, tag: tagId},
+			} satisfies AppEvent<'add.issue.tag'>);
+			changes.push(`tag:${tagName}`);
+		}
+	}
+
+	// --- tags to remove ---
+	if (input.tagsToRemove?.length) {
+		for (const token of input.tagsToRemove) {
+			const tag =
+				nodeRepo.getTag(token) ??
+				nodeRepo.findTagByName(sanitizeInlineText(token).trim());
+
+			if (!tag) return failed(`Tag not found — pass the tag id, ref, or name`);
+
+			const currentTags = issue.props.tags ?? [];
+			if (!currentTags.includes(tag.id)) continue; // idempotent no-op
+
+			events.push({
+				id: ulid(),
+				...actorOf(ready.value.actor),
+				action: 'remove.issue.tag',
+				payload: {id: issueId, tag: tag.id},
+			} satisfies AppEvent<'remove.issue.tag'>);
+			changes.push(`tag:-${tag.name}`);
+		}
+	}
+
+	// --- assignees to add ---
+	if (input.assigneesToAdd?.length) {
+		for (const token of input.assigneesToAdd) {
+			const assignee = resolveAssigneeToken(token, ready);
+			if (isFail(assignee)) return assignee;
+
+			const currentAssignees = issue.props.assignees ?? [];
+			if (currentAssignees.includes(assignee.value.id)) continue; // idempotent
+
+			const eventsArr: AppEvent[] = [];
+
+			const isRegistered = Boolean(
+				ready.value.state.contributors[assignee.value.id],
+			);
+			if (!isRegistered) {
+				const authored = await findEventLogAuthor(
+					ready.value.boot.stateBranchRoot,
+					assignee.value.id,
+				);
+				const name = authored?.name ?? assignee.value.name;
+
+				if (!authored && !ready.value.state.contributors[assignee.value.id]) {
+					return failed(
+						`Unknown assignee id — pass a contributor id, a name, or self`,
+					);
+				}
+
+				eventsArr.push({
+					id: ulid(),
+					...actorOf(ready.value.actor),
+					action: 'create.contributor',
+					payload: {id: assignee.value.id, name},
+				} satisfies AppEvent<'create.contributor'>);
+			}
+
+			eventsArr.push({
+				id: ulid(),
+				...actorOf(ready.value.actor),
+				action: 'add.issue.assignee',
+				payload: {id: issueId, assignee: assignee.value.id},
+			} satisfies AppEvent<'add.issue.assignee'>);
+
+			events.push(...eventsArr);
+			changes.push(`assignee:${assignee.value.name}`);
+		}
+	}
+
+	// --- assignees to remove ---
+	if (input.assigneesToRemove?.length) {
+		for (const token of input.assigneesToRemove) {
+			const assignee = resolveAssigneeToken(token, ready);
+			if (isFail(assignee)) return assignee;
+
+			if (!ready.value.state.contributors[assignee.value.id]) {
+				return failed(
+					`Assignee not found — pass the contributor id, ref, or name`,
+				);
+			}
+
+			const currentAssignees = issue.props.assignees ?? [];
+			if (!currentAssignees.includes(assignee.value.id)) continue; // idempotent
+
+			events.push({
+				id: ulid(),
+				...actorOf(ready.value.actor),
+				action: 'remove.issue.assignee',
+				payload: {id: issueId, assignee: assignee.value.id},
+			} satisfies AppEvent<'remove.issue.assignee'>);
+			changes.push(`assignee:-${assignee.value.name}`);
+		}
+	}
+
+	// --- lane ---
+	if (input.lane !== undefined) {
+		const resolvedLane = resolveLaneId(
+			input.lane,
+			input.board,
+			stateResult.value,
+		);
+		if (isFail(resolvedLane)) return resolvedLane;
+
+		if (issue.parentNodeId !== resolvedLane.value) {
+			events.push({
+				id: ulid(),
+				...actorOf(ready.value.actor),
+				action: 'move.node',
+				payload: {
+					id: issueId,
+					parent: resolvedLane.value,
+					rank: 'end',
+				},
+			} satisfies AppEvent<'move.node'>);
+			changes.push('lane');
+		}
+	}
+
+	// Nothing changed — return early.
+	if (events.length === 0) {
+		return succeeded('No changes made', {
+			id: issueId,
+			ref: nodeRef(issueId),
+			changed: [] as string[],
+		});
+	}
+
+	const results = materializeAndPersistAll(
+		events,
+		ready.value.boot.stateBranchRoot,
+	);
+	if (isFail(results)) return failed(results.message);
+
+	return succeeded('Updated issue', {
+		id: issueId,
+		ref: nodeRef(issueId),
+		changed: changes,
+	});
+};
+
+// Resolve an assignee token (id, ref, or name) to a contributor.
+const resolveAssigneeToken = (
+	token: string,
+	ready: Awaited<ReturnType<typeof bootedWithActorAndState>>,
+): Result<{id: string; name: string}> => {
+	const trimmed = token.trim();
+	const state = ready.value!.state;
+	const contributors = state.contributors;
+
+	// Direct id match in the contributor registry.
+	const byId = contributors[trimmed];
+	if (byId) return succeeded('Found assignee', {id: byId.id, name: byId.name});
+
+	// Name match in the contributor directory.
+	const matches = contributorDirectory({
+		events: state.eventLog ?? [],
+		registry: contributors,
+		logFileNames: loadActorNames(ready.value!.boot.stateBranchRoot),
+	}).filter(c => c.name === trimmed);
+
+	if (matches.length > 1) {
+		return failed(
+			`"${trimmed}" matches ${matches.length} contributors (${matches
+				.map(c => c.id)
+				.join(', ')}). Pass an id.`,
+		);
+	}
+
+	if (matches.length === 1) {
+		return succeeded('Found assignee', {
+			id: matches[0]!.id,
+			name: matches[0]!.name,
+		});
+	}
+
+	// Fallback: treat as an id that might be an event-log author.
+	return succeeded('Treat as id', {id: trimmed, name: trimmed});
+};
+
+// Resolve a lane token (id, ref, or name) to a swimlane id.
+const resolveLaneId = (
+	token: string,
+	board: string | undefined,
+	state: AppState,
+): Result<string> => {
+	const trimmed = token.trim();
+	const {nodes} = state;
+
+	// Exact id match.
+	const direct = nodes[trimmed];
+	if (direct && isSwimlaneNode(direct) && !direct.isDeleted) {
+		return succeeded('Found swimlane', trimmed);
+	}
+
+	// Ref match.
+	const refMatches = Object.keys(nodes).filter(id => {
+		const node = nodes[id];
+		return (
+			node &&
+			isSwimlaneNode(node) &&
+			!node.isDeleted &&
+			nodeRefMatches(id, trimmed)
+		);
+	});
+
+	if (refMatches.length === 1)
+		return succeeded('Found swimlane', refMatches[0]!);
+
+	// Name match.
+	const nameMatches = Object.values(nodes).filter(n => {
+		if (!isSwimlaneNode(n) || n.isDeleted) return false;
+		if (board && n.parentNodeId !== board) return false;
+		return n.title.toLowerCase() === trimmed.toLowerCase();
+	});
+
+	if (nameMatches.length === 1) {
+		return succeeded('Found swimlane', nameMatches[0]!.id);
+	}
+
+	if (nameMatches.length > 1) {
+		return failed(
+			`"${trimmed}" matches ${nameMatches.length} swimlanes: ${nameMatches
+				.map(n => `${n.title} (${n.id})`)
+				.join(', ')}. Use an id or ref.`,
+		);
+	}
+
+	return failed(`Swimlane not found — pass the id, ref, or name`);
 };
