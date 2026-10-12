@@ -87,6 +87,9 @@ export function createDefaultEvents({
 }): Result<readonly AppEvent[]> {
 	const workspaceId = nextId();
 	const boardId = nextId();
+	const ideasBoardId = nextId();
+	const ideasLaneId = nextId();
+	const ideasTicketId = nextId();
 	const swimlaneId1 = nextId();
 	const swimlaneId2 = nextId();
 	const swimlaneId3 = nextId();
@@ -111,6 +114,15 @@ export function createDefaultEvents({
 
 	const closedSwimlaneRank = rankBetween(undefined, undefined);
 	if (isFail(closedSwimlaneRank)) return closedSwimlaneRank;
+
+	const ideasBoardRank = rankBetween(closedBoardRank.value, undefined);
+	if (isFail(ideasBoardRank)) return ideasBoardRank;
+
+	const ideasLaneRank = rankBetween(undefined, undefined);
+	if (isFail(ideasLaneRank)) return ideasLaneRank;
+
+	const ideasTicketRank = rankBetween(undefined, undefined);
+	if (isFail(ideasTicketRank)) return ideasTicketRank;
 
 	return succeeded('Created default events', [
 		{
@@ -207,6 +219,51 @@ export function createDefaultEvents({
 			userId: userId,
 			action: 'lock.node',
 			payload: {id: CLOSED_BOARD_ID},
+		},
+		// An Ideas board in every new project: ideas are tickets like any
+		// other, and the board switcher and board tabs show it beside Default
+		// from the first boot.
+		{
+			id: ulid(),
+			userId: userId,
+			action: 'add.board',
+			payload: {
+				id: ideasBoardId,
+				name: 'Ideas',
+				parent: workspaceId,
+				rank: ideasBoardRank.value,
+			},
+		},
+		{
+			id: ulid(),
+			userId: userId,
+			action: 'add.swimlane',
+			payload: {
+				id: ideasLaneId,
+				name: 'Inbox',
+				parent: ideasBoardId,
+				rank: ideasLaneRank.value,
+			},
+		},
+		{
+			id: ulid(),
+			userId: userId,
+			action: 'add.issue',
+			payload: {
+				id: ideasTicketId,
+				name: 'Capture ideas here',
+				parent: ideasLaneId,
+				rank: ideasTicketRank.value,
+			},
+		},
+		{
+			id: ulid(),
+			userId: userId,
+			action: 'edit.description',
+			payload: {
+				id: ideasTicketId,
+				md: 'Anything worth remembering before it has a plan. Triage it onto a working board when it does.',
+			},
 		},
 		{
 			id: ulid(),

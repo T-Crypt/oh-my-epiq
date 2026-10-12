@@ -26,10 +26,12 @@ Every upstream Epiq feature, plus the operator and agent surface:
   (`~/.epiq-global` → `~/.ome-global`, `.epiq/` → `.ome/`, `__epiq_state__` →
   `__ome_state__`) with a dry run, a backup and a printed rollback. Dry-run
   first; see [Coming from Epiq?](#coming-from-epiq).
-- **A clean agent MCP** — every tool that writes takes a full id _or_ a 7-char
-  `ref`; adding a tag or an assignee a ticket already has is an idempotent
-  no-op; removals accept a name; errors say what to pass. The footguns and the
-  four admin tools agents never call are pruned from the surface.
+- **A clean agent MCP** — one `ome_issue_update` replaces seven narrow
+  writers; reads take `view:brief|full` with brief by default; every write
+  takes a full id, a 7-char `ref` or a name; adding a tag or an assignee a
+  ticket already has is an idempotent no-op; errors say what to pass. The
+  everyday set registers by default and the administrative set opts in with
+  `OME_MCP_FULL=true`. See [MCP for agents](#mcp-for-agents).
 - **A theme switcher** — 23 bundled palettes ported from Oh-My-Pocket, opened
   from the rail or phone tab bar. Picking one updates CSS variables on `:root`
   and re-reads every JavaScript-driven colour at render time, so the whole
@@ -53,6 +55,20 @@ Every upstream Epiq feature, plus the operator and agent surface:
   (take an identity, sync on demand, keep tickets current) to every client on
   connect, so a project carries no agent files. A longer written skill is
   offered at `skills/ome/SKILL.md` for anyone who wants it.
+- **Ticket notes** — a section beside comments for gathered context: websearch
+  results, background reading, anything appended without disturbing the
+  description or the discussion. Notes sync like everything else.
+- **An Ideas board in every project** — `init` seeds one beside Default, and
+  the board tabs above the lanes switch between boards. Ideas are tickets like
+  any other: triage one onto a working board when it grows a plan.
+- **A project picker** — the header names the project behind the board, and
+  opening it lists known projects plus an absolute-path field. Folders without
+  OME state land on the init screen; a descriptor that never recorded its
+  genesis offers a one-click repair.
+- **A collaboration board for agents** — notes, assistance requests and
+  handoffs with open, claimed and resolved, plus pins. Global lines sync to
+  every clone through the state branch; local lines stay on the machine that
+  wrote them. Behind the `OME_MCP_FULL` gate, taught by the skill.
 
 ![The OME terminal UI: the same board in a terminal, with the command palette](source/assets/tui.jpeg)
 
@@ -64,11 +80,13 @@ glance, what this fork adds:
 - **A migration, not a re-install** — `ome migrate` carries an existing Epiq
   board to OME's on-disk layout with a dry run, a backup and a printed
   rollback.
-- **A pruned, forgiving agent MCP** — every writing tool takes a full id or a
-  7-char ref, adding something a ticket already has is an idempotent no-op,
-  removals accept a name, and the admin tools agents never call are gone from
-  the surface. The board workflow ships to every connected client, so a project
-  carries no agent files.
+- **A pruned, forgiving agent MCP** — one update tool, brief reads by
+  default, ids or refs everywhere, idempotent no-ops, and a core surface with
+  the rest behind an opt-in flag. The board workflow ships to every connected
+  client, so a project carries no agent files.
+- **Ideas, picker and collab** — every project starts with an Ideas board
+  beside Default; the header switches projects without dropping to a terminal;
+  agents coordinate on a collaboration board with global and local lines.
 - **The Oh-My-Pocket look, desktop and phone** — the browser board wears the
   Oh-My-Pocket shell (Tokyo Night palette, square tiles, icon rail) and turns
   into a standalone phone app under 760px, with signed-in remote access over
@@ -85,13 +103,13 @@ are designed and tracked but **not implemented yet**:
 - **Lifecycle status** — an explicit, ordered phase
   (`idea · planned · in-flight · maintenance-staged · maintenance-done ·
 support · parked`) that drives a status view on the board.
-- **Notes and priority boards** — capture loose thoughts and rank work P0–P3
-  without fighting the ticket schema.
+- **Priority boards** — rank work P0–P3 without fighting the ticket schema.
+  (Loose capture ships: every project starts with an Ideas board.)
 - **Instructions on a ticket** — a structured "what to do" block, distinct from
   the description and the comment thread, so handoff to an agent is
   unambiguous.
-- **New-project creation from the WebUI** — point the board at a repo and go,
-  without dropping to the TUI for `:init`.
+- **New-project creation from the WebUI** — the picker opens existing
+  projects; creating one still drops to the TUI for `:init`.
 - **Push notifications and offline use on the phone** — Oh-My-Pocket's service
   worker is not ported yet; the phone app needs the server reachable.
 
@@ -192,7 +210,7 @@ Oh-My-Pocket: pick how the board is reached, and sign each device in once.
 <img src="source/assets/phone-board.png" alt="One lane per screen, with lane tabs and the tab bar" width="24%">
 <img src="source/assets/phone-ticket.png" alt="A ticket as a full-screen sheet, with the lane picker above it" width="24%">
 <img src="source/assets/phone-activity.png" alt="The event log as the Activity tab" width="24%">
-<img src="source/assets/phone-signin.png" alt="The sign-in page a new device sees" width="24%">
+<img src="source/assets/phone-signin.png" alt="Identity and device pairing on the Me tab" width="24%">
 </p>
 
 | Access            | Command                                                 | Who can reach it                                                                                                 |

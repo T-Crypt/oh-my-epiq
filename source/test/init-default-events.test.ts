@@ -19,5 +19,14 @@ describe('init default events', () => {
 		if (isFail(state)) throw new Error(state.message);
 
 		expect(state.value.contributors['U1']).toEqual({id: 'U1', name: 'Jo'});
+
+		const boards = Object.values(state.value.nodes).filter(
+			node => node.context === 'BOARD' && !node.isDeleted,
+		);
+		expect(boards.map(board => board.title).sort()).toEqual([
+			'Closed',
+			'Default',
+			'Ideas',
+		]);
 	});
 });
