@@ -27,22 +27,30 @@
 }
 
 :root {
+	/* The palette. These defaults are Tokyo Night; theme.js replaces them. */
 	--o-bg: #1a1b26;
 	--o-bg-dark: #13141c;
 	--o-bg-darker: #0e0e14;
 	--o-bg-light: #24283b;
 	--o-fg: #a9b1d6;
 	--o-fg-dim: #565f89;
+	--o-fg-light: #b4bee6;
 	--o-fg-bright: #c0caf5;
 	--o-accent: #7aa2f7;
+	--o-selection: #292e42;
 	--o-red: #f7768e;
 	--o-yellow: #e0af68;
 	--o-orange: #eb927b;
 	--o-green: #9ece6a;
-	--o-cyan: #7dcfff;
-	--o-magenta: #bb9af7;
+	--o-cyan: #449dab;
+	--o-blue: #7aa2f7;
+	--o-magenta: #ad8ee6;
+	--o-active-a: #7aa2f7;
+	--o-active-b: #7aa2f7;
+	--o-active: linear-gradient(#7aa2f7, #7aa2f7);
 	--o-inactive: rgba(89, 89, 89, 0.67);
 
+	/* Surfaces: the foreground laid over the ground at a few percent. */
 	--desk: var(--o-bg-darker);
 	--bg: var(--o-bg);
 	--card: color-mix(in srgb, var(--o-fg) 4%, var(--o-bg));
@@ -67,7 +75,7 @@
 		var(--o-magenta) 100%
 	);
 
-	/* Hyprland's look as Omarchy sets it: gaps_out 10, gaps_in 5, border_size 2. */
+	/* Hyprland's look: gaps_out 10, gaps_in 5, border_size 2. */
 	--gap-out: 10px;
 	--gap-in: 5px;
 	--border: 2px;
@@ -86,6 +94,17 @@
 	--safe-bottom: env(safe-area-inset-bottom, 0px);
 	--tabbar: 56px;
 	color-scheme: dark;
+}
+
+/* Light themes: quieter text and the status colors darken toward the foreground,
+   so they stay readable on light grounds. */
+:root[data-mode="light"] {
+	color-scheme: light;
+	--o-inactive: rgba(89, 89, 89, 0.4);
+	--scrim: color-mix(in srgb, var(--o-bg-darker) 55%, transparent);
+	--line: color-mix(in srgb, var(--o-fg) 15%, var(--o-bg));
+	--muted: color-mix(in oklab, var(--o-fg) 78%, var(--o-bg));
+	--faint: color-mix(in oklab, var(--o-fg) 58%, var(--o-bg));
 }
 
 /* ─── Reset ──────────────────────────────────────────────────── */
@@ -768,4 +787,87 @@ body.plain-page {
 .signin code,
 .sheet code {
 	font-family: inherit;
+}
+
+/* ─── Theme switcher ──────────────────────────────────────────── */
+
+.theme-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+	gap: 12px;
+}
+
+.theme-card {
+	position: relative;
+	border: 2px solid var(--o-inactive);
+	border-radius: 4px;
+	padding: 12px 10px 10px;
+	cursor: pointer;
+	transition: border-color 120ms ease, background-color 120ms ease;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	align-items: center;
+}
+
+.theme-card:hover {
+	border-color: var(--o-accent);
+}
+
+.theme-card.on {
+	border-color: var(--o-accent);
+	box-shadow: 0 0 0 1px var(--o-accent);
+}
+
+/* Tiny desktop preview inside each card */
+.tc-desk {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.tc-win {
+	height: 8px;
+	border-radius: 2px;
+	display: flex;
+	gap: 3px;
+	padding: 2px;
+}
+
+.tc-win i {
+	width: 4px;
+	height: 4px;
+	border-radius: 1px;
+	background: var(--o-fg-dim);
+}
+
+.tc-win i.lit {
+	background: var(--o-accent);
+}
+
+.tc-name {
+	font-size: 0.7rem;
+	text-align: center;
+	color: var(--o-fg);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 100%;
+}
+
+.tc-name small {
+	opacity: 0.5;
+	font-size: 0.6rem;
+}
+
+.tc-dots {
+	display: flex;
+	gap: 4px;
+}
+
+.tc-dots i {
+	width: 6px;
+	height: 6px;
+	border-radius: 1px;
 }

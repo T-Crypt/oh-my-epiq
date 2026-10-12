@@ -118,12 +118,28 @@ export const TRACK_HIT_PADDING = 12;
 export const HOVER_HINT_WIDTH = 220;
 
 // Must stay fainter than the bucket highlight drawn over it.
-export const SEGMENT_HIGHLIGHT_COLOR = 'rgba(122, 157, 214, 0.14)';
+// These derive from the active theme's palette via the theme module.
+import {resolvePalette} from '../theme.js';
+
+const _palette = resolvePalette();
+const _c = _palette.colors;
+
+function rgb(hex: string | undefined): string {
+	if (!hex) return '0, 0, 0';
+	const h = hex.replace('#', '');
+	return `${Number.parseInt(h.slice(0, 2), 16)}, ${Number.parseInt(h.slice(2, 4), 16)}, ${Number.parseInt(h.slice(4, 6), 16)}`;
+}
+
+const accent = rgb(_c.accent);
+const fg = rgb(_c.foreground);
+
+// Faint accent wash for segment highlights.
+export const SEGMENT_HIGHLIGHT_COLOR = `rgba(${accent}, 0.14)`;
 // The grain, drawn all the time: a hairline at every segment boundary, faint
 // enough to sit under the bars and the dots and under the highlight above,
 // and the short label beside it, a shade up from the line so it can be read.
-export const SEGMENT_BOUNDARY_COLOR = 'rgba(122, 157, 214, 0.06)';
-export const SEGMENT_LABEL_COLOR = 'rgba(122, 157, 214, 0.32)';
+export const SEGMENT_BOUNDARY_COLOR = `rgba(${fg}, 0.06)`;
+export const SEGMENT_LABEL_COLOR = `rgba(${fg}, 0.32)`;
 export const BUCKET_HIGHLIGHT_COLOR = 'rgba(255, 255, 255, 0.06)';
 export const NEEDLE_COLOR = 'rgba(255, 255, 255, 0.62)';
 

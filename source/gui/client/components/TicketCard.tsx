@@ -190,8 +190,8 @@ export const TicketCard = ({
 				// or picking one stops reading as picking it up.
 				background:
 					isSelected || isPicked
-						? 'rgba(118, 228, 255, 0.11)'
-						: 'rgba(185, 192, 255, 0.08)',
+						? GUI_THEME.accentWash
+						: GUI_THEME.hover,
 				// Roomier than a list row: a card is read, not scanned, and the
 				// air around its title is what keeps a column of them from
 				// running together.

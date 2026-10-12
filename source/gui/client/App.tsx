@@ -22,6 +22,7 @@ import {
 	Rail,
 	useIsPhone,
 } from './components/PocketShell';
+import {ThemeSheet} from './components/ThemeSheet';
 import {Button} from './components/Button';
 import {CreateNodeModal} from './components/CreateNodeModal';
 import {AddSwimlaneColumn} from './components/AddSwimlaneColumn';
@@ -132,6 +133,7 @@ import {useSwimlaneEditing} from './lib/use-swimlane-editing';
 import {createHistoryBuffer} from './lib/history-buffer';
 import {SyncStatus} from './lib/gui-sync-statusmodel';
 import {GUI_THEME, UI_FONT} from './lib/gui-theme';
+import {savedThemeId, applyTheme} from './lib/theme';
 import {issueActivityLogEntries} from './lib/event-log';
 import {plural} from './lib/gui-format.helper';
 import {REVEAL_MS, useReveal} from './lib/use-reveal';
@@ -235,6 +237,12 @@ export const App = () => {
 	// Assignable people for the board on screen, unlike state.contributors, which
 	// is the registry and stays empty until somebody is explicitly assigned.
 	const [contributors, setContributors] = useState<GuiContributor[]>([]);
+
+	// Apply the saved theme on mount (the FOUC guard already applied it in the
+	// inline script in index.html; this picks up any change the guard missed).
+	useEffect(() => {
+		applyTheme(savedThemeId());
+	}, []);
 
 	// One value, not two: the scrubber derives its coordinate system from both,
 	// so applying either alone draws the chart against a range it doesn't match.
@@ -1667,6 +1675,7 @@ export const App = () => {
 	const phone = useIsPhone();
 	const [phoneTab, setPhoneTab] = useState<PhoneTab>('board');
 	const [devicesOpen, setDevicesOpen] = useState(false);
+	const [themeSheetOpen, setThemeSheetOpen] = useState(false);
 
 	// The phone's Activity tab is the log, so it is open while that tab shows:
 	// the log only loads its lines while open.
@@ -2592,6 +2601,10 @@ export const App = () => {
 						<DevicesSheet onClose={() => setDevicesOpen(false)} />
 					)}
 
+					{themeSheetOpen && (
+						<ThemeSheet onClose={() => setThemeSheetOpen(false)} />
+					)}
+
 					{commandPalette.open && (
 						<CommandPalette
 							commands={commands}
@@ -2609,6 +2622,7 @@ export const App = () => {
 						onToggleLog={() => setLogOpen(!logOpen)}
 						onOpenCommands={() => commandPalette.setOpen(true)}
 						onOpenDevices={() => setDevicesOpen(true)}
+						onOpenTheme={() => setThemeSheetOpen(true)}
 					/>
 					<div className="ome-window main active">
 						<div
