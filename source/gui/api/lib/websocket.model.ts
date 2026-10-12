@@ -3,6 +3,8 @@ import {MovePosition} from '../../../lib/board/board-events.model.js';
 export type GuiMessage =
 	| {type: 'state:get'}
 	| {type: 'project:open'; payload: {root: string}}
+	| {type: 'project:list'}
+	| {type: 'project:repair'}
 	| {type: 'issues:list'}
 	| {type: 'issues:create'; payload: {title: string; parentId: string}}
 	| {type: 'board:create'; payload: {title: string}}

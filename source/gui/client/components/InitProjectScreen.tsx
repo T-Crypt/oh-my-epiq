@@ -15,8 +15,11 @@ type Props = {
 	repoRoot: string;
 	message: string;
 	recentProjects?: RecentProjectView[];
+	halfInit?: boolean;
 	onRetry: () => void;
 	onOpen: (root: string) => void;
+	onRepair: () => void;
+	onBrowse: () => void;
 };
 
 const codeStyle = {
@@ -31,8 +34,11 @@ export const InitProjectScreen = ({
 	repoRoot,
 	message,
 	recentProjects = [],
+	halfInit = false,
 	onRetry,
 	onOpen,
+	onRepair,
+	onBrowse,
 }: Props) => (
 	<div
 		data-testid="init-project-screen"
@@ -71,7 +77,9 @@ export const InitProjectScreen = ({
 				</div>
 
 				<h1 style={{margin: 0, fontSize: 16, fontWeight: 700}}>
-					This folder is not an ome project yet
+					{halfInit
+						? 'This project never finished initializing'
+						: 'This folder is not an ome project yet'}
 				</h1>
 
 				<div
@@ -92,15 +100,34 @@ export const InitProjectScreen = ({
 					{repoRoot}
 				</div>
 
-				<div
-					style={{fontSize: 12, color: GUI_THEME.secondary, lineHeight: 1.7}}
-				>
-					To start tracking issues here, run <span style={codeStyle}>ome</span>{' '}
-					in that folder and type <span style={codeStyle}>:init</span>. That
-					creates, commits and pushes{' '}
-					<span style={codeStyle}>.ome/project.json</span>. Then come back and
-					reload.
-				</div>
+				{halfInit ? (
+					<div
+						style={{fontSize: 12, color: GUI_THEME.secondary, lineHeight: 1.7}}
+					>
+						Its descriptor exists but the board was never created. Repair writes
+						that missing first event and nothing else.
+					</div>
+				) : (
+					<div
+						style={{fontSize: 12, color: GUI_THEME.secondary, lineHeight: 1.7}}
+					>
+						To start tracking issues here, run{' '}
+						<span style={codeStyle}>ome</span> in that folder and type{' '}
+						<span style={codeStyle}>:init</span>. That creates, commits and
+						pushes <span style={codeStyle}>.ome/project.json</span>. Then come
+						back and reload.
+					</div>
+				)}
+
+				{halfInit && (
+					<Button
+						variant="primary"
+						onClick={onRepair}
+						data-testid="repair-project"
+					>
+						repair workspace
+					</Button>
+				)}
 
 				{recentProjects.length > 0 && (
 					<div
@@ -169,9 +196,14 @@ export const InitProjectScreen = ({
 				>
 					<span style={{fontSize: 10, color: GUI_THEME.dim}}>{message}</span>
 
-					<Button variant="primary" onClick={onRetry}>
-						check again
-					</Button>
+					<div style={{display: 'flex', gap: 8}}>
+						<Button variant="ghost" onClick={onBrowse}>
+							open another folder
+						</Button>
+						<Button variant="primary" onClick={onRetry}>
+							check again
+						</Button>
+					</div>
 				</div>
 			</div>
 		</Panel>

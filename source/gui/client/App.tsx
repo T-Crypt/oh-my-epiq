@@ -33,6 +33,7 @@ import {
 	RecentProjectView,
 } from './components/InitProjectScreen';
 import {Dropdown} from './components/Dropdown';
+import {ProjectListCurrent, ProjectPicker} from './components/ProjectPicker';
 import {Header} from './components/Header';
 import {IssueDetails} from './components/IssueDetails';
 import {
@@ -227,14 +228,22 @@ export const App = () => {
 		msg: 'idle',
 	});
 	const [state, setState] = useState<GuiState | null>(null);
-	// Set only when the server says there is nothing to load here — no ome
-	// project at or above its root. Distinct from `state === null`, which just
-	// means the first broadcast has not arrived yet.
+	// Set only when the server says there is nothing to load here: no ome
+	// project at or above its root, or a half-initialized one whose repair
+	// prompt this carries. Distinct from `state === null`, which just means
+	// the first broadcast has not arrived yet.
 	const [noProject, setNoProject] = useState<{
 		message: string;
 		repoRoot: string;
 		recentProjects: RecentProjectView[];
+		halfInit?: boolean;
 	} | null>(null);
+	const [projectList, setProjectList] = useState<{
+		current: ProjectListCurrent;
+		projects: RecentProjectView[];
+	} | null>(null);
+	const [pickerOpen, setPickerOpen] = useState(false);
+	const [pickerError, setPickerError] = useState<string | null>(null);
 	// Assignable people for the board on screen, unlike state.contributors, which
 	// is the registry and stays empty until somebody is explicitly assigned.
 	const [contributors, setContributors] = useState<GuiContributor[]>([]);
@@ -890,6 +899,26 @@ export const App = () => {
 			const result = message.payload as {status: string; message: string};
 
 			if (result.status !== 'success') {
+				setPickerError(result.message);
+			} else {
+				setPickerOpen(false);
+				setPickerError(null);
+				send('project:list', undefined);
+			}
+		}
+
+		if (message.type === 'project:list:result') {
+			const payload = message.payload as {
+				current: ProjectListCurrent;
+				projects: RecentProjectView[];
+			};
+			setProjectList({current: payload.current, projects: payload.projects});
+		}
+
+		if (message.type === 'project:repair:result') {
+			const result = message.payload as {status: string; message: string};
+
+			if (result.status !== 'success') {
 				setNoProject(current =>
 					current ? {...current, message: result.message} : current,
 				);
@@ -1507,6 +1536,12 @@ export const App = () => {
 		if (!connected) setTheatre(null);
 	}, [connected]);
 
+	// The picker names the project behind the board, so its label is ready
+	// before anyone opens it.
+	useEffect(() => {
+		if (connected) send('project:list', undefined);
+	}, [connected, send]);
+
 	// Both requests carry the same id so their replies can be paired, and replies
 	// to an abandoned request discarded.
 	// Returns the id the reply will carry, so the caller can tell its own
@@ -1858,13 +1893,31 @@ export const App = () => {
 	// no scrubber to draw, so the shell would only frame an empty screen.
 	if (noProject) {
 		return (
-			<InitProjectScreen
-				repoRoot={noProject.repoRoot}
-				message={noProject.message}
-				recentProjects={noProject.recentProjects}
-				onRetry={requestState}
-				onOpen={root => send('project:open', {root})}
-			/>
+			<>
+				<InitProjectScreen
+					repoRoot={noProject.repoRoot}
+					message={noProject.message}
+					recentProjects={noProject.recentProjects}
+					halfInit={noProject.halfInit}
+					onRetry={requestState}
+					onOpen={root => send('project:open', {root})}
+					onRepair={() => send('project:repair', undefined)}
+					onBrowse={() => {
+						setPickerError(null);
+						send('project:list', undefined);
+						setPickerOpen(true);
+					}}
+				/>
+				{pickerOpen && (
+					<ProjectPicker
+						current={projectList?.current ?? null}
+						projects={projectList?.projects ?? noProject.recentProjects}
+						error={pickerError}
+						onOpen={root => send('project:open', {root})}
+						onClose={() => setPickerOpen(false)}
+					/>
+				)}
+			</>
 		);
 	}
 
@@ -1925,6 +1978,34 @@ export const App = () => {
 			}
 			onDragLeave={clearDragState}
 		/>
+	);
+
+	const projectSwitcher = (
+		<button
+			data-testid="project-switcher"
+			type="button"
+			title={projectList?.current.root ?? 'Open a project'}
+			onClick={() => {
+				setPickerError(null);
+				send('project:list', undefined);
+				setPickerOpen(true);
+			}}
+			style={{
+				background: 'none',
+				border: 'none',
+				padding: 0,
+				cursor: 'pointer',
+				color: GUI_THEME.primary,
+				fontSize: 12,
+				fontWeight: 700,
+				maxWidth: 160,
+				overflow: 'hidden',
+				textOverflow: 'ellipsis',
+				whiteSpace: 'nowrap',
+			}}
+		>
+			{projectList?.current.name ?? 'project'}
+		</button>
 	);
 
 	const boardSwitcher = (
@@ -2252,7 +2333,16 @@ export const App = () => {
 				) : undefined,
 			}}
 		>
-			<PhoneTopBar board={boardSwitcher} connection={connection} />
+			<PhoneTopBar
+				board={
+					<>
+						{projectSwitcher}
+						<span style={{color: GUI_THEME.dim, fontSize: 12}}>/</span>
+						{boardSwitcher}
+					</>
+				}
+				connection={connection}
+			/>
 
 			{phoneTab === 'board' && (
 				<div className="phone-pane" style={{opacity: offline ? 0.55 : 1}}>
@@ -2365,6 +2455,7 @@ export const App = () => {
 										scrubbing={state?.timeTravel?.mode === 'scrub'}
 										syncStatus={syncStatus}
 										onOpenCommands={() => commandPalette.setOpen(true)}
+										project={projectSwitcher}
 										board={boardSwitcher}
 										identity={{
 											open: identityOpen,
@@ -2624,6 +2715,16 @@ export const App = () => {
 						<ThemeSheet onClose={() => setThemeSheetOpen(false)} />
 					)}
 
+					{pickerOpen && (
+						<ProjectPicker
+							current={projectList?.current ?? null}
+							projects={projectList?.projects ?? []}
+							error={pickerError}
+							onOpen={root => send('project:open', {root})}
+							onClose={() => setPickerOpen(false)}
+						/>
+					)}
+
 					{commandPalette.open && (
 						<CommandPalette
 							commands={commands}
@@ -2702,6 +2803,7 @@ export const App = () => {
 												scrubbing={state?.timeTravel?.mode === 'scrub'}
 												syncStatus={syncStatus}
 												onOpenCommands={() => commandPalette.setOpen(true)}
+												project={projectSwitcher}
 												board={boardSwitcher}
 												identity={{
 													open: identityOpen,
@@ -3012,6 +3114,16 @@ export const App = () => {
 
 							{devicesOpen && (
 								<DevicesSheet onClose={() => setDevicesOpen(false)} />
+							)}
+
+							{pickerOpen && (
+								<ProjectPicker
+									current={projectList?.current ?? null}
+									projects={projectList?.projects ?? []}
+									error={pickerError}
+									onOpen={root => send('project:open', {root})}
+									onClose={() => setPickerOpen(false)}
+								/>
 							)}
 
 							{commandPalette.open && (

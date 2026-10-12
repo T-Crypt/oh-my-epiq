@@ -24,6 +24,12 @@ import {AnyContext} from '../model/context.model.js';
 
 const nextId = monotonicFactory();
 
+// A descriptor with no workspace behind it: `.ome/project.json` names a
+// project whose log never recorded its genesis. The picker matches on this
+// to offer a repair instead of the init screen.
+export const NO_WORKSPACE_INIT_MESSAGE =
+	'Initialized OME project has no workspace init event';
+
 export function getBootNavigationTarget(): Result<{
 	contextNode: NavNode<AnyContext>;
 	selectedIndex: number;
@@ -290,7 +296,7 @@ export function bootStateFromEventLog(
 	}
 
 	if (!eventLog.some(e => e.action === 'init.workspace')) {
-		return failed('Initialized OME project has no workspace init event');
+		return failed(NO_WORKSPACE_INIT_MESSAGE);
 	}
 
 	const results = materializeAll(eventLog);

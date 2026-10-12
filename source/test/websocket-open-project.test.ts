@@ -209,24 +209,79 @@ describe('websocket project:open', () => {
 		expect(ofType('state:unavailable')).toHaveLength(0);
 	});
 
-	it('refuses a root the registry does not list, and stays put', async () => {
+	it('opens an unlisted project directory and boots it', async () => {
 		const elsewhere = makeProject('01WSOPEN000000000000000002');
+		vi.mocked(getGuiState).mockImplementation(async ({repoRoot} = {}) =>
+			repoRoot === projectRoot || repoRoot === elsewhere
+				? succeeded('state', {marker: repoRoot} as never)
+				: failed(NO_PROJECT_MESSAGE),
+		);
 
 		send({type: 'project:open', payload: {root: elsewhere}});
+
+		await waitFor(() => ofType('state').length === 1, 'the project state');
+
+		expect(ofType('project:open:result')[0]?.payload?.status).toBe('success');
+		expect(ofType('state')[0]?.payload?.value).toEqual(
+			expect.objectContaining({marker: elsewhere}),
+		);
+	});
+
+	it('shows the init screen for an unlisted bare directory', async () => {
+		send({type: 'project:open', payload: {root: bareRoot}});
+
+		await waitFor(
+			() => ofType('state:unavailable').length === 1,
+			'the init screen',
+		);
+
+		expect(ofType('project:open:result')[0]?.payload?.status).toBe('success');
+		const [unavailable] = ofType('state:unavailable');
+		expect(unavailable?.payload?.repoRoot).toBe(bareRoot);
+		expect(
+			(unavailable?.payload as unknown as {halfInit?: boolean})?.halfInit,
+		).not.toBe(true);
+	});
+
+	it('refuses a relative path and a missing directory, and stays put', async () => {
+		send({type: 'project:open', payload: {root: 'relative/path'}});
 
 		await waitFor(
 			() => ofType('project:open:result').length === 1,
 			'the refusal',
 		);
 
-		const [result] = ofType('project:open:result');
-		expect(result?.payload?.status).not.toBe('success');
-		expect(result?.payload?.message).toContain('Not a recent project');
+		expect(ofType('project:open:result')[0]?.payload?.status).not.toBe(
+			'success',
+		);
+
+		send({type: 'project:open', payload: {root: '/no/such/dir'}});
+
+		await waitFor(
+			() => ofType('project:open:result').length === 2,
+			'the second refusal',
+		);
+		expect(ofType('project:open:result')[1]?.payload?.status).not.toBe(
+			'success',
+		);
 
 		send({type: 'state:get'});
 		await waitFor(() => ofType('state:unavailable').length === 1, 'init');
 		expect(ofType('state:unavailable')[0]?.payload?.repoRoot).toBe(bareRoot);
-		expect(getGuiState).not.toHaveBeenCalledWith({repoRoot: elsewhere});
+	});
+
+	it('answers project:list with the current root and recent projects', async () => {
+		send({type: 'project:list'});
+
+		await waitFor(() => ofType('project:list:result').length === 1, 'the list');
+
+		const [list] = ofType('project:list:result');
+		const payload = list?.payload as unknown as {
+			current: {root: string; name: string};
+			projects: Array<{root: string}>;
+		};
+		expect(payload.current.root).toBe(bareRoot);
+		expect(payload.projects.map(p => p.root)).toContain(projectRoot);
 	});
 
 	it('refuses a listed project whose directory has since gone', async () => {
