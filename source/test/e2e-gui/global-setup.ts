@@ -23,6 +23,8 @@ const serve = (handoffPath: string) => {
 			...process.env,
 			IS_LOCAL: 'true',
 			OME_GUI_E2E_HANDOFF: handoffPath,
+			// A test run must never open a window on the machine it runs on.
+			OME_GUI_NO_OPEN: '1',
 		},
 	});
 

@@ -154,7 +154,10 @@ ome gui
 ```
 
 On a machine with no display, or with `--no-open`, it serves without opening a
-browser; open the URL it prints. The board serves on loopback by default
+browser; open the URL it prints. Without a terminal attached it also stays shut,
+so a script or an agent driving it never takes your desktop; `OME_GUI_OPEN=1`
+opens one anyway (a keybind has no terminal), and `OME_GUI_NO_OPEN=1` never
+opens one whatever else is set. The board serves on loopback by default
 (port 3710). To open it from a phone or another machine, see
 [Remote and mobile](#remote-and-mobile).
 
