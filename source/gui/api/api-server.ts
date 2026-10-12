@@ -30,6 +30,18 @@ import {
 import {startGuiAutoSync} from './lib/api-autosync.js';
 import {createLogPublisher, startGuiLogWatch} from './lib/api-log-watch.js';
 import {refuseCrossSiteRequest} from './lib/origin-guard.js';
+import {
+	AccessStore,
+	authorize,
+	clearAuthCookie,
+	createRemoteAccess,
+	handleSignInRoute,
+	isAllowedHost,
+	qrSvg,
+	RemoteAccess,
+	requestOrigin,
+	signInPage,
+} from './lib/remote-access.js';
 import {GuiProject} from './lib/gui-project.js';
 import {setupWebsocket} from './lib/websocket.js';
 
@@ -129,6 +141,11 @@ const getContentType = (filePath: string) => {
 	if (filePath.endsWith('.css')) return 'text/css; charset=utf-8';
 	if (filePath.endsWith('.json')) return 'application/json; charset=utf-8';
 	if (filePath.endsWith('.ico')) return 'image/x-icon';
+	if (filePath.endsWith('.svg')) return 'image/svg+xml';
+	if (filePath.endsWith('.png')) return 'image/png';
+	if (filePath.endsWith('.woff2')) return 'font/woff2';
+	if (filePath.endsWith('.webmanifest'))
+		return 'application/manifest+json; charset=utf-8';
 
 	return 'application/octet-stream';
 };
@@ -240,9 +257,24 @@ const serveStatic = async (
 	}
 };
 
+// What the sign-in page needs to draw, and what a phone fetches before it has a
+// cookie to send: the stylesheet, the font, the icons and the manifest. Nothing
+// here says anything about the board.
+const PUBLIC_ASSETS: ReadonlySet<string> = new Set([
+	'/ome.css',
+	'/JetBrainsMono.woff2',
+	'/favicon.svg',
+	'/favicon.ico',
+	'/manifest.webmanifest',
+	'/apple-touch-icon.png',
+	'/icon-192.png',
+	'/icon-512.png',
+]);
+
 const listen = async (
 	server: http.Server,
 	preferredPort = PREFERRED_GUI_PORT,
+	host = '127.0.0.1',
 ): Promise<number> =>
 	new Promise((resolve, reject) => {
 		const tryListen = (port: number) => {
@@ -273,7 +305,7 @@ const listen = async (
 			server.once('error', onError);
 			server.once('listening', onListening);
 
-			server.listen(port, '127.0.0.1');
+			server.listen(port, host);
 		};
 
 		tryListen(preferredPort);
@@ -282,7 +314,16 @@ const listen = async (
 export const startGuiServer = async (input: {
 	repoRoot: string;
 	boardId: string;
+	// Where to listen; loopback unless an access mode says otherwise.
+	host?: string;
+	// Who may reach the board from elsewhere. Defaults to loopback only, with
+	// the owner token still required of anything arriving through a proxy.
+	access?: RemoteAccess;
 }): Promise<Result<{url: string; server: http.Server}>> => {
+	const access =
+		input.access ??
+		createRemoteAccess({mode: 'local', store: AccessStore.open()});
+
 	// Nothing this server sends reads a ticket's virtual fields, and building
 	// them is most of the cost of a replay. Set here rather than in the CLI
 	// wrapper so the tests run the same configuration.
@@ -321,6 +362,36 @@ export const startGuiServer = async (input: {
 	) {
 		const url = new URL(req.url ?? '/', 'http://127.0.0.1');
 
+		// A name this server was not told it answers to: a rebound DNS name, or a
+		// typo. Refused before any route, the sign-in page included.
+		if (!isAllowedHost(req, access)) {
+			res.writeHead(403, {'content-type': 'text/plain; charset=utf-8'});
+			return res.end('Unknown host. Start ome gui with --allow-host for it.');
+		}
+
+		if (handleSignInRoute(req, res, url, access)) return;
+
+		if (req.method === 'GET' && PUBLIC_ASSETS.has(url.pathname)) {
+			return serveStatic(url.pathname, req, res);
+		}
+
+		const signedIn = authorize(req, access);
+
+		if (!signedIn) {
+			if (
+				url.pathname.startsWith('/api/') ||
+				url.pathname.startsWith('/media/')
+			) {
+				return sendJson(res, 401, {isError: true, message: 'Sign in first'});
+			}
+
+			res.writeHead(401, {
+				'content-type': 'text/html; charset=utf-8',
+				'cache-control': 'no-store',
+			});
+			return res.end(signInPage());
+		}
+
 		const refusal = refuseCrossSiteRequest(
 			{
 				method: req.method,
@@ -328,6 +399,7 @@ export const startGuiServer = async (input: {
 				contentType: req.headers['content-type'],
 			},
 			boundPort,
+			{req, access},
 		);
 
 		if (refusal) {
@@ -348,6 +420,55 @@ export const startGuiServer = async (input: {
 				version: OME_VERSION,
 				pid: process.pid,
 			} satisfies GuiInstance);
+		}
+
+		// The Devices sheet: how this board is reached, and a pairing code for
+		// one more phone. The link is built on the origin a phone can open — the
+		// one this request came in on when that is not loopback, otherwise the
+		// first public URL the server was given.
+		if (req.method === 'GET' && url.pathname === '/api/access') {
+			const here = requestOrigin(req);
+
+			return sendJson(res, 200, {
+				mode: access.mode,
+				local: signedIn === 'local',
+				origins: [
+					...(signedIn === 'local' ? [] : [here]),
+					...access.publicOrigins.filter(origin => origin !== here),
+				],
+			});
+		}
+
+		if (req.method === 'POST' && url.pathname === '/api/access/pair') {
+			const body = await readJsonBody<{origin?: unknown}>(req, 4096).catch(
+				() => ({} as {origin?: unknown}),
+			);
+			const origins = [
+				...(signedIn === 'local' ? [] : [requestOrigin(req)]),
+				...access.publicOrigins,
+			];
+			const origin =
+				typeof body.origin === 'string' && origins.includes(body.origin)
+					? body.origin
+					: origins[0];
+
+			if (!origin) {
+				return sendJson(res, 409, {
+					isError: true,
+					message:
+						'No address a phone can open. Start ome gui with --allow-host <url> (for example the tailscale serve URL).',
+				});
+			}
+
+			const {code, expiresAt} = access.store.createPairing();
+			const link = `${origin}/join/${code}`;
+
+			return sendJson(res, 200, {code, expiresAt, link, qr: qrSvg(link)});
+		}
+
+		if (req.method === 'POST' && url.pathname === '/api/access/signout') {
+			clearAuthCookie(res);
+			return sendJson(res, 200, {ok: true});
 		}
 
 		if (url.pathname === '/api/state') {
@@ -569,7 +690,7 @@ export const startGuiServer = async (input: {
 	}
 
 	try {
-		boundPort = await listen(server);
+		boundPort = await listen(server, PREFERRED_GUI_PORT, input.host);
 	} catch (error) {
 		return failed(
 			error instanceof Error
@@ -586,6 +707,7 @@ export const startGuiServer = async (input: {
 		onStateChanged: () => guiAutoSync.queueSync(),
 		onSyncSettingsChanged: () => guiAutoSync.reschedule(),
 		getPort: () => boundPort,
+		access,
 	});
 
 	server.on('close', () => {

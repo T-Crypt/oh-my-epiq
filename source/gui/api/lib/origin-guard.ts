@@ -10,6 +10,9 @@
  * request with no `Origin` is not coming from a page and has nothing to spoof;
  * it is left alone so curl and the test harness keep working.
  */
+import type http from 'node:http';
+import {isOwnRemoteOrigin, type RemoteAccess} from './remote-access.js';
+
 const LOOPBACK_HOSTS: ReadonlySet<string> = new Set([
 	'127.0.0.1',
 	'[::1]',
@@ -18,9 +21,17 @@ const LOOPBACK_HOSTS: ReadonlySet<string> = new Set([
 	'ome.localhost',
 ]);
 
+// The request the Origin came with, and the names the server was told to
+// answer to. Absent, only the loopback rule below applies.
+export type RemoteOriginContext = {
+	req: http.IncomingMessage;
+	access: RemoteAccess;
+};
+
 export const isForeignOrigin = (
 	origin: string | undefined,
 	port: number,
+	remote?: RemoteOriginContext,
 ): boolean => {
 	if (!origin) return false;
 
@@ -32,6 +43,16 @@ export const isForeignOrigin = (
 		url = new URL(origin);
 	} catch {
 		return true;
+	}
+
+	// A phone on the tailnet, behind `tailscale serve` or on the LAN address:
+	// see `isOwnRemoteOrigin` for why the host has to match the request's.
+	if (
+		remote &&
+		!LOOPBACK_HOSTS.has(url.hostname) &&
+		isOwnRemoteOrigin(url, remote.req, remote.access)
+	) {
+		return false;
 	}
 
 	if (url.protocol !== 'http:') return true;
@@ -56,10 +77,11 @@ export const refuseCrossSiteRequest = (
 		contentType: string | undefined;
 	},
 	port: number,
+	remote?: RemoteOriginContext,
 ): {status: number; message: string} | null => {
 	if (request.method === 'GET' || request.method === 'HEAD') return null;
 
-	if (isForeignOrigin(request.origin, port)) {
+	if (isForeignOrigin(request.origin, port, remote)) {
 		return {status: 403, message: 'Cross-origin request'};
 	}
 

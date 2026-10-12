@@ -3,6 +3,7 @@ import {render} from 'ink';
 import meow from 'meow';
 import React from 'react';
 import {startGui} from './gui/init.js';
+import {ACCESS_MODES, isAccessMode} from './gui/api/lib/remote-access.js';
 import OmeApp from './lib/components/OmeApp.js';
 import {applyActorNameArgument} from './lib/config/actor-env.js';
 import {
@@ -33,6 +34,17 @@ ${chalk.dim('Launch GUI:')}
   ${chalk.cyan('$ ome gui')}
   ${chalk.cyan('$ ome gui --no-open')}  ${chalk.dim('no browser')}
 
+${chalk.dim('Reach the GUI from a phone or another machine:')}
+  ${chalk.cyan('$ ome gui --access tailscale')}   ${chalk.dim(
+	'local | lan | tailscale | cloudflare',
+)}
+  ${chalk.cyan(
+		'$ ome gui --allow-host https://host.example.ts.net:3710',
+	)}  ${chalk.dim('behind a proxy')}
+  ${chalk.cyan('$ ome gui --rotate-token')}       ${chalk.dim(
+	'sign every device out',
+)}
+
 ${chalk.dim('Migrate an Epiq board to OME:')}
   ${chalk.cyan('$ ome migrate')}            ${chalk.dim(
 	'plan only, changes nothing',
@@ -59,6 +71,18 @@ const cli = meow(helpText, {
 			default: true,
 		},
 		apply: {
+			type: 'boolean',
+			default: false,
+		},
+		access: {
+			type: 'string',
+			default: 'local',
+		},
+		allowHost: {
+			type: 'string',
+			isMultiple: true,
+		},
+		rotateToken: {
 			type: 'boolean',
 			default: false,
 		},
@@ -160,9 +184,30 @@ if (command === 'migrate') {
 
 	process.exit(process.exitCode ?? 0);
 } else if (command === 'gui') {
+	if (!isAccessMode(cli.flags.access)) {
+		console.error(
+			chalk.red(
+				`Unknown --access ${cli.flags.access}: use ${ACCESS_MODES.join(', ')}`,
+			),
+		);
+		process.exit(1);
+	}
+
+	// Also from the environment, so a service unit can set it in one place.
+	const allowHosts = [
+		...(cli.flags.allowHost ?? []),
+		...(process.env['OME_GUI_ALLOW_HOSTS'] ?? '')
+			.split(',')
+			.map(host => host.trim())
+			.filter(Boolean),
+	];
+
 	const guiResult = await startGui({
 		repoRoot: process.cwd(),
 		open: cli.flags.open,
+		access: cli.flags.access,
+		allowHosts,
+		rotateToken: cli.flags.rotateToken,
 	});
 
 	if (isFail(guiResult)) {
