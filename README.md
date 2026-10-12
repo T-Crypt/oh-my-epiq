@@ -51,6 +51,25 @@ Every upstream Epiq feature, plus the operator and agent surface:
 
 ![The OME terminal UI: the same board in a terminal, with the command palette](source/assets/tui.jpeg)
 
+## What OME adds over Epiq
+
+The engine is Epiq's; the operator and agent surface on top is OME's. In one
+glance, what this fork adds:
+
+- **A migration, not a re-install** — `ome migrate` carries an existing Epiq
+  board to OME's on-disk layout with a dry run, a backup and a printed
+  rollback.
+- **A pruned, forgiving agent MCP** — every writing tool takes a full id or a
+  7-char ref, adding something a ticket already has is an idempotent no-op,
+  removals accept a name, and the admin tools agents never call are gone from
+  the surface. The board workflow ships to every connected client, so a project
+  carries no agent files.
+- **The Oh-My-Pocket look, desktop and phone** — the browser board wears the
+  Oh-My-Pocket shell (Tokyo Night palette, square tiles, icon rail) and turns
+  into a standalone phone app under 760px, with signed-in remote access over
+  LAN, Tailscale or Cloudflare — Epiq's GUI has neither the shell nor the
+  sign-in.
+
 ## Roadmap
 
 The fork ships the engine and the agent surface first. These operator features

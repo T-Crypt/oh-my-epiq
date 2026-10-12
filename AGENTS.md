@@ -19,7 +19,7 @@ operator-only and gitignored, so it may be absent in a fresh clone.
 
 ## Remotes
 
-- `origin` — `T-Crypt/oh-my-epiq`, **private**. Everything you commit lands here.
+- `origin` — `T-Crypt/oh-my-epiq`, public. Everything you commit lands here.
 - `upstream` — `ljtn/epiq`. Fetch and cherry-pick only. Never push, never force.
 
 ## Shape of the code
@@ -95,4 +95,4 @@ Build and verify before any commit:
   (`OME_*`), on-disk paths (`.ome`, `~/.ome-global`), the state branch
   (`__ome_state__`) and the tool names all moved. Behaviour did not. Re-apply the
   rename after any upstream merge.
-- This repository is private while it is under active development.
+- The repository is public; the issue board on GitHub is not the product — the local board is.
