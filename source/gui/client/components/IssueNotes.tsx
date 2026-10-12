@@ -162,10 +162,7 @@ export const IssueNotes = ({
 											<Button variant="ghost" onClick={() => setEditing(null)}>
 												cancel
 											</Button>
-											<Button
-												variant="primary"
-												onClick={() => saveEdit(note)}
-											>
+											<Button variant="primary" onClick={() => saveEdit(note)}>
 												save
 											</Button>
 										</ActionRow>

@@ -362,9 +362,7 @@ export const useIssueMutations = ({
 	};
 
 	const deleteIssueNote = (issueId: string, noteId: string) => {
-		updateNotes(issueId, notes =>
-			notes.filter(note => note.id !== noteId),
-		);
+		updateNotes(issueId, notes => notes.filter(note => note.id !== noteId));
 
 		send('issue:note:delete', {issueId, noteId});
 	};

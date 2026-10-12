@@ -75,8 +75,7 @@ export const deleteIssueNote = async (input: DeleteIssueNoteInput) => {
 
 	const noteEvent = ready.value.state.eventLog.find(
 		(event): event is AppEvent<'add.issue.note'> =>
-			event.action === 'add.issue.note' &&
-			event.payload.id === input.noteId,
+			event.action === 'add.issue.note' && event.payload.id === input.noteId,
 	);
 
 	if (!noteEvent) {
@@ -92,8 +91,7 @@ export const deleteIssueNote = async (input: DeleteIssueNoteInput) => {
 
 	const alreadyDeleted = ready.value.state.eventLog.some(
 		event =>
-			event.action === 'delete.issue.note' &&
-			event.payload.id === input.noteId,
+			event.action === 'delete.issue.note' && event.payload.id === input.noteId,
 	);
 
 	if (alreadyDeleted) {
@@ -132,8 +130,7 @@ export const editIssueNote = async (input: EditIssueNoteInput) => {
 
 	const noteEvent = ready.value.state.eventLog.find(
 		(event): event is AppEvent<'add.issue.note'> =>
-			event.action === 'add.issue.note' &&
-			event.payload.id === input.noteId,
+			event.action === 'add.issue.note' && event.payload.id === input.noteId,
 	);
 
 	if (!noteEvent) {
@@ -149,8 +146,7 @@ export const editIssueNote = async (input: EditIssueNoteInput) => {
 
 	const deleted = ready.value.state.eventLog.some(
 		event =>
-			event.action === 'delete.issue.note' &&
-			event.payload.id === input.noteId,
+			event.action === 'delete.issue.note' && event.payload.id === input.noteId,
 	);
 
 	if (deleted) return failed('Note was deleted');

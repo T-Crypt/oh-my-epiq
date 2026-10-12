@@ -686,10 +686,7 @@ export const boardHandlers: EventHandlers<AppEventMap> = {
 		const result = nodeRepo.deleteNote(id);
 
 		if (isFail(result)) {
-			return materializeSkip(
-				result.message ?? 'Unable to delete note',
-				event,
-			);
+			return materializeSkip(result.message ?? 'Unable to delete note', event);
 		}
 
 		return succeeded('Note deleted', {

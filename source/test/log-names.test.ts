@@ -142,7 +142,11 @@ const log = (): AppEvent[] => [
 		author: ALICE,
 		md: 'A note',
 	}),
-	at('edit.issue.note', {id: '01J0000000000000000NOTE0', issue: ISSUE, md: 'Edited'}),
+	at('edit.issue.note', {
+		id: '01J0000000000000000NOTE0',
+		issue: ISSUE,
+		md: 'Edited',
+	}),
 	at('delete.issue.note', {id: '01J0000000000000000NOTE0', issue: ISSUE}),
 
 	at('add.issue.attachment', {

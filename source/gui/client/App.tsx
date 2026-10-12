@@ -340,7 +340,10 @@ export const App = () => {
 
 	const tabParam = searchParams.get('tab');
 	const selectedTab: IssueDetailsTab =
-		tabParam === 'comments' || tabParam === 'code' || tabParam === 'stats'
+		tabParam === 'comments' ||
+		tabParam === 'code' ||
+		tabParam === 'stats' ||
+		tabParam === 'notes'
 			? tabParam
 			: 'overview';
 	// The one comment a link points at, where it points at one: the comments
@@ -2065,6 +2068,7 @@ export const App = () => {
 						onDeleteNote={deleteIssueNote}
 						onEditNote={editIssueNote}
 						noteCount={notesByIssueId[selectedIssue.id]?.length}
+						notes={notesByIssueId[selectedIssue.id] ?? []}
 						onFileTicket={fileTicketFromSelection}
 						onOpenDiffLocation={openDiffLocation}
 						diffFocus={diffFocus}

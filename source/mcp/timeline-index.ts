@@ -170,7 +170,8 @@ const NOTE_ACTIONS = new Set<EventAction>([
 // than derived: the id is already there, and no other kind of event has a
 // target the reader could be sent to.
 const targetOf = (event: AppEvent): string | null => {
-	if (!COMMENT_ACTIONS.has(event.action) && !NOTE_ACTIONS.has(event.action)) return null;
+	if (!COMMENT_ACTIONS.has(event.action) && !NOTE_ACTIONS.has(event.action))
+		return null;
 
 	const payload = event.payload as {id?: string} | undefined;
 

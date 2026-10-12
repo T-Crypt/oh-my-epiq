@@ -17,6 +17,21 @@ export const getVisibleCommentCount = (ticket: Ticket) => {
 	).length;
 };
 
+export const getVisibleNoteCount = (ticket: Ticket) => {
+	const deleted = new Set(
+		(ticket.log ?? [])
+			.filter(event => event.action === 'delete.issue.note')
+			.map(event => event.payload.id),
+	);
+
+	return (ticket.log ?? []).filter(
+		event =>
+			event.action === 'add.issue.note' &&
+			event.payload.issue === ticket.id &&
+			!deleted.has(event.payload.id),
+	).length;
+};
+
 export const createCommentNode = (
 	comment: CommentItem,
 	index: number,

@@ -151,6 +151,7 @@ const COMMANDS_BY_CONTEXT: CommandMap = {
 	FIELD_LIST: [...GLOBAL_COMMANDS, ...TICKET_COMMANDS],
 	TEXT: [...GLOBAL_COMMANDS],
 	COMMENT: [CmdKeywords.EDIT, CmdKeywords.DELETE, CmdKeywords.YANK],
+	NOTE: [CmdKeywords.EDIT, CmdKeywords.DELETE, CmdKeywords.YANK],
 };
 
 const getNewModifiers = (context: AnyContext): string[] => {

@@ -190,19 +190,17 @@ export const deriveGuiState = (): Result<ApiState> => {
 	for (const issue of nodes.filter(isTicketNode)) {
 		if (issue.isDeleted || !sentIssueIds.has(issue.id)) continue;
 
-		notesByIssueId[issue.id] = (notesByIssue.get(issue.id) ?? []).map(
-			note => {
-				const contributor = nodeRepo.getContributor(note.authorId);
+		notesByIssueId[issue.id] = (notesByIssue.get(issue.id) ?? []).map(note => {
+			const contributor = nodeRepo.getContributor(note.authorId);
 
-				return {
-					id: note.id,
-					issueId: note.issue,
-					body: note.md,
-					author: identityOf(note.authorId, contributor?.name),
-					createdAt: ulidTimeMs(note.id),
-				};
-			},
-		);
+			return {
+				id: note.id,
+				issueId: note.issue,
+				body: note.md,
+				author: identityOf(note.authorId, contributor?.name),
+				createdAt: ulidTimeMs(note.id),
+			};
+		});
 	}
 
 	const attachmentOwners = new Map<string, string>();

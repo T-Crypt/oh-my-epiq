@@ -34,6 +34,7 @@ export type NavNodePropsMap = {
 	FIELD_LIST: EmptyProps;
 	TEXT: TextProps;
 	COMMENT: FieldProps;
+	NOTE: FieldProps;
 };
 
 export type NavNodeProps<U extends AnyContext> = NavNodePropsMap[U];

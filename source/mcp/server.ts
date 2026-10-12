@@ -503,7 +503,8 @@ export const createMcpServer = () => {
 	server.registerTool(
 		'ome_issue_note_add',
 		{
-			description: 'Add a note to an OME issue (additional information, distinct from comments)',
+			description:
+				'Add a note to an OME issue (additional information, distinct from comments)',
 			inputSchema: z.object({
 				issueId: z.string().min(1),
 				body: z.string().min(1).max(MAX_COMMENT_LENGTH),
@@ -528,8 +529,7 @@ export const createMcpServer = () => {
 	server.registerTool(
 		'ome_issue_note_edit',
 		{
-			description:
-				'Replace the body of one of your own notes on an OME issue',
+			description: 'Replace the body of one of your own notes on an OME issue',
 			inputSchema: z.object({
 				noteId: z.string().min(1),
 				body: z.string().min(1).max(MAX_COMMENT_LENGTH),
