@@ -36,8 +36,8 @@ const needsWritableBoard = (context: CommandContext): string | null => {
  * Named after the TUI's keywords wherever the two surfaces mean the same thing,
  * so what somebody learned in one works in the other. `gui:` ids are the ones a
  * terminal has no equivalent for; the TUI-only commands (`init`, `config`,
- * `exit`, `move`) are simply absent, since a browser has nothing to point them
- * at.
+ * `exit`) are simply absent, since a browser has nothing to point them at.
+ * `move` is here because a touch screen cannot drag a card.
  *
  * Built from handlers rather than reaching for them, so the whole registry is a
  * value a test can construct.
@@ -204,6 +204,26 @@ export const buildCommandRegistry = (): GuiCommand[] => [
 		run: (context, argument) => {
 			if (context.issue && argument) {
 				context.handlers.removeIssueAssignee(context.issue.id, argument.id);
+			}
+		},
+	},
+	{
+		id: CmdKeywords.MOVE,
+		title: 'Move ticket to a lane',
+		group: 'Ticket',
+		keywords: ['lane', 'column', 'swimlane', 'status'],
+		unavailable: context =>
+			needsWritableTicket(context) ??
+			(context.issue?.readonly ? 'This ticket is read-only' : null) ??
+			(context.swimlanes.length > 1 ? null : 'There is no other lane'),
+		// Every lane but the one it stands in.
+		getArguments: context =>
+			context.swimlanes
+				.filter(swimlane => swimlane.id !== context.issueSwimlaneId)
+				.map(swimlane => ({id: swimlane.id, title: swimlane.title})),
+		run: (context, argument) => {
+			if (context.issue && argument) {
+				context.handlers.moveIssue(context.issue.id, argument.id);
 			}
 		},
 	},

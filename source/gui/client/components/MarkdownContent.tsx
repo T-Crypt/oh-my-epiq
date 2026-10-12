@@ -43,7 +43,7 @@ const urlTransform = (url: string): string =>
 	url.startsWith(TICKET_REF_URL_PREFIX) ? url : defaultUrlTransform(url);
 
 const CODE_FONT =
-	'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+	'"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
 
 // A ticket ref, set in the prose it was written in. Under the pointer it takes
 // a wash of its own colour, as a tag chip does — the preview card is a beat

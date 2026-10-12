@@ -9,6 +9,9 @@ import React, {
 } from 'react';
 import {GUI_THEME} from '../lib/gui-theme';
 
+// Off in the Pocket look; see `glowStrength` below.
+const AMBIENT_GLOW = false;
+
 // Roughly one sample per frame at 60Hz, without depending on the frame clock.
 const POINTER_SAMPLE_MS = 16;
 
@@ -116,13 +119,17 @@ export const Panel = <T extends ElementType = 'div'>({
 		return () => window.removeEventListener('mousemove', onMove);
 	}, [proximityReach]);
 
-	const glowStrength = active
-		? 1
-		: proximityReach !== undefined
-		? proximity
-		: hovered
-		? 1
+	// Lit only while something is being dropped on it. Oh-My-Pocket's windows
+	// carry no ambient glow — a border colour says what is in focus — so the
+	// hover and approach light are kept as inputs but no longer drawn.
+	const ambient = AMBIENT_GLOW
+		? proximityReach !== undefined
+			? proximity
+			: hovered
+			? 1
+			: 0
 		: 0;
+	const glowStrength = active ? 1 : ambient;
 
 	const glow = useMemo<PanelGlow>(
 		() => ({

@@ -4,6 +4,7 @@ import React, {
 	useCallback,
 	useEffect,
 	useLayoutEffect,
+	useContext,
 	useRef,
 	useState,
 } from 'react';
@@ -70,6 +71,16 @@ export type AsideRenderApi = {
 // place.
 export const AsideHeaderSlot = createContext<HTMLDivElement | null>(null);
 
+// On a phone every panel is a sheet over the whole screen rather than a column
+// beside a board there is no room for: `.phone-sheet` in ome.css pins it, and
+// the resize handle has nothing to resize. `bar` is drawn above the panel's own
+// header — the ticket's lane picker, which a touch screen needs because it
+// cannot drag a card.
+export const PhoneSheetContext = createContext<{
+	phone: boolean;
+	bar?: React.ReactNode;
+}>({phone: false});
+
 export const Aside = forwardRef<
 	HTMLElement,
 	{
@@ -87,7 +98,8 @@ export const Aside = forwardRef<
 	// State rather than the ref below: the handle re-renders on its own hover
 	// and reads this as a prop, so a drag ending has to reach it as a render.
 	const [dragging, setDragging] = useState(false);
-	const bottom = dock === 'bottom';
+	const sheet = useContext(PhoneSheetContext);
+	const bottom = dock === 'bottom' && !sheet.phone;
 
 	// Mirrors the sizes synchronously: handlePointerMove/handleDragEnd are
 	// memoized once (empty deps, so the pointermove/pointerup listeners stay
@@ -232,6 +244,7 @@ export const Aside = forwardRef<
 	return (
 		<aside
 			ref={ref}
+			className={sheet.phone ? 'phone-sheet' : undefined}
 			style={{
 				boxSizing: 'border-box',
 				// Fullscreen overlays the row rather than growing inside it: the
@@ -270,11 +283,15 @@ export const Aside = forwardRef<
 				overflow: 'hidden',
 			}}
 		>
-			<ResizeHandle
-				edge={bottom ? 'top' : 'left'}
-				active={dragging}
-				onPointerDown={handlePointerDown}
-			/>
+			{sheet.phone ? (
+				sheet.bar
+			) : (
+				<ResizeHandle
+					edge={bottom ? 'top' : 'left'}
+					active={dragging}
+					onPointerDown={handlePointerDown}
+				/>
+			)}
 			{/* Where FormHeader lands, whichever panel drew it — above the pane
 			    rather than in it, as the log's header is. A header inside the
 			    scroller would have the scrollbar running up beside it, and would

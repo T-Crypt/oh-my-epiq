@@ -13,6 +13,7 @@ const handlers = (): CommandHandlers => ({
 	removeIssueTag: vi.fn(),
 	addIssueAssignee: vi.fn(),
 	removeIssueAssignee: vi.fn(),
+	moveIssue: vi.fn(),
 	commentOnIssue: vi.fn(),
 	copyRef: vi.fn(),
 	sync: vi.fn(),
@@ -46,6 +47,8 @@ const context = (overrides: Partial<CommandContext> = {}): CommandContext => ({
 	board: {id: 'board-1', title: 'Default', readonly: false},
 	tags: [],
 	tickets: [],
+	swimlanes: [],
+	issueSwimlaneId: null,
 	contributors: [],
 	handlers: handlers(),
 	...overrides,
@@ -378,5 +381,36 @@ describe('the GUI command registry', () => {
 		expect(running.handlers.closeIssue).toHaveBeenCalledWith('issue-1');
 		expect(running.handlers.copyRef).toHaveBeenCalledWith('ABC1234');
 		expect(running.handlers.sync).toHaveBeenCalled();
+	});
+});
+
+describe('move', () => {
+	it('offers every lane but the one the ticket is in, and moves it', () => {
+		const moving = context({
+			swimlanes: [
+				{id: 'todo', title: 'Todo'},
+				{id: 'doing', title: 'In progress'},
+				{id: 'done', title: 'Done'},
+			],
+			issueSwimlaneId: 'todo',
+		});
+		const command = find(CmdKeywords.MOVE);
+
+		expect(command.unavailable(moving)).toBeNull();
+		expect(command.getArguments?.(moving)?.map(lane => lane.title)).toEqual([
+			'In progress',
+			'Done',
+		]);
+
+		command.run(moving, {id: 'done', title: 'Done'});
+		expect(moving.handlers.moveIssue).toHaveBeenCalledWith('issue-1', 'done');
+	});
+
+	it('says why when there is nowhere to go', () => {
+		expect(
+			find(CmdKeywords.MOVE).unavailable(
+				context({swimlanes: [{id: 'todo', title: 'Todo'}]}),
+			),
+		).toBe('There is no other lane');
 	});
 });

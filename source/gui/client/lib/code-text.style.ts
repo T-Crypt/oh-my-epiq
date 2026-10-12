@@ -10,7 +10,7 @@ import {TEXT} from './gui-theme';
  * through its shadow root from whatever element carries this.
  */
 export const CODE_FONT =
-	'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+	'"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
 
 // Sized for the app's mono text, and a line grid anything drawn alongside the
 // highlighter (a gutter, an annotation) has to land on.

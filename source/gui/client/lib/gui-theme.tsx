@@ -1,16 +1,15 @@
-// UI chrome (labels, buttons, tags) stays monospace to match the rest of the
-// app; prose content (description, title, comments) uses this for readability.
-// Both lead with the Oh-My-Pi (OMP) faces so OMP and OME read as siblings;
-// they fall back to the platform stack when Geist / JetBrains Mono are absent.
+// One face for everything, as Oh-My-Pocket draws it: JetBrains Mono for the
+// chrome and the prose alike. Bundled (dist/gui/JetBrainsMono.woff2), so a
+// phone without it installed reads the same board. Two names still, because
+// they are set in different places — see UI_FONT.
 export const CONTENT_FONT =
-	'"Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+	'"JetBrains Mono", "JetBrainsMono Nerd Font", ui-monospace, "SF Mono", Menlo, Consolas, monospace';
 
 // The chrome's own face. Set once on the tree the app draws into, and again by
 // anything drawn outside it: a window of its own, the screen shown before there
 // is a board, and any popover portalled to the body, which inherits from there
 // rather than from the control it belongs to.
-export const UI_FONT =
-	'"JetBrains Mono", "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+export const UI_FONT = CONTENT_FONT;
 
 // The side panel's text sizes. Prose (descriptions, comments, notes) sits a
 // step above the mono UI text so the two fonts read at the same visual size.
@@ -22,91 +21,70 @@ export const TEXT = {
 	title: 18,
 } as const;
 
-// The OMP palette: a near-black ground, a magenta primary, a cyan secondary
-// and a violet bridge. Hard white rules and a magenta selection hold it
-// together. Keeping these values in one place is what lets OME sit beside OMP
-// without looking like a different product.
+// Oh-My-Pocket's palette — Tokyo Night, the theme it ships by default — so the
+// board and the agent harness read as one family on the same phone. Surfaces
+// are the foreground laid over the ground at a few percent, the way Pocket
+// mixes them (ome.css carries the same values as variables); hex rather than
+// variables here because canvases and `${colour}33` alphas read these too.
 export const GUI_THEME = {
-	bg: '#070708',
+	bg: '#1a1b26',
 	// The instrumentation around the work: the top bar, the timeline and the
 	// event log. Below the board's own ground rather than above it, so the
 	// chrome reads as the room and the board as what is lit in it.
-	chrome: '#000000',
-	bgHighlight: '#12121665',
-	panel: '#0f0f12',
-	panel2: '#151519',
-	line: 'rgba(255, 255, 255, 0.08)',
+	chrome: '#13141c',
+	bgHighlight: '#24283b65',
+	panel: '#20212d',
+	panel2: '#252734',
+	line: 'rgba(169, 177, 214, 0.13)',
 	// The detail panel's own outer edge. `line` divides sections inside one
-	// surface; this one has to hold the panel apart from the board behind it,
-	// which takes considerably more contrast.
-	edge: 'rgba(255, 255, 255, 0.14)',
-	// The same edge over the chrome's ground rather than the panel's. That
-	// ground is black, so a translucent line lands on more contrast there and
-	// reads brighter at the same value — half the alpha is what makes the two
-	// look like one edge drawn twice.
-	edgeOnChrome: 'rgba(255, 255, 255, 0.07)',
-	primary: '#f2f2f4',
-	// One step under `primary`, for text that is the content of what it sits in
-	// but repeats all the way down a column — a card's title. Thirty of those at
-	// full `primary` is the brightest thing on the board, louder than the accent
-	// marking the selected card, and it leaves the ref and the tags nothing to
-	// stand against. Still well clear of a reading contrast: what comes off is
-	// the shout, not the legibility.
-	primarySoft: '#d5d5da',
-	secondary: '#a0a0a8',
-	tertiary: '#1a1a1f',
+	// surface; this one has to hold the panel apart from the board behind it.
+	edge: 'rgba(169, 177, 214, 0.25)',
+	// The same edge over the chrome's darker ground, where a translucent line
+	// lands on more contrast and reads brighter at the same value.
+	edgeOnChrome: 'rgba(169, 177, 214, 0.16)',
+	primary: '#c0caf5',
+	// One step under `primary`, for text that repeats all the way down a column
+	// — a card's title — so thirty of them do not outshout the selected card.
+	primarySoft: '#a9b1d6',
+	secondary: '#9aa5ce',
+	tertiary: '#24283b',
 	// The chrome's quiet text — labels, unselected scope buttons, placeholders,
-	// the connection line. OMP's own faint ink, lifted enough to read on black.
-	dim: '#626368',
-	dim2: '#7d7e85',
-	// What anything the pointer is over takes on, throughout: buttons, rows,
-	// menu items. A lift off whatever it sits on rather than a colour of its
-	// own, so it reads the same on the panel as on the board.
-	hover: 'rgba(255,255,255,0.04)',
-	// What the confirming button in a row is filled with — `hover` a step
-	// further up, and a wash rather than a colour for the same reason: it sits
-	// on the panel, on a modal and inside the diff's own composer, whose ground
-	// is the flat colour this used to be painted in.
-	raised: 'rgba(255,255,255,0.06)',
-	raisedHover: 'rgba(255,255,255,0.1)',
-	// OMP's primary accent, magenta. Selection, links, the selected card and
+	// the connection line.
+	dim: '#565f89',
+	dim2: '#737aa2',
+	// What anything the pointer is over takes on: a lift off whatever it sits
+	// on rather than a colour of its own.
+	hover: 'rgba(169, 177, 214, 0.08)',
+	raised: 'rgba(169, 177, 214, 0.11)',
+	raisedHover: 'rgba(169, 177, 214, 0.16)',
+	// Pocket's accent, Tokyo Night blue. Selection, links, the selected card and
 	// the follower all take it.
-	accent: '#f84fcc',
-	// The accent laid over whatever is underneath, for the one thing a link or
-	// a follow is pointing at: the log's followed line, the comment a log line
-	// leads to. Faint on purpose — it says "this one", not "look here".
-	accentWash: 'rgba(248, 79, 204, 0.12)',
-	green: '#8ce99a',
-	// One step short of `red`, at the same pastel weight, for anything that
-	// warns before it alarms.
-	amber: '#ffc078',
-	red: '#ff8787',
+	accent: '#7aa2f7',
+	accentWash: 'rgba(122, 162, 247, 0.13)',
+	green: '#9ece6a',
+	amber: '#e0af68',
+	red: '#f7768e',
 	transparent: 'rgba(0, 0, 0, 0)',
 };
 
 // The Board series split by what kind of change each event was. Tickets keeps
-// the magenta accent; the rest are the OMP family — amber, violet, cyan —
-// spaced around the wheel at a matching lightness. Green is avoided throughout
-// — that is the commit series.
+// the accent; the rest are the palette's yellow, magenta and cyan. Green is
+// avoided — that is the commit series.
 export const EVENT_CATEGORY_COLORS = {
 	tickets: GUI_THEME.accent,
-	comments: '#ffd479',
-	tagging: '#9362f4',
-	assigning: '#00dbe4',
+	comments: '#e0af68',
+	tagging: '#bb9af7',
+	assigning: '#7dcfff',
 } as const;
 
 // The Contributors series, which is not a kind of event but a way of splitting
-// every kind. Its own hue rather than the Board accent: it plots what "Board
-// events" plots, so sharing a colour would leave the two rows saying the same
-// thing.
-export const BOARD_CONTRIBUTOR_COLOR = '#7fd8c4';
+// every kind, so a hue of its own.
+export const BOARD_CONTRIBUTOR_COLOR = '#73daca';
 
-// The mark's own gradient: the three stops the favicon draws, cyan → violet →
-// magenta. Worn by anything that names OME in a heading — the header's `:ome`
-// and the init screen's kicker — so the wordmark and the favicon are one mark,
-// which is what the theme asks for.
+// The mark's gradient, cyan → blue → magenta, as the favicon draws it. Worn by
+// anything that names OME in a heading.
 export const OME_GRADIENT =
-	'linear-gradient(100deg, #00dbe4 0%, #9362f4 52%, #f84fcc 100%)';
+	'linear-gradient(100deg, #7dcfff 0%, #7aa2f7 52%, #bb9af7 100%)';
 
 // The style a span takes to wear `OME_GRADIENT`. `background-clip: text` shows
 // the gradient through the glyphs only while the text colour is transparent,
