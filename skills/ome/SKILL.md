@@ -17,6 +17,7 @@ description: Workflow for working an ome issue board through the ome MCP — tak
 - **Picking up a ticket:** assign yourself and move it to the in-progress lane. Ask before taking one assigned to someone else.
 - **Keep status, tags and description current**; reuse existing tags.
 - **Comment** on deviations, blockers, and the outcome when done.
+- **Notes** (`ome_issue_note_add/edit/delete`) are a separate section from comments: use them for gathered context, websearch results, or any additional information you append to a ticket without disturbing the description or the comment thread. Comments are for discussion; notes are for recorded information.
 - **Prompt user for closing tickets and big decisions**
 - **Park decisions that are the user's to make.** A design fork, a change with blast radius beyond its ticket, anything you'd want a second opinion on - file a ticket tagged human-input-needed naming the options and the trade-offs, then carry on with whatever doesn't depend on the answer.
 - **Link commits** by starting the subject with the ticket's `ref` from the MCP response — never derive the ref from the id.

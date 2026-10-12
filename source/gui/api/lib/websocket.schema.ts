@@ -94,6 +94,12 @@ export const GuiMessageSchema = z.discriminatedUnion('type', [
 		'issue:comment:edit',
 		z.object({issueId: id, commentId: id, body: z.string()}),
 	),
+	message('issue:note:add', z.object({issueId: id, body: z.string()})),
+	message('issue:note:delete', z.object({issueId: id, noteId: id})),
+	message(
+		'issue:note:edit',
+		z.object({issueId: id, noteId: id, body: z.string()}),
+	),
 	message('issue:get', z.object({issueId: id})),
 	message('issue:preview:get', z.object({issueId: id})),
 	z.object({

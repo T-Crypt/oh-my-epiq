@@ -1,4 +1,4 @@
-import {AnyContext, Comment, NavNodeCtx} from '../model/context.model.js';
+import {AnyContext, Comment, Note, NavNodeCtx} from '../model/context.model.js';
 import {NavNode} from '../model/navigation-node.model.js';
 import {nodeRef} from '../utils/node-ref.js';
 
@@ -194,6 +194,36 @@ export const nodes = {
 		isDeleted: false,
 		props,
 		context: NavNodeCtx.COMMENT,
+		childRenderAxis: 'vertical',
+		parentNodeId,
+		readonly,
+		log: [],
+		isVirtual,
+	}),
+
+	note: ({
+		id,
+		name,
+		parentNodeId,
+		rank,
+		props = {},
+		readonly = true,
+		isVirtual = true,
+	}: {
+		id: string;
+		name: string;
+		parentNodeId: string;
+		rank: string;
+		props?: Note['props'];
+		isVirtual?: boolean;
+		readonly?: boolean;
+	}): NavNode<'NOTE'> => ({
+		id,
+		title: name,
+		rank,
+		isDeleted: false,
+		props,
+		context: NavNodeCtx.NOTE,
 		childRenderAxis: 'vertical',
 		parentNodeId,
 		readonly,

@@ -429,8 +429,10 @@ vi.mock('../../lib/repository/node-repo.js', () => ({
 		getContributor: vi.fn((id: string) => contributorRegistry[id]),
 		getCommentsByIssue: vi.fn(() => []),
 		getAttachmentsByIssue: vi.fn(() => []),
+		getNotesByIssue: vi.fn(() => []),
 		getCommentsGroupedByIssue: vi.fn(() => new Map()),
 		getAttachmentsGroupedByIssue: vi.fn(() => new Map()),
+		getNotesGroupedByIssue: vi.fn(() => new Map()),
 	},
 }));
 

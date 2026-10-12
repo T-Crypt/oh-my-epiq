@@ -137,7 +137,7 @@ import {plural} from './lib/gui-format.helper';
 import {REVEAL_MS, useReveal} from './lib/use-reveal';
 import {usePrefersReducedMotion} from './lib/scrubber';
 
-type IssueDetailsTab = 'overview' | 'comments' | 'code' | 'stats';
+type IssueDetailsTab = 'overview' | 'comments' | 'notes' | 'code' | 'stats';
 
 // Module scope so an absent state does not hand the memos below a new object
 // on every render.
@@ -340,7 +340,10 @@ export const App = () => {
 
 	const tabParam = searchParams.get('tab');
 	const selectedTab: IssueDetailsTab =
-		tabParam === 'comments' || tabParam === 'code' || tabParam === 'stats'
+		tabParam === 'comments' ||
+		tabParam === 'code' ||
+		tabParam === 'stats' ||
+		tabParam === 'notes'
 			? tabParam
 			: 'overview';
 	// The one comment a link points at, where it points at one: the comments
@@ -425,6 +428,7 @@ export const App = () => {
 	const [statsSwimlaneId, setStatsSwimlaneId] = useState<string | null>(null);
 
 	const commentsByIssueId = state?.commentsByIssueId ?? EMPTY_COMMENTS;
+	const notesByIssueId = state?.notesByIssueId ?? {};
 
 	// The board's state carries no descriptions, comment bodies or commits —
 	// they are most of a ticket's weight and nothing on the board draws them.
@@ -439,6 +443,7 @@ export const App = () => {
 		squashed: issueSquashedDiff,
 		loadSquashedDiff: loadIssueSquashedDiff,
 		updateComments: updateDetailComments,
+		updateNotes: updateDetailNotes,
 		onMessage: onIssueDetailMessage,
 	} = useIssueDetail({
 		issueId: selectedIssue?.id ?? null,
@@ -1300,6 +1305,9 @@ export const App = () => {
 		addIssueComment,
 		deleteIssueComment,
 		editIssueComment,
+		addIssueNote,
+		deleteIssueNote,
+		editIssueNote,
 		uploadIssueAttachments,
 		deleteIssueAttachment,
 	} = useIssueMutations({
@@ -1307,6 +1315,7 @@ export const App = () => {
 		setState,
 		contributors,
 		updateComments: updateDetailComments,
+		updateNotes: updateDetailNotes,
 		attachmentMaxKb: state?.attachmentMaxKb,
 	});
 
@@ -2055,6 +2064,11 @@ export const App = () => {
 						onAddComment={addIssueComment}
 						onDeleteComment={deleteIssueComment}
 						onEditComment={editIssueComment}
+						onAddNote={addIssueNote}
+						onDeleteNote={deleteIssueNote}
+						onEditNote={editIssueNote}
+						noteCount={notesByIssueId[selectedIssue.id]?.length}
+						notes={notesByIssueId[selectedIssue.id] ?? []}
 						onFileTicket={fileTicketFromSelection}
 						onOpenDiffLocation={openDiffLocation}
 						diffFocus={diffFocus}

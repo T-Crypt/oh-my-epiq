@@ -159,6 +159,7 @@ export function initWorkspaceState(workspace: Workspace) {
 		hasProjectDefinition,
 		hasInitializingEvents: false,
 		comments: {},
+		notes: {},
 		attachments: {},
 	};
 

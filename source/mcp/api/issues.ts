@@ -58,6 +58,7 @@ import {
 	boardsEverOnOf,
 	getIssueTags,
 	getIssueComments,
+	getIssueNotes,
 	getIssueAssignees,
 } from './issue-projection.js';
 import {
@@ -170,6 +171,7 @@ export const getIssue = async (input: GetIssueInput) => {
 		tags: getIssueTags(issue),
 		assignees: getIssueAssignees(issue),
 		comments: getIssueComments(issue.id),
+		notes: getIssueNotes(issue.id),
 	} satisfies ApiIssueDetail);
 };
 

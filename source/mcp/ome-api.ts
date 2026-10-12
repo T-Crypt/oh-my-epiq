@@ -45,6 +45,7 @@ export {
 	deleteIssueComment,
 	editIssueComment,
 } from './api/comments.js';
+export {addIssueNote, deleteIssueNote, editIssueNote} from './api/notes.js';
 export {
 	addIssueAttachment,
 	deleteIssueAttachment,

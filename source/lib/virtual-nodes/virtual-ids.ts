@@ -28,6 +28,7 @@ export type VirtualNodeKind =
 	| 'history'
 	| 'diff'
 	| 'comments'
+	| 'notes'
 	| 'attachments';
 
 // The ids this has already derived.

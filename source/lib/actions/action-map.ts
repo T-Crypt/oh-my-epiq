@@ -15,6 +15,7 @@ type ContextActions = ActionMap<{
 	[NavNodeCtx.FIELD_LIST]: ActionEntry[];
 	[NavNodeCtx.TEXT]: ActionEntry[];
 	[NavNodeCtx.COMMENT]: ActionEntry[];
+	[NavNodeCtx.NOTE]: ActionEntry[];
 }>;
 
 export const contextActions: ContextActions = {
@@ -30,4 +31,5 @@ export const contextActions: ContextActions = {
 	[NavNodeCtx.FIELD_LIST]: [],
 	[NavNodeCtx.TEXT]: [],
 	[NavNodeCtx.COMMENT]: [],
+	[NavNodeCtx.NOTE]: [],
 };

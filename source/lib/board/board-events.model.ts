@@ -218,6 +218,42 @@ export type AppEventMap = {
 		};
 	};
 
+	'add.issue.note': {
+		payload: PayloadBase & {
+			issue: string;
+			author: string;
+			md: string;
+		};
+		result: {
+			id: string;
+			issue: string;
+			author: string;
+			md: string;
+		};
+	};
+
+	'edit.issue.note': {
+		payload: PayloadBase & {
+			issue: string;
+			md: string;
+		};
+		result: {
+			id: string;
+			issue: string;
+			md: string;
+		};
+	};
+
+	'delete.issue.note': {
+		payload: PayloadBase & {
+			issue: string;
+		};
+		result: {
+			id: string;
+			issue: string;
+		};
+	};
+
 	/**
 	 * References a content-addressed blob at `.ome/media/<hash>.<ext>` in
 	 * the state branch worktree. The blob is written in the same commit as
@@ -346,6 +382,9 @@ export const EVENT_ACTIONS = [
 	'add.issue.comment',
 	'edit.issue.comment',
 	'delete.issue.comment',
+	'add.issue.note',
+	'edit.issue.note',
+	'delete.issue.note',
 	'add.issue.attachment',
 	'delete.issue.attachment',
 	'close.issue',

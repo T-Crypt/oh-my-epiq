@@ -19,6 +19,15 @@ export type GuiComment = {
 	isDeleted?: boolean;
 };
 
+export type GuiNote = {
+	id: string;
+	issueId: string;
+	body: string;
+	author: GuiUser;
+	createdAt: number;
+	isDeleted?: boolean;
+};
+
 export type GuiAttachment = {
 	id: string;
 	issueId: string;
@@ -86,6 +95,7 @@ export type GuiState = {
 	contributors: GuiUser[];
 	user: GuiUser;
 	commentsByIssueId: Record<string, GuiComment[]>;
+	notesByIssueId: Record<string, GuiNote[]>;
 	attachmentsByIssueId: Record<string, GuiAttachment[]>;
 	attachmentMaxKb?: number;
 	timeTravel: GuiTimeTravelStatus;

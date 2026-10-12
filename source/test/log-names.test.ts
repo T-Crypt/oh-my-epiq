@@ -136,6 +136,19 @@ const log = (): AppEvent[] => [
 	at('edit.issue.comment', {id: COMMENT, issue: ISSUE, md: 'Edited'}),
 	at('delete.issue.comment', {id: COMMENT, issue: ISSUE}),
 
+	at('add.issue.note', {
+		id: '01J0000000000000000NOTE0',
+		issue: ISSUE,
+		author: ALICE,
+		md: 'A note',
+	}),
+	at('edit.issue.note', {
+		id: '01J0000000000000000NOTE0',
+		issue: ISSUE,
+		md: 'Edited',
+	}),
+	at('delete.issue.note', {id: '01J0000000000000000NOTE0', issue: ISSUE}),
+
 	at('add.issue.attachment', {
 		id: ATTACHMENT,
 		issue: ISSUE,

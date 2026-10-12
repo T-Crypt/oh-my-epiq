@@ -6,6 +6,7 @@ import {
 	GuiIssue,
 	GuiTag,
 	GuiComment,
+	GuiNote,
 	GuiAttachment,
 	GuiRefCommitEntry,
 	GuiSquashedDiff,
@@ -40,6 +41,7 @@ import {IssueAttachments} from './IssueAttachments';
 import {AttachmentUploadStatus} from '../lib/use-issue-mutations';
 import {CollapsibleBody} from './CollapsibleBody';
 import {CommentBody, IssueComments} from './IssueComments';
+import {IssueNotes} from './IssueNotes';
 import {IssueCommits} from './IssueCommits';
 import {DiffViewSwitch} from './DiffViewSwitch';
 import {SquashedDiff} from './SquashedDiff';
@@ -66,7 +68,7 @@ import {MAX_DESCRIPTION_LENGTH} from '../../../lib/utils/text.limits.js';
 import {useImageInsert} from '../lib/image-insert';
 import {AddImageButton} from './AddImageButton';
 
-type IssueDetailsTab = 'overview' | 'comments' | 'code' | 'stats';
+type IssueDetailsTab = 'overview' | 'comments' | 'notes' | 'code' | 'stats';
 
 // The Code tab's two views and the switch between them. One object rather than
 // five props: they are a single control and the thing it draws.
@@ -295,6 +297,11 @@ export const IssueDetails = ({
 	onAddComment,
 	onDeleteComment,
 	onEditComment,
+	onAddNote,
+	onDeleteNote,
+	onEditNote,
+	noteCount,
+	notes,
 	onFileTicket,
 	onOpenDiffLocation,
 	diffFocus,
@@ -350,6 +357,11 @@ export const IssueDetails = ({
 	onAddComment?: (issueId: string, body: string) => void;
 	onDeleteComment?: (issueId: string, commentId: string) => void;
 	onEditComment?: (issueId: string, commentId: string, body: string) => void;
+	onAddNote?: (issueId: string, body: string) => void;
+	onDeleteNote?: (issueId: string, noteId: string) => void;
+	onEditNote?: (issueId: string, noteId: string, body: string) => void;
+	noteCount?: number;
+	notes?: GuiNote[];
 	onFileTicket?: (
 		originIssueId: string,
 		originRef: string,
@@ -472,6 +484,7 @@ export const IssueDetails = ({
 	const tabs: TabItem<IssueDetailsTab>[] = [
 		{id: 'overview', label: 'Overview'},
 		{id: 'comments', label: 'Comments', count: comments.length},
+		{id: 'notes', label: 'Notes', count: noteCount},
 		{id: 'code', label: 'Code', count: commitsCount},
 		{id: 'stats', label: 'Stats'},
 	];
@@ -973,6 +986,18 @@ export const IssueDetails = ({
 					/>
 				);
 
+				const notesPane = issue && (
+					<IssueNotes
+						whoAmI={whoAmI}
+						issueId={issue.id}
+						readonly={issue.readonly}
+						notes={notes}
+						onAddNote={onAddNote}
+						onDeleteNote={onDeleteNote}
+						onEditNote={onEditNote}
+					/>
+				);
+
 				const perCommitPane = issue && (
 					<IssueCommits
 						issueRef={issue.ref}
@@ -1245,6 +1270,7 @@ export const IssueDetails = ({
 										/>
 										{activeTab === 'overview' && overviewPane}
 										{activeTab === 'comments' && commentsPane}
+										{activeTab === 'notes' && notesPane}
 										{activeTab === 'code' && commitsPane}
 										{activeTab === 'stats' && statsPane}
 									</>

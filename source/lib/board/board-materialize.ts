@@ -632,6 +632,69 @@ export const boardHandlers: EventHandlers<AppEventMap> = {
 		});
 	},
 
+	'add.issue.note': event => {
+		const {id, issue, author, md} = event.payload;
+
+		const result = nodeRepo.createNote({
+			id,
+			issue,
+			authorId: author,
+			md,
+			deleted: false,
+		});
+
+		if (isFail(result)) {
+			return materializeSkip(result.message ?? 'Unable to add note', event);
+		}
+
+		return succeeded('Note added', {
+			action: event.action,
+			result: {id, issue, author, md},
+		});
+	},
+
+	'edit.issue.note': event => {
+		const {id, issue, md} = event.payload;
+
+		const existing = nodeRepo.getNote(id);
+		if (!existing) return materializeSkip('Unable to locate note', event);
+		if (existing.issue !== issue) {
+			return materializeSkip('Note does not belong to issue', event);
+		}
+
+		const result = nodeRepo.editNote(id, md);
+
+		if (isFail(result)) {
+			return materializeSkip(result.message ?? 'Unable to edit note', event);
+		}
+
+		return succeeded('Note edited', {
+			action: event.action,
+			result: {id, issue, md},
+		});
+	},
+
+	'delete.issue.note': event => {
+		const {id, issue} = event.payload;
+
+		const existing = nodeRepo.getNote(id);
+		if (!existing) return materializeSkip('Unable to locate note', event);
+		if (existing.issue !== issue) {
+			return materializeSkip('Note does not belong to issue', event);
+		}
+
+		const result = nodeRepo.deleteNote(id);
+
+		if (isFail(result)) {
+			return materializeSkip(result.message ?? 'Unable to delete note', event);
+		}
+
+		return succeeded('Note deleted', {
+			action: event.action,
+			result: {id, issue},
+		});
+	},
+
 	'add.issue.attachment': event => {
 		const {id, issue, hash, ext, name, bytes} = event.payload;
 

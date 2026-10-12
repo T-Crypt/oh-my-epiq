@@ -4,7 +4,10 @@ import {isFieldListNode, isFieldNode, Ticket} from '../model/context.model.js';
 import {nodeRepo} from '../repository/node-repo.js';
 import {getRenderedChildren, useAppState} from '../state/state.js';
 import {theme} from '../theme/themes.js';
-import {getVisibleCommentCount} from '../utils/comment.utils.js';
+import {
+	getVisibleCommentCount,
+	getVisibleNoteCount,
+} from '../utils/comment.utils.js';
 import {virtualNodeId} from '../virtual-nodes/virtual-ids.js';
 import {AttachmentListUI} from './AttachmentListUI.js';
 import {CommentListUI} from './CommentListUI.js';
@@ -13,6 +16,7 @@ import {DiffListUI} from './DiffListUI.js';
 import {FieldListUI} from './FieldListUI.js';
 import {InlineEditor} from './InlineEditor.js';
 import {inlineEditorRowCount} from '../utils/inline-editor-layout.js';
+import {NoteListUI} from './NoteListUI.js';
 
 type Props = {
 	ticket: Ticket;
@@ -31,6 +35,8 @@ const getDiffNodeId = (ticketId: string) => virtualNodeId(ticketId, 'diff');
 
 const getAttachmentsNodeId = (ticketId: string) =>
 	virtualNodeId(ticketId, 'attachments');
+
+const getNotesNodeId = (ticketId: string) => virtualNodeId(ticketId, 'notes');
 
 export const TicketUI: React.FC<Props> = ({ticket, height}) => {
 	const commentCount = useMemo(() => getVisibleCommentCount(ticket), [ticket]);
@@ -56,6 +62,10 @@ export const TicketUI: React.FC<Props> = ({ticket, height}) => {
 		[ticket.id],
 	);
 
+	const noteCount = useMemo(() => getVisibleNoteCount(ticket), [ticket]);
+
+	const notesNodeId = useMemo(() => getNotesNodeId(ticket.id), [ticket.id]);
+
 	const attachmentCount = nodeRepo.getAttachmentsByIssue(ticket.id).length;
 
 	const isAtTicketRoot = contextNode.id === ticket.id;
@@ -70,6 +80,9 @@ export const TicketUI: React.FC<Props> = ({ticket, height}) => {
 	const isInsideAttachments =
 		contextNode.id === attachmentsNodeId ||
 		contextNode.parentNodeId === attachmentsNodeId;
+
+	const isInsideNotes =
+		contextNode.id === notesNodeId || contextNode.parentNodeId === notesNodeId;
 
 	const isInsideDiff =
 		contextNode.id === diffNodeId || contextNode.parentNodeId === diffNodeId;
@@ -110,6 +123,23 @@ export const TicketUI: React.FC<Props> = ({ticket, height}) => {
 					width={maxWidth}
 					height={editorHeight}
 				/>
+			</Box>
+		);
+	}
+
+	if (isInsideNotes) {
+		const commandPromptHeight = 3;
+		const editorHeight = height - commandPromptHeight;
+
+		return (
+			<Box
+				width={maxWidth}
+				flexDirection="column"
+				paddingRight={1}
+				paddingBottom={1}
+				minHeight={height}
+			>
+				<NoteListUI ticket={ticket} width={maxWidth} height={editorHeight} />
 			</Box>
 		);
 	}
@@ -167,6 +197,7 @@ export const TicketUI: React.FC<Props> = ({ticket, height}) => {
 		logNodeId,
 		diffNodeId,
 		commentsNodeId,
+		notesNodeId,
 		attachmentsNodeId,
 	];
 	const isMenuNode = (id: string) => menuNodeIds.includes(id);
@@ -234,6 +265,10 @@ export const TicketUI: React.FC<Props> = ({ticket, height}) => {
 
 		if (child.id === commentsNodeId) {
 			return menuRow(child, index, selected, ` Comments (${commentCount}) ›› `);
+		}
+
+		if (child.id === notesNodeId) {
+			return menuRow(child, index, selected, ` Notes (${noteCount}) ›› `);
 		}
 
 		if (child.id === attachmentsNodeId) {

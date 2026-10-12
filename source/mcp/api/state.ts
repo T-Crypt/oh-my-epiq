@@ -183,6 +183,26 @@ export const deriveGuiState = (): Result<ApiState> => {
 		);
 	}
 
+	const notesByIssueId: ApiState['notesByIssueId'] = {};
+
+	const notesByIssue = nodeRepo.getNotesGroupedByIssue();
+
+	for (const issue of nodes.filter(isTicketNode)) {
+		if (issue.isDeleted || !sentIssueIds.has(issue.id)) continue;
+
+		notesByIssueId[issue.id] = (notesByIssue.get(issue.id) ?? []).map(note => {
+			const contributor = nodeRepo.getContributor(note.authorId);
+
+			return {
+				id: note.id,
+				issueId: note.issue,
+				body: note.md,
+				author: identityOf(note.authorId, contributor?.name),
+				createdAt: ulidTimeMs(note.id),
+			};
+		});
+	}
+
 	const attachmentOwners = new Map<string, string>();
 	for (const event of stateResult.value.eventLog) {
 		if (event.action === 'add.issue.attachment') {
@@ -264,6 +284,7 @@ export const deriveGuiState = (): Result<ApiState> => {
 			color: getStringColor(settingsRes.value.userName ?? ''),
 		},
 		commentsByIssueId,
+		notesByIssueId,
 		attachmentsByIssueId,
 		attachmentMaxKb: getAttachmentMaxKb(),
 		timeTravel,

@@ -109,6 +109,7 @@ export type AppState = {
 	unappliedEvents: AppEvent[];
 	replay: ReplayState | null;
 	comments: Record<string, CommentState>;
+	notes: Record<string, NoteState>;
 	attachments: Record<string, AttachmentState>;
 };
 
@@ -134,6 +135,19 @@ export const findInBreadCrumb = <T extends BreadCrumbItem['context']>(
 // know was stored as "Unknown", a name two strangers share. Resolved by id at
 // the point of display instead, like every other name since SVYYX5A.
 export type CommentState = {
+	id: string;
+	issue: string;
+	authorId: string;
+	md: string;
+	deleted?: boolean;
+};
+
+/**
+ * A note is like a comment but without diff-anchoring: it is plain additional
+ * information about a ticket, written by a human or an agent to record context
+ * without disturbing the description or the comment thread.
+ */
+export type NoteState = {
 	id: string;
 	issue: string;
 	authorId: string;
