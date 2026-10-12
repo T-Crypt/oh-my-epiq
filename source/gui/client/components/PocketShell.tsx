@@ -127,11 +127,7 @@ export const Rail = ({
 			<IconSearch />
 		</button>
 		<div className="rail-fill" />
-		<button
-			className="rail-button"
-			title="Theme"
-			onClick={onOpenTheme}
-		>
+		<button className="rail-button" title="Theme" onClick={onOpenTheme}>
 			<IconPalette />
 		</button>
 		<button

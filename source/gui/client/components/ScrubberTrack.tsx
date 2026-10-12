@@ -199,7 +199,7 @@ const chartLabelStyle: React.CSSProperties = {
 	color: GUI_THEME.secondary,
 	padding: '2px 4px',
 	borderRadius: 2,
-	background: 'rgba(0, 0, 0, 0.55)',
+	background: GUI_THEME.scrim,
 	pointerEvents: 'none',
 };
 

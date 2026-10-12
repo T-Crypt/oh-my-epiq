@@ -277,7 +277,7 @@ export const TicketPreviewLayer = ({
 				borderRadius: 6,
 				background: GUI_THEME.panel,
 				border: `1px solid ${GUI_THEME.edge}`,
-				boxShadow: '0 6px 20px rgba(0, 0, 0, 0.6)',
+				boxShadow: `0 6px 20px ${GUI_THEME.shadow}`,
 			}}
 		>
 			<Card preview={preview} />

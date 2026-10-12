@@ -105,6 +105,12 @@
 	--line: color-mix(in srgb, var(--o-fg) 15%, var(--o-bg));
 	--muted: color-mix(in oklab, var(--o-fg) 78%, var(--o-bg));
 	--faint: color-mix(in oklab, var(--o-fg) 58%, var(--o-bg));
+	--warn: color-mix(in oklab, var(--o-yellow) 62%, var(--o-fg));
+	--ok: color-mix(in oklab, var(--o-green) 78%, var(--o-fg));
+	--err: color-mix(in oklab, var(--o-red) 85%, var(--o-fg));
+	--accent-fill: color-mix(in oklab, var(--o-accent) 76%, var(--o-fg));
+	--accent-line: color-mix(in srgb, var(--o-accent) 65%, transparent);
+	--accent-soft: color-mix(in srgb, var(--o-accent) 18%, transparent);
 }
 
 /* ─── Reset ──────────────────────────────────────────────────── */

@@ -562,10 +562,11 @@ const CACHE_KEY = 'ome.themeCache';
 
 const hexRe = /^#[0-9a-f]{3,8}$/i;
 
-const pick = (c: Record<string, string>, ...keys: string[]): string | undefined =>
-	keys
-		.map((k) => c[k])
-		.find((v) => typeof v === 'string' && hexRe.test(v));
+const pick = (
+	c: Record<string, string>,
+	...keys: string[]
+): string | undefined =>
+	keys.map(k => c[k]).find(v => typeof v === 'string' && hexRe.test(v));
 
 /** A resolved palette: the theme id, name, mode, and its colour map. */
 export type Palette = {
@@ -578,9 +579,20 @@ export type Palette = {
 /** Resolve a theme id to its palette. Falls back to tokyo-night for unknown ids. */
 export function resolvePalette(id = 'tokyo-night'): Palette {
 	const t = THEMES[id];
-	if (t) return {id, name: t.name, mode: t.colors['mode'] as 'dark' | 'light', colors: t.colors};
+	if (t)
+		return {
+			id,
+			name: t.name,
+			mode: t.colors['mode'] as 'dark' | 'light',
+			colors: t.colors,
+		};
 	const fb = THEMES[FALLBACK];
-	return {id: FALLBACK, name: fb?.name ?? 'Tokyo Night', mode: fb?.colors['mode'] as 'dark' | 'light' ?? 'dark', colors: fb?.colors ?? {}};
+	return {
+		id: FALLBACK,
+		name: fb?.name ?? 'Tokyo Night',
+		mode: (fb?.colors['mode'] as 'dark' | 'light') ?? 'dark',
+		colors: fb?.colors ?? {},
+	};
 }
 
 /** Theme ids in the order the picker shows them: dark themes first, then light. */
@@ -588,8 +600,8 @@ export function themeIds(): string[] {
 	const ids = Object.keys(THEMES);
 
 	return [
-		...ids.filter((id) => THEMES[id]?.colors?.['mode'] !== 'light'),
-		...ids.filter((id) => THEMES[id]?.colors?.['mode'] === 'light'),
+		...ids.filter(id => THEMES[id]?.colors?.['mode'] !== 'light'),
+		...ids.filter(id => THEMES[id]?.colors?.['mode'] === 'light'),
 	];
 }
 
@@ -659,8 +671,14 @@ export function setThemeId(id: string): void {
 // ─── Application ──────────────────────────────────────────────────
 
 const root = typeof document !== 'undefined' ? document.documentElement : null;
-const metaTheme = typeof document !== 'undefined' ? document.querySelector('meta[name="theme-color"]') : null;
-const metaScheme = typeof document !== 'undefined' ? document.querySelector('meta[name="color-scheme"]') : null;
+const metaTheme =
+	typeof document !== 'undefined'
+		? document.querySelector('meta[name="theme-color"]')
+		: null;
+const metaScheme =
+	typeof document !== 'undefined'
+		? document.querySelector('meta[name="color-scheme"]')
+		: null;
 
 function setVars(vars: Record<string, string | null>): void {
 	if (!root) return;
@@ -689,7 +707,9 @@ export function applyTheme(id: string): void {
 	metaScheme?.setAttribute('content', mode);
 
 	// cache for the FOUC guard
-	const cached = Object.fromEntries(Object.entries(vars).filter(([, v]) => v !== null));
+	const cached = Object.fromEntries(
+		Object.entries(vars).filter(([, v]) => v !== null),
+	);
 	try {
 		localStorage.setItem(
 			CACHE_KEY,
@@ -706,7 +726,10 @@ export function applyCachedTheme(): void {
 	try {
 		const raw = localStorage.getItem(CACHE_KEY);
 		if (!raw) return;
-		const look = JSON.parse(raw) as {vars: Record<string, string>; attrs: Record<string, string>};
+		const look = JSON.parse(raw) as {
+			vars: Record<string, string>;
+			attrs: Record<string, string>;
+		};
 		for (const [name, value] of Object.entries(look.vars)) {
 			root.style.setProperty(name, value);
 		}

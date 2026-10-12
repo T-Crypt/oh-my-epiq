@@ -41,8 +41,19 @@ const palette = resolvePalette();
 const c = palette.colors;
 const bg = c['background'] ?? '#1a1b26';
 const fg = c['foreground'] ?? '#a9b1d6';
+// Scrims and shadows: mix the theme's darker background with transparency so
+// they adapt to light themes without a separate light-mode code path.
+const bgDark = c['darker_background'] ?? '#0e0e14';
 
 const hex = (key: string, fallback: string): string => c[key] ?? fallback;
+
+const scrimOpacity = c['mode'] === 'light' ? 0.55 : 0.62;
+const scrim = `color-mix(in srgb, ${bgDark} ${
+	scrimOpacity * 100
+}%, transparent)`;
+const shadow = `rgba(${hexToRgb(bgDark)}, ${
+	c['mode'] === 'light' ? 0.35 : 0.45
+})`;
 
 export const GUI_THEME = {
 	bg: bg,
@@ -85,6 +96,10 @@ export const GUI_THEME = {
 	amber: hex('yellow', '#e0af68'),
 	red: hex('red', '#f7768e'),
 	transparent: 'rgba(0, 0, 0, 0)',
+	// Theme-driven overlay: a scrim that adapts to light and dark palettes.
+	scrim,
+	// Theme-driven box-shadow colour (the alpha is per-component).
+	shadow,
 } as const;
 
 // The Board series split by what kind of change each event was. Tickets keeps
@@ -103,8 +118,10 @@ export const BOARD_CONTRIBUTOR_COLOR = hex('cyan', '#73daca');
 
 // The mark's gradient, cyan → blue → magenta, as the favicon draws it. Worn by
 // anything that names OME in a heading.
-export const OME_GRADIENT =
-	`linear-gradient(100deg, ${hex('cyan', '#7dcfff')} 0%, ${hex('accent', '#7aa2f7')} 52%, ${hex('magenta', '#bb9af7')} 100%)`;
+export const OME_GRADIENT = `linear-gradient(100deg, ${hex(
+	'cyan',
+	'#7dcfff',
+)} 0%, ${hex('accent', '#7aa2f7')} 52%, ${hex('magenta', '#bb9af7')} 100%)`;
 
 // The style a span takes to wear `OME_GRADIENT`. `background-clip: text` shows
 // the gradient through the glyphs only while the text colour is transparent,

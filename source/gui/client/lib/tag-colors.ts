@@ -4,7 +4,15 @@
 
 import {resolvePalette} from './theme';
 
-const HUES = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'magenta'] as const;
+const HUES = [
+	'red',
+	'orange',
+	'yellow',
+	'green',
+	'cyan',
+	'blue',
+	'magenta',
+] as const;
 type HueKey = (typeof HUES)[number];
 
 function hexToHue(hex: string): number {
@@ -48,9 +56,11 @@ export function tagColorToThemeHue(tagColor: string): HueKey | null {
 
 	for (const hue of HUES) {
 		const themeKey = `--o-${hue}`;
-		const cssVar = getComputedStyle(document.documentElement).getPropertyValue(themeKey).trim();
+		const cssVar = getComputedStyle(document.documentElement)
+			.getPropertyValue(themeKey)
+			.trim();
 		if (!cssVar || !cssVar.startsWith('#')) continue;
-	 const themeHue = hexToHue(cssVar);
+		const themeHue = hexToHue(cssVar);
 		const dist = Math.abs(tagHue - themeHue);
 		if (dist < bestDist) {
 			bestDist = dist;

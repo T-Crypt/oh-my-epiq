@@ -127,7 +127,10 @@ const _c = _palette.colors;
 function rgb(hex: string | undefined): string {
 	if (!hex) return '0, 0, 0';
 	const h = hex.replace('#', '');
-	return `${Number.parseInt(h.slice(0, 2), 16)}, ${Number.parseInt(h.slice(2, 4), 16)}, ${Number.parseInt(h.slice(4, 6), 16)}`;
+	return `${Number.parseInt(h.slice(0, 2), 16)}, ${Number.parseInt(
+		h.slice(2, 4),
+		16,
+	)}, ${Number.parseInt(h.slice(4, 6), 16)}`;
 }
 
 const accent = rgb(_c.accent);

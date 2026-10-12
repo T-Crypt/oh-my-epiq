@@ -189,9 +189,7 @@ export const TicketCard = ({
 				// colour at the same weight: the two washes have to move together,
 				// or picking one stops reading as picking it up.
 				background:
-					isSelected || isPicked
-						? GUI_THEME.accentWash
-						: GUI_THEME.hover,
+					isSelected || isPicked ? GUI_THEME.accentWash : GUI_THEME.hover,
 				// Roomier than a list row: a card is read, not scanned, and the
 				// air around its title is what keeps a column of them from
 				// running together.

@@ -30,6 +30,9 @@ Every upstream Epiq feature, plus the operator and agent surface:
   `ref`; adding a tag or an assignee a ticket already has is an idempotent
   no-op; removals accept a name; errors say what to pass. The footguns and the
   four admin tools agents never call are pruned from the surface.
+- **A theme switcher** — 23 bundled palettes ported from Oh-My-Pocket, a sheet
+  in the GUI to pick one, CSS variables that adapt to light and dark themes,
+  and a pre-paint guard so reloads never flash another look.
 - **The Oh-My-Pocket look** — the browser board wears the same shell as
   [Oh-My-Pocket](https://github.com/T-Crypt/oh-my-pocket): the Tokyo Night
   palette, square tiles, 2px window borders with Hyprland's gaps, no glow, a
