@@ -97,7 +97,7 @@ describe('event boot', () => {
 
 		const events = result.value;
 
-		expect(events).toHaveLength(10);
+		expect(events).toHaveLength(14);
 		expect(events.map(e => e.action)).toEqual([
 			'init.workspace',
 			'create.contributor',
@@ -108,13 +108,17 @@ describe('event boot', () => {
 			'add.board',
 			'add.swimlane',
 			'lock.node',
+			'add.board',
+			'add.swimlane',
+			'add.issue',
+			'edit.description',
 			'lock.node',
 		]);
 
 		const closedBoardEvent = events[6];
 		const closedSwimlaneEvent = events[7];
 		const lockClosedBoardEvent = events[8];
-		const lockClosedSwimlaneEvent = events[9];
+		const lockClosedSwimlaneEvent = events[13];
 
 		if (
 			closedBoardEvent?.action !== 'add.board' ||

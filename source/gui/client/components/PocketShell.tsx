@@ -132,6 +132,7 @@ export const Rail = ({
 		</button>
 		<button
 			className="rail-button"
+			data-testid="rail-devices"
 			title="Devices: open this board on a phone"
 			onClick={onOpenDevices}
 		>

@@ -33,6 +33,7 @@ import {
 	RecentProjectView,
 } from './components/InitProjectScreen';
 import {Dropdown} from './components/Dropdown';
+import {Tabs} from './components/Tabs';
 import {ProjectListCurrent, ProjectPicker} from './components/ProjectPicker';
 import {Header} from './components/Header';
 import {IssueDetails} from './components/IssueDetails';
@@ -2008,6 +2009,26 @@ export const App = () => {
 		</button>
 	);
 
+	// The tab view over the boards: the dropdown in the header still switches,
+	// and these switch faster. One strip in each shell, both driving the same
+	// route.
+	const boardTabs = (state?.boards.length ?? 0) > 1 && selectedBoard && (
+		<Tabs
+			testId="board-tabs"
+			activeTab={selectedBoard.id}
+			tabs={(state?.boards ?? []).map(board => ({
+				id: board.id,
+				label: board.title,
+				count: board.swimlanes.reduce(
+					(total, swimlane) => total + swimlane.issues.length,
+					0,
+				),
+			}))}
+			onChange={selectBoard}
+			showCounts={false}
+		/>
+	);
+
 	const boardSwitcher = (
 		<Dropdown
 			testId="board-switcher"
@@ -2346,6 +2367,7 @@ export const App = () => {
 
 			{phoneTab === 'board' && (
 				<div className="phone-pane" style={{opacity: offline ? 0.55 : 1}}>
+					{boardTabs}
 					<LanePager swimlanes={shownSwimlanes} renderLane={renderSwimlane} />
 				</div>
 			)}
@@ -2566,6 +2588,7 @@ export const App = () => {
 												transition: 'padding-bottom 240ms ease',
 											}}
 										>
+											{boardTabs}
 											{shownSwimlanes.map(renderSwimlane)}
 
 											{/* Appends: `createSwimlane` ranks at the end, so the ghost sits
@@ -2966,6 +2989,7 @@ export const App = () => {
 														transition: 'padding-bottom 240ms ease',
 													}}
 												>
+													{boardTabs}
 													{shownSwimlanes.map(renderSwimlane)}
 
 													{/* Appends: `createSwimlane` ranks at the end, so the ghost sits

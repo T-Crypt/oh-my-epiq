@@ -14,6 +14,7 @@ type Props<T extends string> = {
 	// line. The count is the first thing to go: a tab whose name has wrapped
 	// under its own number is harder to read than one without the number.
 	showCounts?: boolean;
+	testId?: string;
 };
 
 export const Tabs = <T extends string>({
@@ -21,8 +22,10 @@ export const Tabs = <T extends string>({
 	tabs,
 	onChange,
 	showCounts = true,
+	testId,
 }: Props<T>) => (
 	<div
+		{...(testId ? {'data-testid': testId} : {})}
 		style={{
 			display: 'flex',
 			gap: 6,
