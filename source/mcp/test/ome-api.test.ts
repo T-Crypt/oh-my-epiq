@@ -341,7 +341,6 @@ const tagRegistry: Record<
 
 const DEFAULT_TAG_REGISTRY = {
 	'tag-1': {id: 'tag-1', name: 'bug'},
-	'tag-2': {id: 'tag-2', name: 'enhancement'},
 };
 
 // The *state* event log, distinct from the merged on-disk log loadMergedEvents
@@ -601,6 +600,7 @@ describe('mcp tools', () => {
 			const result = await tools.getIssue({
 				repoRoot: '/repo',
 				idOrRef: fixtureId('issue-1'),
+				view: 'full',
 			});
 
 			expect(isFail(result)).toBe(false);
@@ -644,6 +644,7 @@ describe('mcp tools', () => {
 			const result = await tools.getIssue({
 				repoRoot: '/repo',
 				idOrRef: fixtureId('issue-1'),
+				view: 'full',
 			});
 
 			expect(isFail(result)).toBe(false);
@@ -1058,6 +1059,7 @@ describe('mcp tools', () => {
 		const result = await tools.listIssues({
 			repoRoot: '/repo',
 			includeClosed: false,
+			view: 'full',
 		});
 
 		expect(isFail(result)).toBe(false);
@@ -1129,14 +1131,16 @@ describe('mcp tools', () => {
 
 			expect(isFail(result)).toBe(false);
 			if (isFail(result)) return;
-			expect(result.value).toContainEqual({
-				id: fixtureId('issue-1'),
-				ref: nodeRef(fixtureId('issue-1')),
-				title: 'Fix bug',
-				swimlane: 'Todo',
-				tags: ['bug'],
-				assignees: ['Alice'],
-			});
+			expect(result.value).toContainEqual(
+				expect.objectContaining({
+					id: fixtureId('issue-1'),
+					ref: nodeRef(fixtureId('issue-1')),
+					title: 'Fix bug',
+					swimlane: 'Todo',
+					tags: ['bug'],
+					assignees: ['Alice'],
+				}),
+			);
 			expect(result.value.every(issue => !('description' in issue))).toBe(true);
 		});
 	});
@@ -2193,7 +2197,7 @@ describe('mcp tools', () => {
 			},
 		]);
 
-		const result = await tools.listIssues({repoRoot: '/repo'});
+		const result = await tools.listIssues({repoRoot: '/repo', view: 'full'});
 
 		expect(isFail(result)).toBe(false);
 		if (!isFail(result)) {
