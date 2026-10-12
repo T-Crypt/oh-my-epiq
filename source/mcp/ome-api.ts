@@ -9,6 +9,7 @@ export {
 	getIssue,
 	listIssues,
 	createIssue,
+	updateIssue,
 	closeIssue,
 	reopenIssue,
 	moveIssue,

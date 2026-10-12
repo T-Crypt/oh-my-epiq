@@ -85,6 +85,10 @@ export type ApiIssueBrief = {
 	swimlane: string;
 	tags: string[];
 	assignees: string[];
+	commentCount: number;
+	noteCount: number;
+	createdAt: number;
+	enteredLaneAt: number;
 };
 
 export type ApiSwimlane = {

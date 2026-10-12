@@ -93,7 +93,7 @@ export const assumeActor = async (
 // event this build cannot decode still proves its author wrote something. Going
 // through the decoded log instead would let an unreadable schema version make
 // somebody look unauthored, and the guard below would clear their removal.
-const findEventLogAuthor = async (
+export const findEventLogAuthor = async (
 	stateBranchRoot: string,
 	userId: string,
 ): Promise<{id: string; name: string} | undefined> => {
