@@ -38,6 +38,9 @@ export const formatLogAction = (action: string): string => {
 		'add.issue.attachment': 'Attached',
 		'delete.issue.attachment': 'Removed attachment',
 		'edit.issue.comment': 'Edited comment',
+		'add.issue.note': 'Added note',
+		'delete.issue.note': 'Deleted note',
+		'edit.issue.note': 'Edited note',
 		// Structural events. Rare in a ticket's own history, but the GUI
 		// timeline plots the whole log, where the fallback below would render
 		// them as "add.boarded" / "init.workspaced".

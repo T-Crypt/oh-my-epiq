@@ -50,6 +50,7 @@ const state: GuiState = {
 	contributors: [],
 	user: {id: 'u', name: 'u', color: ''},
 	commentsByIssueId: {},
+	notesByIssueId: {},
 	attachmentsByIssueId: {},
 	timeTravel: {mode: 'live', asOfTime: null},
 };

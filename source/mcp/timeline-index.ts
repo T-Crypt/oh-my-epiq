@@ -158,11 +158,19 @@ const COMMENT_ACTIONS = new Set<EventAction>([
 	'delete.issue.comment',
 ]);
 
+// Same shape as comments but without diff-anchoring: notes are plain
+// additional information about a ticket.
+const NOTE_ACTIONS = new Set<EventAction>([
+	'add.issue.note',
+	'edit.issue.note',
+	'delete.issue.note',
+]);
+
 // What inside the ticket the event happened to. Read off the payload rather
 // than derived: the id is already there, and no other kind of event has a
 // target the reader could be sent to.
 const targetOf = (event: AppEvent): string | null => {
-	if (!COMMENT_ACTIONS.has(event.action)) return null;
+	if (!COMMENT_ACTIONS.has(event.action) && !NOTE_ACTIONS.has(event.action)) return null;
 
 	const payload = event.payload as {id?: string} | undefined;
 

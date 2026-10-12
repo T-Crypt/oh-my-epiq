@@ -1,6 +1,7 @@
 import {
 	AttachmentState,
 	CommentState,
+	NoteState,
 	Contributor,
 	Tag,
 	REMOVED_CONTRIBUTOR_NAME,
@@ -239,6 +240,88 @@ export const nodeRepo = {
 
 			if (existing) existing.push(comment);
 			else byIssue.set(comment.issue, [comment]);
+		}
+
+		return byIssue;
+	},
+
+	createNote(note: NoteState): Result<NoteState> {
+		const issue = this.getNode(note.issue);
+
+		if (!issue) return failed('Unable to create note, missing issue');
+		if (!isTicketNode(issue)) return failed('Can only add notes to issues');
+
+		const result = setStateEntry('notes', note.id, {
+			...note,
+			deleted: false,
+		});
+
+		if (isFail(result)) return failed('Unable to create note');
+
+		return succeeded('Created note', {
+			...note,
+			deleted: false,
+		});
+	},
+
+	editNote(noteId: string, md: string): Result<NoteState> {
+		const existing = this.getNote(noteId);
+		if (!existing) return failed('Unable to edit note, missing note');
+
+		const issue = this.getNode(existing.issue);
+
+		if (!issue) return failed('Unable to edit note, missing issue');
+		if (!isTicketNode(issue)) return failed('Can only edit issue notes');
+
+		const updatedNote: NoteState = {
+			...existing,
+			md,
+			deleted: false,
+		};
+
+		const result = setStateEntry('notes', noteId, updatedNote);
+
+		if (isFail(result)) return failed('Unable to edit note');
+
+		return succeeded('Edited note', updatedNote);
+	},
+
+	deleteNote(noteId: string): Result<NoteState> {
+		const existing = this.getNote(noteId);
+		if (!existing) return failed('Unable to delete note, missing note');
+
+		const updatedNote: NoteState = {
+			...existing,
+			deleted: true,
+		};
+
+		const result = setStateEntry('notes', noteId, updatedNote);
+
+		if (isFail(result)) return failed('Unable to delete note');
+
+		return succeeded('Deleted note', updatedNote);
+	},
+
+	getNote(noteId: string): NoteState | undefined {
+		return getState().notes?.[noteId];
+	},
+
+	getNotesByIssue(issueId: string): NoteState[] {
+		return Object.values(getState().notes ?? {}).filter(
+			note => note.issue === issueId && !note.deleted,
+		);
+	},
+
+	getNotesGroupedByIssue(): Map<string, NoteState[]> {
+		const byIssue = new Map<string, NoteState[]>();
+
+		for (const note of Object.values(getState().notes ?? {})) {
+			if (note.deleted) continue;
+
+			const existing = byIssue.get(note.issue);
+
+			if (existing) existing.push(note);
+			else byIssue.set(note.issue, [note]);
 		}
 
 		return byIssue;

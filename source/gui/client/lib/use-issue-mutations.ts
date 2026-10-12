@@ -21,12 +21,14 @@ export const useIssueMutations = ({
 	setState,
 	contributors,
 	updateComments,
+	updateNotes,
 	attachmentMaxKb,
 }: {
 	send: BoardSocketActions['send'];
 	setState: Dispatch<SetStateAction<GuiState | null>>;
 	contributors: GuiContributor[];
 	updateComments: IssueDetailPanel['updateComments'];
+	updateNotes: IssueDetailPanel['updateNotes'];
 	attachmentMaxKb: GuiState['attachmentMaxKb'] | undefined;
 }) => {
 	const [attachmentUploadStatus, setAttachmentUploadStatus] =
@@ -333,6 +335,48 @@ export const useIssueMutations = ({
 		send('issue:comment:edit', {issueId, commentId, body});
 	};
 
+	const addIssueNote = (issueId: string, body: string) => {
+		setState(prev => {
+			if (!prev) return prev;
+
+			const previousNotes = prev.notesByIssueId[issueId] ?? [];
+			const placeholderNote = {
+				id: `placeholder-note-${crypto.randomUUID()}`,
+				issueId,
+				body,
+				isDeleted: false,
+				author: prev.user,
+				createdAt: new Date().getTime(),
+			} as (typeof previousNotes)[number];
+
+			return {
+				...prev,
+				notesByIssueId: {
+					...prev.notesByIssueId,
+					[issueId]: [...previousNotes, placeholderNote],
+				},
+			};
+		});
+
+		send('issue:note:add', {issueId, body});
+	};
+
+	const deleteIssueNote = (issueId: string, noteId: string) => {
+		updateNotes(issueId, notes =>
+			notes.filter(note => note.id !== noteId),
+		);
+
+		send('issue:note:delete', {issueId, noteId});
+	};
+
+	const editIssueNote = (issueId: string, noteId: string, body: string) => {
+		updateNotes(issueId, notes =>
+			notes.map(note => (note.id === noteId ? {...note, body} : note)),
+		);
+
+		send('issue:note:edit', {issueId, noteId, body});
+	};
+
 	return {
 		attachmentUploadStatus,
 		editIssueTitle,
@@ -349,6 +393,9 @@ export const useIssueMutations = ({
 		addIssueComment,
 		deleteIssueComment,
 		editIssueComment,
+		addIssueNote,
+		deleteIssueNote,
+		editIssueNote,
 		uploadIssueAttachments,
 		deleteIssueAttachment,
 	};

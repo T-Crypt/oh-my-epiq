@@ -11,9 +11,26 @@ export type ApiComment = {
 	createdAt: number;
 };
 
+export type ApiNote = {
+	id: string;
+	issueId: string;
+	body: string;
+	author: ApiAssignee;
+	createdAt: number;
+};
+
 // A comment as ome_issue_get carries it: what a thread is read for, and
 // nothing the GUI needs to draw one.
 export type ApiIssueComment = {
+	id: string;
+	author: string;
+	createdAt: number;
+	body: string;
+};
+
+// A note as ome_issue_get carries it: additional information about a ticket,
+// distinct from comments and description.
+export type ApiIssueNote = {
 	id: string;
 	author: string;
 	createdAt: number;
@@ -47,7 +64,10 @@ export type ApiIssue = {
 	boardIds: string[];
 };
 
-export type ApiIssueDetail = ApiIssue & {comments: ApiIssueComment[]};
+export type ApiIssueDetail = ApiIssue & {
+	comments: ApiIssueComment[];
+	notes: ApiIssueNote[];
+};
 
 // One write over many tickets: which went through and which did not, and
 // why. A failure is per ticket, not per call.
@@ -124,6 +144,7 @@ export type ApiState = {
 	user: ApiAssignee;
 	boards: ApiBoard[];
 	commentsByIssueId: Record<string, ApiComment[]>;
+	notesByIssueId: Record<string, ApiNote[]>;
 	attachmentsByIssueId: Record<string, ApiAttachment[]>;
 	attachmentMaxKb: number;
 	timeTravel: ApiTimeTravelStatus;

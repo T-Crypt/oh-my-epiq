@@ -6,6 +6,7 @@ import {
 	tombstoneContributor,
 	tombstoneTag,
 	addIssueComment,
+	addIssueNote,
 	addIssueTag,
 	closeIssue,
 	createBoard,
@@ -14,7 +15,9 @@ import {
 	createSwimlane,
 	deleteSwimlane,
 	deleteIssueComment,
+	deleteIssueNote,
 	editIssueComment,
+	editIssueNote,
 	deriveGuiState,
 	editIssueDescription,
 	editSwimlaneTitle,
@@ -573,6 +576,60 @@ export const setupWebsocket = (
 
 					sendSocket(socket, {
 						type: 'issue:comment:delete:result',
+						payload: result,
+					});
+
+					if (isFail(result)) {
+						return sendSocket(socket, {
+							type: 'failed',
+							payload: result.message,
+						});
+					}
+
+					onStateChanged();
+					return sendGuiState(socket, repoRoot);
+				}
+
+				if (type === 'issue:note:add') {
+					const result = await addIssueNote({
+						repoRoot,
+						issueId: message.payload.issueId,
+						body: message.payload.body,
+					});
+
+					return sendMutationResult(
+						socket,
+						repoRoot,
+						onStateChanged,
+						'issue:note:add:result',
+						result,
+					);
+				}
+
+				if (type === 'issue:note:edit') {
+					const result = await editIssueNote({
+						repoRoot,
+						noteId: message.payload.noteId,
+						body: message.payload.body,
+					});
+
+					return sendMutationResult(
+						socket,
+						repoRoot,
+						onStateChanged,
+						'issue:note:edit:result',
+						result,
+					);
+				}
+
+				if (type === 'issue:note:delete') {
+					const result = await deleteIssueNote({
+						repoRoot,
+						noteId: message.payload.noteId,
+					});
+
+					sendSocket(socket, {
+						type: 'issue:note:delete:result',
 						payload: result,
 					});
 

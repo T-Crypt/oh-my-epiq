@@ -21,6 +21,7 @@ import {
 	tombstoneTag,
 	restoreTag,
 	addIssueComment,
+	addIssueNote,
 	addIssueTag,
 	assumeActor,
 	closeIssue,
@@ -28,7 +29,9 @@ import {
 	createIssue,
 	createSwimlane,
 	deleteIssueComment,
+	deleteIssueNote,
 	editIssueComment,
+	editIssueNote,
 	deleteSwimlane,
 	editIssueDescription,
 	editIssueTitle,
@@ -495,6 +498,45 @@ export const createMcpServer = () => {
 			}),
 		},
 		exclusiveTool(editIssueComment),
+	);
+
+	server.registerTool(
+		'ome_issue_note_add',
+		{
+			description: 'Add a note to an OME issue (additional information, distinct from comments)',
+			inputSchema: z.object({
+				issueId: z.string().min(1),
+				body: z.string().min(1).max(MAX_COMMENT_LENGTH),
+				repoRoot: z.string().optional(),
+			}),
+		},
+		exclusiveTool(addIssueNote),
+	);
+
+	server.registerTool(
+		'ome_issue_note_delete',
+		{
+			description: 'Delete a note from an OME issue',
+			inputSchema: z.object({
+				noteId: z.string().min(1),
+				repoRoot: z.string().optional(),
+			}),
+		},
+		exclusiveTool(deleteIssueNote),
+	);
+
+	server.registerTool(
+		'ome_issue_note_edit',
+		{
+			description:
+				'Replace the body of one of your own notes on an OME issue',
+			inputSchema: z.object({
+				noteId: z.string().min(1),
+				body: z.string().min(1).max(MAX_COMMENT_LENGTH),
+				repoRoot: z.string().optional(),
+			}),
+		},
+		exclusiveTool(editIssueNote),
 	);
 
 	server.registerTool(

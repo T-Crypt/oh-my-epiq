@@ -15,6 +15,7 @@ import {IssueStats} from '../../../lib/stats/issue-stats.model.js';
 import {getResultValue} from './gui-state-helper';
 import {
 	GuiComment,
+	GuiNote,
 	GuiCommitDiff,
 	GuiCommitDiffFile,
 	GuiIssueHistoryEntry,
@@ -26,6 +27,7 @@ export type IssueDetail = {
 	issueId: string;
 	description: string;
 	comments: GuiComment[];
+	notes: GuiNote[];
 	history: GuiIssueHistoryEntry[];
 };
 
@@ -104,6 +106,12 @@ export type IssueDetailPanel = {
 	updateComments: (
 		issueId: string,
 		update: (comments: GuiComment[]) => GuiComment[],
+	) => void;
+	// An optimistic edit to the notes on screen, before the board's own state
+	// catches up with the change.
+	updateNotes: (
+		issueId: string,
+		update: (notes: GuiNote[]) => GuiNote[],
 	) => void;
 	// Handed every frame; it takes the three that are its own and ignores the
 	// rest. Deliberately not exclusive — `commit:diff:result` is also the
@@ -233,6 +241,17 @@ export const useIssueDetail = ({
 			setDetail(prev =>
 				prev && prev.issueId === id
 					? {...prev, comments: update(prev.comments)}
+					: prev,
+			);
+		},
+		[],
+	);
+
+	const updateNotes = useCallback(
+		(id: string, update: (notes: GuiNote[]) => GuiNote[]) => {
+			setDetail(prev =>
+				prev && prev.issueId === id
+					? {...prev, notes: update(prev.notes ?? [])}
 					: prev,
 			);
 		},
@@ -386,6 +405,7 @@ export const useIssueDetail = ({
 		commitDiffs,
 		loadCommitDiff,
 		updateComments,
+		updateNotes,
 		onMessage,
 	};
 };

@@ -6,7 +6,7 @@ import {
 	getTicketAssignees,
 	getTicketTags,
 } from '../../lib/utils/ticket.utils.js';
-import {ApiIssue, ApiIssueComment} from '../api-state.model.js';
+import {ApiIssue, ApiIssueComment, ApiIssueNote} from '../api-state.model.js';
 
 // Every board a lane has hung off, its current one included. A lane moves
 // between boards too (`moveSwimlane`), and reading only where it hangs today
@@ -85,6 +85,20 @@ export const getIssueComments = (issueId: string): ApiIssueComment[] =>
 			),
 			createdAt: ulidTimeMs(comment.id),
 			body: comment.md,
+		}));
+
+export const getIssueNotes = (issueId: string): ApiIssueNote[] =>
+	nodeRepo
+		.getNotesByIssue(issueId)
+		.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+		.map(note => ({
+			id: note.id,
+			author: nameOf(
+				note.authorId,
+				nodeRepo.getContributor(note.authorId)?.name,
+			),
+			createdAt: ulidTimeMs(note.id),
+			body: note.md,
 		}));
 
 export const getIssueAssignees = (ticket: Ticket) =>

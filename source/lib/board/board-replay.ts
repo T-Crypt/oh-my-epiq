@@ -69,6 +69,9 @@ export const getAffectedNodeIds = (event: AppEvent): string[] => {
 		case 'add.issue.comment':
 		case 'edit.issue.comment':
 		case 'delete.issue.comment':
+		case 'add.issue.note':
+		case 'edit.issue.note':
+		case 'delete.issue.note':
 		case 'add.issue.attachment':
 		case 'delete.issue.attachment':
 			return [event.payload.issue];

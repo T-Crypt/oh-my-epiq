@@ -24,4 +24,7 @@ export const MUTATING_MESSAGE_TYPES = new Set<string>([
 	'issue:assignee:remove',
 	'issue:comment:add',
 	'issue:comment:delete',
+	'issue:note:add',
+	'issue:note:delete',
+	'issue:note:edit',
 ]);

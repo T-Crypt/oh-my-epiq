@@ -91,6 +91,10 @@ const EventPayloadSchemas: Record<EventAction, z.ZodType> = {
 	'edit.issue.comment': z.looseObject({id, issue: id, md: z.string()}),
 	'delete.issue.comment': z.looseObject({id, issue: id}),
 
+	'add.issue.note': z.looseObject({id, issue: id, md: z.string()}),
+	'edit.issue.note': z.looseObject({id, issue: id, md: z.string()}),
+	'delete.issue.note': z.looseObject({id, issue: id}),
+
 	'add.issue.attachment': z.looseObject({
 		id,
 		issue: id,
