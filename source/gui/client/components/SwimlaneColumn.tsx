@@ -18,7 +18,8 @@ import {scrollGutter} from '../lib/scroll-gutter.style';
 
 // Not GUI_THEME.accent: at that hue a large soft wash reads cyan-green rather
 // than blue, so this is desaturated toward the panel chrome's blue-grey.
-const COLUMN_GLOW_COLOR = 'rgb(140, 176, 232)';
+// Derives from the theme's accent.
+const COLUMN_GLOW_COLOR = 'var(--o-accent)';
 
 const COLUMN_PADDING = 12;
 
@@ -141,7 +142,7 @@ export const SwimlaneColumn = ({
 				height: '100%',
 				// Panel's 1px border would otherwise add to the 100% and overflow the row.
 				boxSizing: 'border-box',
-				background: dragOver ? '#14202a' : GUI_THEME.bg,
+				background: dragOver ? 'var(--o-selection)' : GUI_THEME.bg,
 				padding: `0 ${COLUMN_PADDING}px`,
 				display: 'flex',
 				flexDirection: 'column',

@@ -76,7 +76,7 @@ export const CodeSnippet = ({
 						alignItems: 'center',
 						gap: 6,
 						padding: '4px 6px 4px 4px',
-						background: 'rgba(255,255,255,0.03)',
+						background: GUI_THEME.bgHighlight,
 						borderBottom: collapsed ? 'none' : `1px solid ${GUI_THEME.line}`,
 						fontFamily: CODE_FONT,
 						fontSize: TEXT.meta,

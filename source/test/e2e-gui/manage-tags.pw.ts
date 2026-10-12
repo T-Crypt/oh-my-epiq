@@ -76,7 +76,8 @@ test('arming a delete highlights the whole tag row', async ({
 
 // The chip used to be coloured text inside the neutral hairline every other
 // button wears, which at that contrast left it reading as two words rather than
-// one element. Fill, border and name are all the tag's own colour now.
+// one element. Fill and border are the tag's own colour; the name follows the
+// theme so it repaints when the user switches themes.
 test("a tag chip is washed with the tag's own colour", async ({
 	page,
 	appUrl,
@@ -107,12 +108,13 @@ test("a tag chip is washed with the tag's own colour", async ({
 		})()
 	`);
 
-	// Same hue as the name it sits behind, and far enough down that the chip
-	// never competes with the title above it.
+	// Fill is the tag's own colour (washed), and the text is a theme hue
+	// so it repaints on theme switch.
 	const rgba = /^rgba?\((\d+), (\d+), (\d+)(?:, ([\d.]+))?\)$/;
 	const [, r, g, b, alpha] = rgba.exec(fill) ?? [];
 	expect(fill).toMatch(rgba);
-	expect(`rgb(${r}, ${g}, ${b})`).toBe(text);
+	// The text colour is a theme colour, not the tag's own fill colour.
+	expect(text).not.toBe(`rgb(${r}, ${g}, ${b})`);
 	expect(Number(alpha)).toBeGreaterThan(0);
 	expect(Number(alpha)).toBeLessThan(0.2);
 

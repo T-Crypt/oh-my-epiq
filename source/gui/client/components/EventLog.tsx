@@ -548,7 +548,7 @@ const EventLogPanel = ({
 					borderRight: inWindow
 						? 'none'
 						: `1px solid ${GUI_THEME.edgeOnChrome}`,
-					boxShadow: inWindow ? undefined : '10px 0 24px rgba(0, 0, 0, 0.45)',
+					boxShadow: inWindow ? undefined : `10px 0 24px ${GUI_THEME.shadow}`,
 					background: GUI_THEME.chrome,
 					// How many lanes the pane divides into while it is split.
 					[LOG_LANE_COUNT_PROPERTY]: lanes.length,

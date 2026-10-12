@@ -1,5 +1,6 @@
 import {GuiContributor, GuiIssue, GuiTag} from '../lib/gui-state.model';
 import {GUI_THEME} from '../lib/gui-theme';
+import {tagColorToThemeHue} from '../lib/tag-colors';
 import {Aside} from './Aside';
 import {AsideDock} from '../lib/aside-dock';
 import {Button} from './Button';
@@ -97,35 +98,43 @@ export const BulkDetails = ({
 					{tags.length === 0 ? (
 						<Empty>No tags</Empty>
 					) : (
-						tags.map(({item, count}) => (
-							<Button
-								key={item.id}
-								variant="chip"
-								title="Remove from every selected ticket"
-								onClick={() => onRemoveTag(item.id)}
-								tint={item.color}
-								style={{color: item.color}}
-							>
-								{item.name}
-								{partial(count)} ×
-							</Button>
-						))
+						tags.map(({item, count}) => {
+							const hue = tagColorToThemeHue(item.color);
+							const tagTextColor = hue ? `var(--o-${hue})` : item.color;
+							return (
+								<Button
+									key={item.id}
+									variant="chip"
+									title="Remove from every selected ticket"
+									onClick={() => onRemoveTag(item.id)}
+									tint={item.color}
+									style={{color: tagTextColor}}
+								>
+									{item.name}
+									{partial(count)} ×
+								</Button>
+							);
+						})
 					)}
 				</ChipRow>
 
 				<ChipRow>
-					{availableTags.map(tag => (
-						<Button
-							key={tag.id}
-							variant="chip"
-							title="Add to every selected ticket"
-							onClick={() => onAddTag(tag.name)}
-							tint={tag.color}
-							style={{color: tag.color, opacity: 0.6}}
-						>
-							+ {tag.name}
-						</Button>
-					))}
+					{availableTags.map(tag => {
+						const hue = tagColorToThemeHue(tag.color);
+						const tagTextColor = hue ? `var(--o-${hue})` : tag.color;
+						return (
+							<Button
+								key={tag.id}
+								variant="chip"
+								title="Add to every selected ticket"
+								onClick={() => onAddTag(tag.name)}
+								tint={tag.color}
+								style={{color: tagTextColor, opacity: 0.6}}
+							>
+								+ {tag.name}
+							</Button>
+						);
+					})}
 				</ChipRow>
 
 				<AddRow>

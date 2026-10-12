@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {GuiComment, GuiIssue} from '../lib/gui-state.model';
 import {GUI_THEME} from '../lib/gui-theme';
+import {tagColorToThemeHue} from '../lib/tag-colors';
 import {
 	THEATRE_CARD_IN_ANIMATION,
 	THEATRE_FLASH_FRAMES,
@@ -189,9 +190,7 @@ export const TicketCard = ({
 				// colour at the same weight: the two washes have to move together,
 				// or picking one stops reading as picking it up.
 				background:
-					isSelected || isPicked
-						? 'rgba(118, 228, 255, 0.11)'
-						: 'rgba(185, 192, 255, 0.08)',
+					isSelected || isPicked ? GUI_THEME.accentWash : GUI_THEME.hover,
 				// Roomier than a list row: a card is read, not scanned, and the
 				// air around its title is what keeps a column of them from
 				// running together.
@@ -338,6 +337,8 @@ export const TicketCard = ({
 					>
 						{ticket.tags.map(tag => {
 							const isolated = tag.id === isolatedTagId;
+							const hue = tagColorToThemeHue(tag.color);
+							const tagTextColor = hue ? `var(--o-${hue})` : tag.color;
 
 							return (
 								<Button
@@ -358,7 +359,7 @@ export const TicketCard = ({
 										event.stopPropagation();
 										onFilterByTag(tag.id);
 									}}
-									style={{color: tag.color}}
+									style={{color: tagTextColor}}
 								>
 									{tag.name}
 								</Button>

@@ -32,6 +32,20 @@
 			crossorigin
 		/>
 		<link rel="stylesheet" href="/ome.css" />
+		<!-- The last look this browser used (theme.js keeps it), before the first paint: no flash of another theme. -->
+		<script>
+			try {
+				var look = JSON.parse(localStorage.getItem("ome.themeCache") || "null");
+				if (look) {
+					var root = document.documentElement;
+					for (var name in look.vars) root.style.setProperty(name, look.vars[name]);
+					for (var key in look.attrs) root.dataset[key] = look.attrs[key];
+					document
+						.querySelector('meta[name="theme-color"]')
+						.setAttribute("content", look.vars["--o-bg"]);
+				}
+			} catch (error) {}
+		</script>
 	</head>
 
 	<body>
