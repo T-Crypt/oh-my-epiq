@@ -300,6 +300,11 @@ attachments, `ome_project_init`, and `ome_skill_install`.
 `ome_issue_list` and `ome_issue_get` accept `view:brief` (default) for a
 lean response or `view:full` for descriptions, comments, and notes.
 
+The full surface also carries the collaboration board: `ome_collab_post`
+(`note`, `request` or `handoff`), `ome_collab_list`, `ome_collab_claim`,
+`ome_collab_resolve` and `ome_collab_pin`. Global lines sync to every clone
+through the state branch. Local lines stay on the machine that wrote them.
+
 The server sends the board workflow as its MCP instructions, so nothing has to
 be installed in a project. The longer written skill is optional: it lives at
 `skills/ome/SKILL.md`, and `ome_skill_install` copies it into one clone at

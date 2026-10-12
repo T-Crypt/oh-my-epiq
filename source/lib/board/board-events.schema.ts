@@ -76,6 +76,13 @@ const EventPayloadSchemas: Record<EventAction, z.ZodType> = {
 	'link.contributor.email': z.looseObject({contributor: id, email: id}),
 	'unlink.contributor.email': z.looseObject({contributor: id, email: id}),
 
+	// Channel and kind membership is the handler's call: an unknown value
+	// there is a skipped event, not a quarantined log.
+	'collab.post': z.looseObject({id, body: z.string()}),
+	'collab.claim': withId,
+	'collab.resolve': withId,
+	'collab.pin': z.looseObject({id, pinned: z.boolean()}),
+
 	'add.issue.assignee': z.looseObject({id, assignee: id}),
 	'remove.issue.assignee': z.looseObject({id, assignee: id}),
 	'add.issue.tag': z.looseObject({id, tag: id}),

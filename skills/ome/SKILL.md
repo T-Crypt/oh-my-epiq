@@ -17,6 +17,7 @@ description: Workflow for working an ome issue board through the ome MCP — tak
 - **Picking up a ticket:** assign yourself and move it to the in-progress lane. Ask before taking one assigned to someone else.
 - **Keep status, tags and description current**; reuse existing tags.
 - **Comment** on deviations, blockers, and the outcome when done.
+- **Collaboration board** (gated tools, set `OME_MCP_FULL=true`): post with `ome_collab_post` (`note`, `request` or `handoff`), read with `ome_collab_list`, carry a request with `ome_collab_claim`, finish it with `ome_collab_resolve`, pin with `ome_collab_pin`. Global lines sync to every clone through the state branch. Local lines stay on this machine in a sidecar the sync never reads. Notes and handoffs take an optional `ticket` and free-text `dueBy`; nothing schedules or reminds.
 - **Notes** (`ome_issue_note_add/edit/delete`) are a separate section from comments: use them for gathered context, websearch results, or any additional information you append to a ticket without disturbing the description or the comment thread. Comments are for discussion; notes are for recorded information.
 - **Prompt user for closing tickets and big decisions**
 - **Park decisions that are the user's to make.** A design fork, a change with blast radius beyond its ticket, anything you'd want a second opinion on - file a ticket tagged human-input-needed naming the options and the trade-offs, then carry on with whatever doesn't depend on the answer.

@@ -42,6 +42,13 @@ import {
 	sync,
 	updateIssue,
 } from './ome-api.js';
+import {
+	claimCollabMessage,
+	listCollabMessages,
+	pinCollabMessage,
+	postCollabMessage,
+	resolveCollabMessage,
+} from './api/collab.js';
 import {initProjectTool} from './ome-init.js';
 import {getIssueStats} from './ome-issue-stats.js';
 import {installSkill} from './ome-skill.js';
@@ -435,6 +442,63 @@ export const createMcpServer = () => {
 			}),
 		},
 		exclusiveTool(deleteIssueNote),
+	);
+
+	registerFull(
+		'ome_collab_post',
+		'Post a line on the collaboration board: a note, an assistance request, or a handoff. Global rides the synced state branch; local stays on this machine.',
+		z.object({
+			kind: z.enum(['note', 'request', 'handoff']),
+			body: z.string().min(1).max(MAX_COMMENT_LENGTH),
+			channel: z.enum(['global', 'local']).optional(),
+			ticket: z.string().optional(),
+			dueBy: z.string().optional(),
+			repoRoot: z.string().optional(),
+		}),
+		exclusiveTool(postCollabMessage),
+	);
+
+	registerFull(
+		'ome_collab_list',
+		'List collaboration board lines, pins first. Narrow by channel, kind or status.',
+		z.object({
+			channel: z.enum(['global', 'local']).optional(),
+			kind: z.enum(['note', 'request', 'handoff']).optional(),
+			status: z.enum(['open', 'claimed', 'resolved']).optional(),
+			repoRoot: z.string().optional(),
+		}),
+		exclusiveTool(listCollabMessages),
+	);
+
+	registerFull(
+		'ome_collab_claim',
+		'Claim an open request or handoff: it is yours to carry now.',
+		z.object({
+			messageId: z.string().min(1),
+			repoRoot: z.string().optional(),
+		}),
+		exclusiveTool(claimCollabMessage),
+	);
+
+	registerFull(
+		'ome_collab_resolve',
+		'Resolve a claimed request or handoff: the work it named is done.',
+		z.object({
+			messageId: z.string().min(1),
+			repoRoot: z.string().optional(),
+		}),
+		exclusiveTool(resolveCollabMessage),
+	);
+
+	registerFull(
+		'ome_collab_pin',
+		'Pin or unpin a collaboration board line. Pins list first.',
+		z.object({
+			messageId: z.string().min(1),
+			pinned: z.boolean().optional(),
+			repoRoot: z.string().optional(),
+		}),
+		exclusiveTool(pinCollabMessage),
 	);
 
 	server.registerTool(

@@ -18,6 +18,12 @@ import {
 	materializeSkip,
 } from '../event/event-materialize.js';
 import {AppEvent, AppEventMap} from './board-events.model.js';
+import {
+	collabChannels,
+	collabKinds,
+	collabRepo,
+} from '../collab/collab-repo.js';
+import {ulidTimeMs} from '../event/date-utils.js';
 import {CLOSED_SWIMLANE_ID} from './static-ids.js';
 
 // How each board event applies to the board's state. Every precondition is a
@@ -790,6 +796,81 @@ export const boardHandlers: EventHandlers<AppEventMap> = {
 			action: event.action,
 			result: result.value,
 		});
+	},
+
+	'collab.post': event => {
+		const {id, channel, kind, body, ticket, dueBy} = event.payload;
+
+		if (!collabChannels.includes(channel)) {
+			return materializeSkip(`Unknown collab channel: ${channel}`, event);
+		}
+		if (!collabKinds.includes(kind)) {
+			return materializeSkip(`Unknown collab kind: ${kind}`, event);
+		}
+
+		const result = collabRepo.post({
+			id,
+			channel,
+			kind,
+			body,
+			authorId: event.userId,
+			createdAt: ulidTimeMs(id),
+			ticket,
+			dueBy,
+		});
+		if (isFail(result)) {
+			return materializeSkip(result.message ?? 'Unable to post message', event);
+		}
+
+		return succeeded('Message posted', {
+			action: event.action,
+			result: {id},
+		});
+	},
+
+	'collab.claim': event => {
+		const result = collabRepo.claim(event.payload.id);
+		if (isFail(result)) {
+			return materializeSkip(
+				result.message ?? 'Unable to claim message',
+				event,
+			);
+		}
+
+		return succeeded('Message claimed', {
+			action: event.action,
+			result: {id: event.payload.id},
+		});
+	},
+
+	'collab.resolve': event => {
+		const result = collabRepo.resolve(event.payload.id);
+		if (isFail(result)) {
+			return materializeSkip(
+				result.message ?? 'Unable to resolve message',
+				event,
+			);
+		}
+
+		return succeeded('Message resolved', {
+			action: event.action,
+			result: {id: event.payload.id},
+		});
+	},
+
+	'collab.pin': event => {
+		const result = collabRepo.pin(event.payload.id, event.payload.pinned);
+		if (isFail(result)) {
+			return materializeSkip(result.message ?? 'Unable to pin message', event);
+		}
+
+		return succeeded(
+			event.payload.pinned ? 'Message pinned' : 'Message unpinned',
+			{
+				action: event.action,
+				result: {id: event.payload.id},
+			},
+		);
 	},
 
 	'link.contributor.user': event => {

@@ -8,6 +8,7 @@ import {
 import {AttachmentExt, Contributor, Tag} from '../model/app-state.model.js';
 import {EmailLink} from '../model/email-link.js';
 import {AnyContext} from '../model/context.model.js';
+import {CollabChannel, CollabKind} from '../collab/collab-repo.js';
 import {NavNode} from '../model/navigation-node.model.js';
 
 /**
@@ -348,6 +349,40 @@ export type AppEventMap = {
 			userId: string;
 		};
 	};
+
+	/**
+	 * A line on the collaboration board: a note, an assistance request, or
+	 * a handoff. Standalone on purpose — it never edits board nodes, so
+	 * replaying it needs no board state and a board replay never waits on
+	 * it. `channel` decides where the line lives: `global` rides the synced
+	 * state branch, `local` a gitignored sidecar on this machine only.
+	 * `dueBy` stays free text: no scheduler reads it.
+	 */
+	'collab.post': {
+		payload: PayloadBase & {
+			channel: CollabChannel;
+			kind: CollabKind;
+			body: string;
+			ticket?: string;
+			dueBy?: string;
+		};
+		result: {id: string};
+	};
+
+	'collab.claim': {
+		payload: PayloadBase;
+		result: {id: string};
+	};
+
+	'collab.resolve': {
+		payload: PayloadBase;
+		result: {id: string};
+	};
+
+	'collab.pin': {
+		payload: PayloadBase & {pinned: boolean};
+		result: {id: string};
+	};
 };
 
 export type EventAction = keyof AppEventMap;
@@ -393,6 +428,10 @@ export const EVENT_ACTIONS = [
 	'rebalance.children',
 	'link.contributor.user',
 	'link.contributor.email',
+	'collab.post',
+	'collab.claim',
+	'collab.resolve',
+	'collab.pin',
 	'unlink.contributor.email',
 ] as const satisfies readonly EventAction[];
 

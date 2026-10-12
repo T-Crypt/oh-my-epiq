@@ -168,6 +168,16 @@ const log = (): AppEvent[] => [
 
 	// An issue's title moves through the same action as a lane's, so a title
 	// edit only counts as a rename for an id one of the node cases created.
+	at('collab.post', {
+		id: '01J00000000000000CAFE00112',
+		channel: 'global',
+		kind: 'handoff',
+		body: 'Take this',
+	}),
+	at('collab.claim', {id: '01J00000000000000CAFE00112'}),
+	at('collab.resolve', {id: '01J00000000000000CAFE00112'}),
+	at('collab.pin', {id: '01J00000000000000CAFE00112', pinned: true}),
+
 	at('edit.title', {id: ISSUE, name: 'Issue Renamed'}),
 	at('edit.title', {id: LANE, name: 'Icebox'}),
 	at('edit.title', {id: GONE_LANE, name: 'Spike Renamed'}),
