@@ -75,7 +75,10 @@ import {
 	GuiProject,
 	recentProjectViews,
 	resolveRecentProjectRoot,
+	detectProjectState,
+	repairWorkspace,
 } from './gui-project.js';
+import {recentProjectName} from '../../../lib/config/recent-projects.js';
 import {GuiMessage} from './websocket.model.js';
 import {isForeignOrigin} from './origin-guard.js';
 import {authorize, type RemoteAccess} from './remote-access.js';
@@ -224,15 +227,74 @@ export const setupWebsocket = (
 				const {type} = message;
 				const repoRoot = project.repoRoot;
 
+				if (type === 'project:list') {
+					return sendSocket(socket, {
+						type: 'project:list:result',
+						payload: {
+							current: {
+								root: repoRoot,
+								name: recentProjectName(repoRoot),
+							},
+							projects: recentProjectViews(repoRoot),
+						},
+					});
+				}
+
 				if (type === 'project:open') {
-					const result = resolveRecentProjectRoot(message.payload.root);
+					const requested = message.payload.root;
+					const listed = resolveRecentProjectRoot(requested);
 
-					sendSocket(socket, {type: 'project:open:result', payload: result});
+					// A root the registry lists takes the short path: it booted
+					// before, so it boots again.
+					if (!isFail(listed)) {
+						sendSocket(socket, {type: 'project:open:result', payload: listed});
+						project.repoRoot = listed.value;
+						return sendGuiState(socket, listed.value);
+					}
 
-					if (isFail(result)) return;
+					// Otherwise the picker typed it: any absolute directory is
+					// openable, and detection says which screen it earns.
+					const detection = await detectProjectState(requested);
+					if (isFail(detection)) {
+						return sendSocket(socket, {
+							type: 'project:open:result',
+							payload: detection,
+						});
+					}
 
-					project.repoRoot = result.value;
-					return sendGuiState(socket, result.value);
+					project.repoRoot = detection.value.root;
+					sendSocket(socket, {
+						type: 'project:open:result',
+						payload: succeeded(
+							`Opened project in slot ${detection.value.slot}`,
+							detection.value,
+						),
+					});
+
+					if (detection.value.slot === 'ready') {
+						return sendGuiState(socket, detection.value.root);
+					}
+
+					return sendSocket(socket, {
+						type: 'state:unavailable',
+						payload: {
+							message: detection.value.message,
+							repoRoot: detection.value.root,
+							recentProjects: recentProjectViews(detection.value.root),
+							halfInit: detection.value.slot === 'half',
+						},
+					});
+				}
+
+				if (type === 'project:repair') {
+					const repaired = await repairWorkspace(repoRoot);
+					sendSocket(socket, {
+						type: 'project:repair:result',
+						payload: repaired,
+					});
+					if (isFail(repaired)) return;
+
+					return sendGuiState(socket, repaired.value.root);
 				}
 
 				// Echoed back rather than forwarded into the API: the client pairs

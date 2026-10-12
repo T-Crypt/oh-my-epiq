@@ -35,6 +35,8 @@ const bare = <T extends string>(type: T) => z.object({type: z.literal(type)});
 
 export const GuiMessageSchema = z.discriminatedUnion('type', [
 	bare('state:get'),
+	bare('project:list'),
+	bare('project:repair'),
 	bare('issues:list'),
 	bare('sync'),
 	bare('time-travel:live'),

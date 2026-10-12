@@ -23,6 +23,9 @@ type HeaderProps = {
 	// what everything below is showing, the timeline included, and this is the
 	// one row that outlives every panel and collapse below it.
 	board: React.ReactNode;
+	// The project switcher, ahead of the board: the board belongs to the
+	// project, so the breadcrumb reads app, project, board.
+	project?: React.ReactNode;
 	identity: {
 		open: boolean;
 		onToggle: () => void;
@@ -39,6 +42,7 @@ export const Header = ({
 	syncStatus,
 	onOpenCommands,
 	board,
+	project,
 	identity,
 }: HeaderProps) => {
 	const panelRef = useRef<HTMLDivElement | null>(null);
@@ -139,6 +143,13 @@ export const Header = ({
 					{/* Read as a breadcrumb: the app, then the board it is showing. The
 					    slash is what makes the pair one phrase rather than two labels
 					    that happen to sit together. */}
+					{project && (
+						<>
+							<span style={{color: GUI_THEME.dim, fontSize: 12}}>/</span>
+							{project}
+						</>
+					)}
+
 					<span style={{color: GUI_THEME.dim, fontSize: 12}}>/</span>
 
 					{board}
