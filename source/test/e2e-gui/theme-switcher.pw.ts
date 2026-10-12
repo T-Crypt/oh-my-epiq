@@ -1,3 +1,4 @@
+/// <reference lib="dom" />
 import {expect, test} from './fixtures.js';
 
 test('switching the theme repaints a JavaScript-sourced scrim without reload', async ({

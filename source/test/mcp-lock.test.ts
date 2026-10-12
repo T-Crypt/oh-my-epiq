@@ -37,6 +37,7 @@ vi.mock('../mcp/ome-api.js', () => ({
 	removeIssueTag: vi.fn(),
 	reopenIssue: vi.fn(),
 	sync: vi.fn(),
+	updateIssue: vi.fn(),
 }));
 
 import {Client} from '@modelcontextprotocol/sdk/client/index.js';
