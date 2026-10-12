@@ -2865,7 +2865,7 @@ describe('createIssue lane default', () => {
 			expect(result.value.id).toBeDefined();
 			expect(result.value.ref).toBeDefined();
 		} finally {
-			nodes['readonly-swimlane'] = saved;
+			if (saved !== undefined) nodes['readonly-swimlane'] = saved;
 		}
 	});
 });
