@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"rootDir": "source",
 		"outDir": "dist",
-		"lib": ["esnext", "DOM"],
+		"lib": ["esnext"],
 		"types": ["node"]
 	},
 	"include": ["source", "globals.d.ts"],

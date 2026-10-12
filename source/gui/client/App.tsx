@@ -243,6 +243,12 @@ export const App = () => {
 	// inline script in index.html; this picks up any change the guard missed).
 	useEffect(() => {
 		applyTheme(savedThemeId());
+		// Exposed for e2e assertions that prove JS-sourced colours repaint on
+		// theme switch without reloading the page.
+		if (typeof window !== 'undefined') {
+			(window as unknown as Record<string, unknown>).__omeApplyTheme =
+				applyTheme;
+		}
 	}, []);
 
 	// Repaint the whole tree when the theme changes: a theme switch updates CSS

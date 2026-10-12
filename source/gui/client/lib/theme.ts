@@ -623,6 +623,7 @@ export function themeVars(palette: Palette): Record<string, string | null> {
 		'--o-fg-dim': pick(c, 'dark_foreground', 'muted') ?? fg,
 		'--o-fg-light': pick(c, 'light_foreground') ?? fg,
 		'--o-fg-bright': pick(c, 'bright_foreground') ?? fg,
+		'--o-muted': pick(c, 'muted') ?? fg,
 		'--o-accent': accent,
 		'--o-selection': pick(c, 'selection', 'lighter_background') ?? accent,
 		'--o-red': pick(c, 'red') ?? '#f7768e',
