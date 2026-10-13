@@ -283,9 +283,14 @@ export const Aside = forwardRef<
 							boxShadow: `-10px 0 24px ${GUI_THEME.shadow}`,
 					  }),
 				background: GUI_THEME.panel,
-				// None at the top: the header band below carries the inset that puts
-				// it on the line the board's and the log's headers keep.
-				padding: `0 ${ASIDE_PADDING}px ${ASIDE_PADDING}px`,
+				// None at the top on desktop: the header band below carries the
+				// inset that puts it on the line the board's and the log's
+				// headers keep. On the phone sheet the inline padding is
+				// authoritative (it beats .phone-sheet's padding longhands in
+				// the cascade), so it carries the safe-area insets itself.
+				padding: sheet.phone
+					? `var(--safe-top) ${ASIDE_PADDING}px var(--safe-bottom)`
+					: `0 ${ASIDE_PADDING}px ${ASIDE_PADDING}px`,
 				fontSize: 12,
 				// The band and the pane stack, and the pane takes what is left.
 				display: 'flex',

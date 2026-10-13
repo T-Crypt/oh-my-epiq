@@ -764,6 +764,9 @@ body.plain-page {
 	max-width: none !important;
 	height: 100dvh !important;
 	z-index: 800;
+	/* NOTE: the inline padding in Aside.tsx is authoritative (inline style
+	   beats these longhands in the cascade) — it carries the safe-area
+	   insets for the phone sheet. These are fallback/documentation only. */
 	padding-top: var(--safe-top);
 	padding-bottom: var(--safe-bottom);
 	box-sizing: border-box;
