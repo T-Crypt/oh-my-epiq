@@ -69,7 +69,9 @@ describe('TUI diff e2e', () => {
 				const issues = await listIssues({repoRoot: tui.cwd});
 				if (isFail(issues)) throw new Error(issues.message);
 
-				const ref = issues.value[0]?.ref;
+				// init seeds an Ideas board with its own ticket, so the new
+				// issue is not necessarily first — find it by title.
+				const ref = issues.value.find(i => i.title === 'Diff target')?.ref;
 				expect(ref).toBeTruthy();
 
 				commit(tui.cwd, `${ref} the first thing`, 'one.ts');
@@ -141,7 +143,7 @@ describe('TUI diff e2e', () => {
 
 				const issues = await listIssues({repoRoot: tui.cwd});
 				if (isFail(issues)) throw new Error(issues.message);
-				const ref = issues.value[0]?.ref;
+				const ref = issues.value.find(i => i.title === 'Patch target')?.ref;
 
 				// A base to diff against, then a change that removes one line, adds
 				// another and leaves context around both.
@@ -231,7 +233,7 @@ describe('TUI diff e2e', () => {
 
 				const issues = await listIssues({repoRoot: tui.cwd});
 				if (isFail(issues)) throw new Error(issues.message);
-				const ref = issues.value[0]?.ref;
+				const ref = issues.value.find(i => i.title === 'Comment target')?.ref;
 
 				fs.writeFileSync(
 					path.join(tui.cwd, 'thing.ts'),
@@ -357,7 +359,7 @@ describe('TUI diff e2e', () => {
 
 				const issues = await listIssues({repoRoot: tui.cwd});
 				if (isFail(issues)) throw new Error(issues.message);
-				const ref = issues.value[0]?.ref;
+				const ref = issues.value.find(i => i.title === 'Wide target')?.ref;
 
 				git(tui.cwd, 'commit -q --no-verify --allow-empty -m base');
 

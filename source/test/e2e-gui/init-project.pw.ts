@@ -47,9 +47,7 @@ test('offers the recently opened project and boots into it', async ({
 	const screen = page.getByTestId('init-project-screen');
 	await expect(screen).toBeVisible();
 
-	const recent = page
-		.getByTestId('recent-project')
-		.filter({hasText: repoRoot});
+	const recent = page.getByTestId('recent-project').filter({hasText: repoRoot});
 	await expect(recent).toHaveCount(1);
 
 	await recent.getByTestId('open-recent-project').click();

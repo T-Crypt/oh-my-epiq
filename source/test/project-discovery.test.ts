@@ -19,9 +19,14 @@ const track = (dir: string): string => {
 	return dir;
 };
 
-const makeRoot = (): string => track(fs.mkdtempSync(path.join(os.tmpdir(), 'ome-disc-')));
+const makeRoot = (): string =>
+	track(fs.mkdtempSync(path.join(os.tmpdir(), 'ome-disc-')));
 
-const makeProject = (parent: string, name: string, projectId: string): string => {
+const makeProject = (
+	parent: string,
+	name: string,
+	projectId: string,
+): string => {
 	const root = path.join(parent, name);
 	fs.mkdirSync(path.join(root, '.ome'), {recursive: true});
 	fs.writeFileSync(
@@ -93,7 +98,7 @@ describe('discoverOmeProjectRoots', () => {
 
 	it('tolerates a missing search root', () => {
 		expect(
-			discoverOmeProjectRoots({roots: [path.join(makeRoot(), 'nope')]})
+			discoverOmeProjectRoots({roots: [path.join(makeRoot(), 'nope')]}),
 		).toEqual([]);
 	});
 });
@@ -107,7 +112,9 @@ describe('reconcileRecentProjects', () => {
 		const reconciled = unwrap(reconcileRecentProjects({roots: [search]}));
 
 		expect(reconciled.map(entry => entry.root)).toContain(root);
-		expect(unwrap(listRecentProjects()).map(entry => entry.root)).toContain(root);
+		expect(unwrap(listRecentProjects()).map(entry => entry.root)).toContain(
+			root,
+		);
 	});
 
 	it('keeps the existing lastOpenedAt for opened projects', () => {
@@ -117,7 +124,9 @@ describe('reconcileRecentProjects', () => {
 
 		const reconciled = unwrap(reconcileRecentProjects({roots: [search]}));
 
-		expect(reconciled.find(entry => entry.root === root)?.lastOpenedAt).toBe(42);
+		expect(reconciled.find(entry => entry.root === root)?.lastOpenedAt).toBe(
+			42,
+		);
 	});
 
 	it('leaves the registry alone when there is nothing new', () => {

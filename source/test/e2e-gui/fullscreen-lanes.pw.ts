@@ -48,14 +48,20 @@ test('a wide fullscreen panel shows every pane side by side', async ({
 		expect(commits).toBeGreaterThanOrEqual((await widthOf(lane)) * 2);
 	}
 
-	// Nothing runs off the right edge of the window.
+	// Nothing runs off the right edge of the window. The lanes are sized
+	// from the panel's measured width, which lands a frame after fullscreen
+	// opens — so sample until the layout settles rather than snapshotting
+	// the first paint, which still has them laid out for the window.
 	for (const target of [
 		page.getByTestId('lane-commits'),
 		fullscreenToggle(page),
 	]) {
-		const box = await target.boundingBox();
-		expect(box).not.toBeNull();
-		expect(box!.x + box!.width).toBeLessThanOrEqual(1600);
+		await expect
+			.poll(async () => {
+				const box = await target.boundingBox();
+				return box ? box.x + box.width : Number.POSITIVE_INFINITY;
+			})
+			.toBeLessThanOrEqual(1600);
 	}
 
 	await page.screenshot({
