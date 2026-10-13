@@ -9,6 +9,11 @@ import {
 	DIFF_WORKER_HIGHLIGHTER_OPTIONS,
 	DIFF_WORKER_POOL_OPTIONS,
 } from './lib/diffs-worker-pool';
+import {installViewportHeight} from './lib/viewport';
+
+// Before the first paint, so the shell is never one frame at the wrong height. Nothing happens on a platform that
+// reports its viewport honestly.
+installViewportHeight();
 
 // The board, with somewhere for the diff highlighter to run — see
 // lib/diffs-worker-pool. One element for both board routes, so moving between
