@@ -114,6 +114,9 @@
 	--safe-bottom: env(safe-area-inset-bottom, 0px);
 	--safe-left: env(safe-area-inset-left, 0px);
 	--safe-right: env(safe-area-inset-right, 0px);
+	/* What the tab bar keeps clear at the bottom. The home-indicator inset, until lib/viewport measures a platform
+	   drawing chrome over the app and reporting no inset for it: the part it covers is already clear. */
+	--pad-bottom: var(--safe-bottom);
 	--tabbar: 56px;
 	color-scheme: dark;
 }
@@ -654,6 +657,9 @@ body.plain-page {
 	flex-direction: column;
 	height: 100vh;
 	height: 100dvh;
+	/* lib/viewport sets --app-h to the visible viewport where the platform draws chrome over the app and describes
+	   none of it; everywhere else this is the dvh above. */
+	height: var(--app-h, 100dvh);
 	padding-left: var(--safe-left);
 	padding-right: var(--safe-right);
 	box-sizing: border-box;
@@ -798,8 +804,8 @@ body.plain-page {
 	grid-auto-flow: column;
 	grid-auto-columns: 1fr;
 	box-sizing: border-box;
-	height: calc(var(--tabbar) + var(--safe-bottom));
-	padding-bottom: var(--safe-bottom);
+	height: calc(var(--tabbar) + var(--pad-bottom));
+	padding-bottom: var(--pad-bottom);
 	padding-left: var(--safe-left);
 	padding-right: var(--safe-right);
 	/* The background runs through the home-indicator padding to the

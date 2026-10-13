@@ -51,6 +51,63 @@ test.describe('phone', () => {
 		expect(pageErrors).toEqual([]);
 	});
 
+	// An installed web app on iOS 26 draws its own toolbar over the page and reports no inset for it, so the layout
+	// viewport is taller than what a person can see. The shell has to take the visible one, or the last strip of the
+	// tab bar is painted under that toolbar.
+	test('sizes the shell to the visible viewport when chrome covers the bottom', async ({
+		page,
+		appUrl,
+		pageErrors,
+	}) => {
+		const chrome = 49;
+		await page.addInitScript((covered: number) => {
+			const fake = {
+				width: window.innerWidth,
+				height: window.innerHeight - covered,
+				offsetTop: 0,
+				offsetLeft: 0,
+				pageTop: 0,
+				pageLeft: 0,
+				scale: 1,
+				addEventListener: () => undefined,
+				removeEventListener: () => undefined,
+			};
+			Object.defineProperty(window, 'visualViewport', {
+				value: fake,
+				configurable: true,
+			});
+		}, chrome);
+
+		await page.goto(appUrl);
+		await expect(page.getByTestId('board-switcher')).toContainText('Default');
+
+		const metrics = await page.evaluate(() => {
+			const bar = document.querySelector('.tabbar')?.getBoundingClientRect();
+			const tabs = Array.from(document.querySelectorAll('.tab')).map(
+				tab => tab.getBoundingClientRect().bottom,
+			);
+
+			return {
+				appHeight: getComputedStyle(document.documentElement)
+					.getPropertyValue('--app-h')
+					.trim(),
+				innerHeight: window.innerHeight,
+				barBottom: bar?.bottom ?? 0,
+				barHeight: bar?.height ?? 0,
+				lastLabelBottom: Math.max(...tabs),
+			};
+		});
+
+		const visible = metrics.innerHeight - chrome;
+		expect(metrics.appHeight).toBe(`${visible}px`);
+		expect(metrics.barBottom).toBeLessThanOrEqual(visible + 1);
+		expect(metrics.barBottom).toBeGreaterThan(visible - 2);
+		// The inset is 0 under emulation, so nothing is left for the bar to keep clear.
+		expect(metrics.barHeight).toBe(56);
+		expect(metrics.lastLabelBottom).toBeLessThanOrEqual(visible);
+		expect(pageErrors).toEqual([]);
+	});
+
 	test('gives tabs and Me actions 44px targets', async ({
 		page,
 		appUrl,
