@@ -34,7 +34,8 @@ test('leaves the board alone in a repo that does have a project', async ({
 });
 
 // The worker's seeded project was booted by the same process that serves the
-// bare directory, so it is the one recent project the bare screen can offer.
+// bare directory, so the bare screen offers it — alongside any other board on
+// the device the discovery scan picks up.
 test('offers the recently opened project and boots into it', async ({
 	page,
 	bareAppUrl,
@@ -46,11 +47,12 @@ test('offers the recently opened project and boots into it', async ({
 	const screen = page.getByTestId('init-project-screen');
 	await expect(screen).toBeVisible();
 
-	const recent = page.getByTestId('recent-project');
+	const recent = page
+		.getByTestId('recent-project')
+		.filter({hasText: repoRoot});
 	await expect(recent).toHaveCount(1);
-	await expect(recent).toContainText(repoRoot);
 
-	await page.getByTestId('open-recent-project').click();
+	await recent.getByTestId('open-recent-project').click();
 
 	await expect(page.getByTestId('board-switcher')).toContainText('Default');
 	await expect(page.getByTestId('init-project-screen')).toHaveCount(0);

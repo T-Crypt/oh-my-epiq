@@ -20,6 +20,7 @@ type Props = {
 	onOpen: (root: string) => void;
 	onRepair: () => void;
 	onBrowse: () => void;
+	onScan?: () => void;
 };
 
 const codeStyle = {
@@ -39,6 +40,7 @@ export const InitProjectScreen = ({
 	onOpen,
 	onRepair,
 	onBrowse,
+	onScan,
 }: Props) => (
 	<div
 		data-testid="init-project-screen"
@@ -136,13 +138,27 @@ export const InitProjectScreen = ({
 					>
 						<div
 							style={{
-								color: GUI_THEME.accent,
-								fontSize: 10,
-								letterSpacing: 1,
-								textTransform: 'uppercase',
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'space-between',
+								gap: 8,
 							}}
 						>
-							Or open a recent project
+							<div
+								style={{
+									color: GUI_THEME.accent,
+									fontSize: 10,
+									letterSpacing: 1,
+									textTransform: 'uppercase',
+								}}
+							>
+								Or open a known project ({recentProjects.length})
+							</div>
+							{onScan && (
+								<Button variant="ghost" onClick={onScan} data-testid="scan-projects">
+									scan for more
+								</Button>
+							)}
 						</div>
 
 						{recentProjects.map(project => (

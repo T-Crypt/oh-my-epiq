@@ -4,6 +4,7 @@ export type GuiMessage =
 	| {type: 'state:get'}
 	| {type: 'project:open'; payload: {root: string}}
 	| {type: 'project:list'}
+	| {type: 'project:scan'}
 	| {type: 'project:repair'}
 	| {type: 'issues:list'}
 	| {type: 'issues:create'; payload: {title: string; parentId: string}}

@@ -1908,6 +1908,7 @@ export const App = () => {
 						send('project:list', undefined);
 						setPickerOpen(true);
 					}}
+					onScan={() => send('project:scan', undefined)}
 				/>
 				{pickerOpen && (
 					<ProjectPicker
@@ -2772,6 +2773,7 @@ export const App = () => {
 							error={pickerError}
 							onOpen={root => send('project:open', {root})}
 							onClose={() => setPickerOpen(false)}
+							onScan={() => send('project:scan', undefined)}
 						/>
 					)}
 
@@ -3174,6 +3176,7 @@ export const App = () => {
 									error={pickerError}
 									onOpen={root => send('project:open', {root})}
 									onClose={() => setPickerOpen(false)}
+									onScan={() => send('project:scan', undefined)}
 								/>
 							)}
 
