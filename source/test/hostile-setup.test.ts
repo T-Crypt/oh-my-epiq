@@ -5,6 +5,7 @@ import {AppEvent} from '../lib/board/board-events.model.js';
 import {isFail, succeeded} from '../lib/model/result-types.js';
 import {resetEmailScanCacheForTests} from '../lib/repository/email-candidates.js';
 import {patchSettingsState} from '../lib/state/settings.state.js';
+import {useProjectRoot} from './helpers/project-root.js';
 
 /**
  * Setup is the one flow that takes a repository's git history and a person's
@@ -25,10 +26,15 @@ vi.mock('../git/git-constants.js', () => ({
 vi.mock('../git/git-storage.js', () => ({
 	getStateBranchRoot: vi.fn(() => succeeded('Root', '/state')),
 }));
+// Booting a board reads a real `.ome/project.json` where this resolver points,
+// and a fresh clone carries none: it is per-machine identity, untracked. The
+// root below stands in for the checkout.
+const projectRoot = useProjectRoot();
+
 vi.mock('../lib/storage/paths.js', async importOriginal => ({
 	...(await importOriginal<typeof import('../lib/storage/paths.js')>()),
 	resolveClosestOmeProjectRoot: vi.fn(() =>
-		succeeded('Resolved', process.cwd()),
+		succeeded('Resolved', projectRoot()),
 	),
 }));
 vi.mock('../lib/config/user-config.js', () => ({

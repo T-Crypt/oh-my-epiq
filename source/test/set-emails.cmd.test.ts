@@ -8,6 +8,7 @@ import {resetEmailScanCacheForTests} from '../lib/repository/email-candidates.js
 import {getOfferedEmails} from '../lib/state/email-offers.state.js';
 import {patchSettingsState} from '../lib/state/settings.state.js';
 import {getState} from '../lib/state/state.js';
+import {useProjectRoot} from './helpers/project-root.js';
 
 // The scan and the write are the two things this command does not own. Both are
 // covered by their own tests; what is under test here is everything between the
@@ -20,12 +21,16 @@ vi.mock('../git/git-constants.js', () => ({
 vi.mock('../git/git-storage.js', () => ({
 	getStateBranchRoot: vi.fn(() => succeeded('Root', '/state')),
 }));
+// Booting a board reads a real `.ome/project.json` where this resolver points,
+// and a fresh clone carries none: it is per-machine identity, untracked. The
+// root below stands in for the checkout; every git call is mocked, so nothing
+// touches the repository.
+const projectRoot = useProjectRoot();
+
 vi.mock('../lib/storage/paths.js', async importOriginal => ({
 	...(await importOriginal<typeof import('../lib/storage/paths.js')>()),
-	// The worktree itself: booting a board reads a real `.ome/project.json`,
-	// and every git call here is mocked, so nothing touches the repository.
 	resolveClosestOmeProjectRoot: vi.fn(() =>
-		succeeded('Resolved', process.cwd()),
+		succeeded('Resolved', projectRoot()),
 	),
 }));
 const BOARD = 'BOARD-UNDER-TEST';
