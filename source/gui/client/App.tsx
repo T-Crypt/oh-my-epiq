@@ -2400,6 +2400,33 @@ export const App = () => {
 				<div className="phone-me">
 					<div className="tile">{identityPanel}</div>
 					<div className="tile">
+						<div className="sheet-head">Project</div>
+						<div style={{fontSize: 12, fontWeight: 700, marginBottom: 8}}>
+							{projectList?.current.name ?? 'Loading...'}
+						</div>
+						<Button
+							variant="primary"
+							onClick={() => {
+								setPickerError(null);
+								send('project:list', undefined);
+								setPickerOpen(true);
+							}}
+							data-testid="open-project-picker"
+						>
+							switch project
+						</Button>
+					</div>
+					<div className="tile">
+						<div className="sheet-head">Appearance</div>
+						<Button
+							variant="primary"
+							onClick={() => setThemeSheetOpen(true)}
+							data-testid="open-theme-sheet"
+						>
+							change theme
+						</Button>
+					</div>
+					<div className="tile">
 						<div className="sheet-head">Devices</div>
 						<DevicesPanel />
 					</div>

@@ -1,5 +1,5 @@
 // Theme switcher: a sheet showing all themes as cards with preview swatches.
-// Mounted from the rail on desktop and the phone menu on mobile.
+// Mounted from the rail on desktop and the Appearance tile on mobile.
 
 import {useEffect, useState} from 'react';
 import {
