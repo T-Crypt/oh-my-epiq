@@ -156,6 +156,45 @@ export const GUI_THEME = Object.freeze({
 	get transparent() {
 		return 'rgba(0, 0, 0, 0)';
 	},
+	// Semantic aliases over the same custom properties theme.ts emits.
+	// Every getter falls back to its pre-alias value, so surfaces drawn
+	// before the aliases existed read unchanged.
+	get background() {
+		return readVar('--color-background', '#1a1b26');
+	},
+	get surface() {
+		return readVar('--surface', '#13141c');
+	},
+	get surfaceRaised() {
+		return readVar('--surface-raised', '#24283b');
+	},
+	get border() {
+		return readVar('--border', 'rgba(169, 177, 214, 0.13)');
+	},
+	get textPrimary() {
+		return readVar('--text-primary', '#c0caf5');
+	},
+	get textSecondary() {
+		return readVar('--text-secondary', '#a9b1d6');
+	},
+	get textMuted() {
+		return readVar('--text-muted', '#8288a6');
+	},
+	get textDisabled() {
+		return readVar('--text-disabled', '#646881');
+	},
+	get focus() {
+		return readVar('--focus', '#7aa2f7');
+	},
+	get success() {
+		return readVar('--success', '#9ece6a');
+	},
+	get warning() {
+		return readVar('--warning', '#e0af68');
+	},
+	get danger() {
+		return readVar('--danger', '#f7768e');
+	},
 	// Theme-driven overlay: a scrim that adapts to light and dark palettes.
 	get scrim() {
 		const bgDark = readVar('--o-bg-darker', '#0e0e14');

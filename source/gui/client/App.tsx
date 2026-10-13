@@ -2450,7 +2450,9 @@ export const App = () => {
 				<div
 					className={phone ? 'ome-phone' : undefined}
 					style={{
-						height: phone ? '100dvh' : '100%',
+						// Height lives in .ome-phone (ome.css, vh + dvh
+						// fallback); an inline height would win over it.
+						...(phone ? {} : {height: '100%'}),
 						background: GUI_THEME.bg,
 						color: GUI_THEME.primary,
 						fontFamily: UI_FONT,
@@ -2800,7 +2802,9 @@ export const App = () => {
 						<div
 							className={phone ? 'ome-phone' : undefined}
 							style={{
-								height: phone ? '100dvh' : '100%',
+								// Height lives in .ome-phone (ome.css, vh + dvh
+								// fallback); an inline height would win over it.
+								...(phone ? {} : {height: '100%'}),
 								background: GUI_THEME.bg,
 								color: GUI_THEME.primary,
 								fontFamily: UI_FONT,

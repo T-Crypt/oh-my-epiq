@@ -607,6 +607,47 @@ export function themeIds(): string[] {
 
 // ─── CSS variables ────────────────────────────────────────────────
 
+/**
+ * Semantic token aliases over the `--o-*` palette. Derivations only — every
+ * value references a `--o-*` variable, so no palette hue changes here.
+ * Mix percentages are contrast-calibrated (see the implement report): muted
+ * holds ≥4.5:1 and disabled ≥3:1 on every bundled theme in both modes.
+ * `--warn`/`--ok` exist in both modes (dark mode previously had neither).
+ */
+export function semanticVars(palette: Palette): Record<string, string> {
+	const light = palette.mode === 'light';
+	const warn = light
+		? 'color-mix(in oklab, var(--o-yellow) 62%, var(--o-fg))'
+		: 'var(--o-yellow)';
+	const ok = light
+		? 'color-mix(in oklab, var(--o-green) 78%, var(--o-fg))'
+		: 'var(--o-green)';
+	const danger = light
+		? 'color-mix(in oklab, var(--o-red) 85%, var(--o-fg))'
+		: 'var(--o-red)';
+	return {
+		'--color-background': 'var(--o-bg)',
+		'--surface': 'var(--o-bg-dark)',
+		'--surface-raised': 'var(--o-bg-light)',
+		'--border': 'color-mix(in srgb, var(--o-fg) 13%, var(--o-bg))',
+		'--text-primary': 'var(--o-fg-bright)',
+		'--text-secondary': 'var(--o-fg)',
+		'--text-muted': light
+			? 'color-mix(in oklab, var(--o-fg) 86%, var(--o-bg))'
+			: 'color-mix(in oklab, var(--o-fg) 75%, var(--o-bg))',
+		'--text-disabled': light
+			? 'color-mix(in oklab, var(--o-fg) 66%, var(--o-bg))'
+			: 'color-mix(in oklab, var(--o-fg) 55%, var(--o-bg))',
+		'--accent': 'var(--o-accent)',
+		'--focus': 'var(--o-accent)',
+		'--success': ok,
+		'--warning': warn,
+		'--danger': danger,
+		'--warn': warn,
+		'--ok': ok,
+	};
+}
+
 /** Palette → CSS custom properties. Everything in ome.css mixes from these. */
 export function themeVars(palette: Palette): Record<string, string | null> {
 	const c = palette.colors;
@@ -615,6 +656,7 @@ export function themeVars(palette: Palette): Record<string, string | null> {
 	const accent = pick(c, 'accent', 'blue') ?? fg;
 
 	return {
+		...semanticVars(palette),
 		'--o-bg': bg,
 		'--o-bg-dark': pick(c, 'dark_background') ?? bg,
 		'--o-bg-darker': pick(c, 'darker_background', 'dark_background') ?? bg,

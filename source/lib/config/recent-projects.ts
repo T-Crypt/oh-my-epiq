@@ -244,39 +244,39 @@ export const discoverOmeProjectRoots = ({
 		const next: {dir: string; depth: number}[] = [];
 		for (const {dir, depth} of level) {
 			if (visited >= maxDirs) break;
-		visited += 1;
+			visited += 1;
 
-		if (isProjectRootDir(dir)) {
-			found.push(dir);
-			// A project root still has children worth scanning (a monorepo
-			// can nest another), so this does not `continue`.
-		}
+			if (isProjectRootDir(dir)) {
+				found.push(dir);
+				// A project root still has children worth scanning (a monorepo
+				// can nest another), so this does not `continue`.
+			}
 
-		if (depth >= maxDepth) continue;
+			if (depth >= maxDepth) continue;
 
-		let entries: fs.Dirent[];
-		try {
-			entries = fs.readdirSync(dir, {withFileTypes: true});
-		} catch {
-			continue;
-		}
-
-		for (const entry of entries) {
-			if (!entry.isDirectory() || entry.isSymbolicLink()) continue;
-			if (SCAN_SKIP_DIRS.has(entry.name) || entry.name.startsWith('.cache'))
+			let entries: fs.Dirent[];
+			try {
+				entries = fs.readdirSync(dir, {withFileTypes: true});
+			} catch {
 				continue;
-		const child = path.join(dir, entry.name);
-		let resolved: string;
-		try {
-			resolved = fs.realpathSync(child);
-		} catch {
-			continue;
+			}
+
+			for (const entry of entries) {
+				if (!entry.isDirectory() || entry.isSymbolicLink()) continue;
+				if (SCAN_SKIP_DIRS.has(entry.name) || entry.name.startsWith('.cache'))
+					continue;
+				const child = path.join(dir, entry.name);
+				let resolved: string;
+				try {
+					resolved = fs.realpathSync(child);
+				} catch {
+					continue;
+				}
+				if (seen.has(resolved)) continue;
+				seen.add(resolved);
+				next.push({dir: resolved, depth: depth + 1});
+			}
 		}
-		if (seen.has(resolved)) continue;
-		seen.add(resolved);
-		next.push({dir: resolved, depth: depth + 1});
-		}
-	}
 		level = next;
 	}
 

@@ -155,7 +155,11 @@ export const InitProjectScreen = ({
 								Or open a known project ({recentProjects.length})
 							</div>
 							{onScan && (
-								<Button variant="ghost" onClick={onScan} data-testid="scan-projects">
+								<Button
+									variant="ghost"
+									onClick={onScan}
+									data-testid="scan-projects"
+								>
 									scan for more
 								</Button>
 							)}

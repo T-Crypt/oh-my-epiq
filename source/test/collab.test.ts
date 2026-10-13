@@ -16,16 +16,17 @@ vi.mock('../lib/board/board-log.js', async () => {
 			message: 'mocked load',
 			value: [],
 		})),
-		materializeAndPersistAll: vi.fn(
-			(events: readonly never[], rootDir: string) => {
-				(actual.materializeAndPersistAll as Function)(events, '/state');
-				return {
-					status: 'success',
-					message: 'mocked persist',
-					value: {rootDir},
-				};
-			},
-		),
+		materializeAndPersistAll: vi.fn((events: never[], rootDir: string) => {
+			(actual.materializeAndPersistAll as typeof materializeAndPersistAll)(
+				events,
+				'/state',
+			);
+			return {
+				status: 'success',
+				message: 'mocked persist',
+				value: {rootDir},
+			};
+		}),
 	};
 });
 

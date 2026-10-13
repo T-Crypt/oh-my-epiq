@@ -306,7 +306,7 @@ export const DevicesSheet = ({onClose}: {onClose: () => void}) => {
 					<span>Devices</span>
 					<button
 						className="rail-button"
-						style={{width: 32, height: 32}}
+						style={{width: 44, height: 44}}
 						title="Close"
 						onClick={onClose}
 					>
@@ -419,6 +419,7 @@ export const PhoneTabBar = ({
 	<nav className="tabbar" aria-label="Sections">
 		<button
 			className={`tab${tab === 'board' ? ' on' : ''}`}
+			aria-current={tab === 'board' ? 'page' : undefined}
 			onClick={() => onChange('board')}
 		>
 			<IconBoard />
@@ -426,6 +427,7 @@ export const PhoneTabBar = ({
 		</button>
 		<button
 			className={`tab${tab === 'activity' ? ' on' : ''}`}
+			aria-current={tab === 'activity' ? 'page' : undefined}
 			onClick={() => onChange('activity')}
 		>
 			<IconActivity />
@@ -437,6 +439,7 @@ export const PhoneTabBar = ({
 		</button>
 		<button
 			className={`tab${tab === 'me' ? ' on' : ''}`}
+			aria-current={tab === 'me' ? 'page' : undefined}
 			onClick={() => onChange('me')}
 		>
 			<IconPerson />

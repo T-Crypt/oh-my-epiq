@@ -61,10 +61,29 @@
 	--line-strong: color-mix(in srgb, var(--o-fg) 26%, var(--o-bg));
 	--text: var(--o-fg-bright);
 	--body: var(--o-fg);
-	--muted: color-mix(in oklab, var(--o-fg) 62%, var(--o-bg));
-	--faint: color-mix(in oklab, var(--o-fg) 38%, var(--o-bg));
+	--muted: color-mix(in oklab, var(--o-fg) 75%, var(--o-bg));
+	--faint: color-mix(in oklab, var(--o-fg) 55%, var(--o-bg));
+	/* Semantic aliases (static fallbacks; theme.ts emits the live values
+	   inline per theme and mode). Dark-mode --warn/--ok live here too —
+	   previously only the light block defined them. */
+	--color-background: var(--o-bg);
+	--surface: var(--o-bg-dark);
+	--surface-raised: var(--o-bg-light);
+	--border: color-mix(in srgb, var(--o-fg) 13%, var(--o-bg));
+	--text-primary: var(--o-fg-bright);
+	--text-secondary: var(--o-fg);
+	--text-muted: color-mix(in oklab, var(--o-fg) 75%, var(--o-bg));
+	--text-disabled: color-mix(in oklab, var(--o-fg) 55%, var(--o-bg));
+	--focus: var(--o-accent);
+	--success: var(--o-green);
+	--warning: var(--o-yellow);
+	--danger: var(--o-red);
+	--warn: var(--o-yellow);
+	--ok: var(--o-green);
 	--accent: var(--o-accent);
-	--accent-ink: var(--o-bg);
+	/* Text on the accent: the ground darkened toward black, so mid-tone
+	   accents (miasma, nord) hold 4.5:1 without re-hueing any palette. */
+	--accent-ink: color-mix(in oklab, var(--o-bg) 60%, black);
 	--accent-soft: color-mix(in srgb, var(--o-accent) 13%, transparent);
 	--err: var(--o-red);
 	--scrim: color-mix(in srgb, var(--o-bg-darker) 62%, transparent);
@@ -89,9 +108,12 @@
 	--mono: 'JetBrains Mono', 'JetBrainsMono Nerd Font', ui-monospace, 'SF Mono',
 		Menlo, Consolas, monospace;
 
-	/* What a phone keeps clear: the notch, the home indicator. */
+	/* What a phone keeps clear: the notch, the home indicator, and in
+	   landscape the camera cutout on either side. */
 	--safe-top: env(safe-area-inset-top, 0px);
 	--safe-bottom: env(safe-area-inset-bottom, 0px);
+	--safe-left: env(safe-area-inset-left, 0px);
+	--safe-right: env(safe-area-inset-right, 0px);
 	--tabbar: 56px;
 	color-scheme: dark;
 }
@@ -103,14 +125,31 @@
 	--o-inactive: rgba(89, 89, 89, 0.4);
 	--scrim: color-mix(in srgb, var(--o-bg-darker) 55%, transparent);
 	--line: color-mix(in srgb, var(--o-fg) 15%, var(--o-bg));
-	--muted: color-mix(in oklab, var(--o-fg) 78%, var(--o-bg));
-	--faint: color-mix(in oklab, var(--o-fg) 58%, var(--o-bg));
+	--muted: color-mix(in oklab, var(--o-fg) 86%, var(--o-bg));
+	--faint: color-mix(in oklab, var(--o-fg) 66%, var(--o-bg));
 	--warn: color-mix(in oklab, var(--o-yellow) 62%, var(--o-fg));
 	--ok: color-mix(in oklab, var(--o-green) 78%, var(--o-fg));
 	--err: color-mix(in oklab, var(--o-red) 85%, var(--o-fg));
 	--accent-fill: color-mix(in oklab, var(--o-accent) 76%, var(--o-fg));
 	--accent-line: color-mix(in srgb, var(--o-accent) 65%, transparent);
 	--accent-soft: color-mix(in srgb, var(--o-accent) 18%, transparent);
+	/* Text on the accent: keep the plain ground on light themes — the
+	   darkened mix below is dark-mode only, and reads gray-on-gray
+	   (white theme ~1.8:1) on light accents. */
+	--accent-ink: var(--o-bg);
+}
+
+/* Older Android WebViews have no color-mix: fall back to the raw palette
+   stops rather than to nothing. */
+@supports not (background: color-mix(in srgb, red 50%, blue)) {
+	:root {
+		--muted: var(--o-fg);
+		--faint: var(--o-fg);
+		--text-muted: var(--o-fg);
+		--text-disabled: var(--o-fg);
+		--accent-ink: var(--o-bg);
+		--border: var(--line);
+	}
 }
 
 /* ─── Reset ──────────────────────────────────────────────────── */
@@ -119,6 +158,10 @@ html,
 body {
 	margin: 0;
 	height: 100%;
+	/* The page itself never scrolls or rubber-bands: each pane owns its
+	   scroll, so dvh rounding or an overshoot never exposes a strip. */
+	overflow: clip;
+	overscroll-behavior: none;
 	background: var(--desk);
 	color: var(--body);
 	font-family: var(--mono);
@@ -127,7 +170,15 @@ body {
 	-webkit-tap-highlight-color: transparent;
 }
 
+/* One ground behind the phone column: any overshoot below the tab bar
+   (rubber-band, dvh rounding, keyboard resize) reads as more of the app
+   rather than a dark strip. */
+body:has(.ome-phone) {
+	background: var(--bg);
+}
+
 #root {
+	height: 100vh;
 	height: 100dvh;
 	width: 100%;
 }
@@ -176,6 +227,7 @@ body {
 	align-items: center;
 	justify-content: center;
 	gap: 1.1rem;
+	height: 100vh;
 	height: 100dvh;
 	padding: 1.5rem;
 	color: var(--muted);
@@ -292,6 +344,12 @@ body {
 	border-color: var(--accent);
 }
 
+/* Keyboard and switch-control focus is always visible, on every control. */
+:focus-visible {
+	outline: 2px solid var(--focus);
+	outline-offset: 2px;
+}
+
 .muted {
 	color: var(--muted);
 }
@@ -313,6 +371,7 @@ body {
 
 body.plain-page {
 	height: auto;
+	min-height: 100vh;
 	min-height: 100dvh;
 	background: var(--bg);
 	font-size: 14px;
@@ -375,6 +434,7 @@ body.plain-page {
 .ome-desk {
 	display: flex;
 	gap: var(--gap-out);
+	height: 100vh;
 	height: 100dvh;
 	padding: var(--gap-out);
 	box-sizing: border-box;
@@ -489,6 +549,9 @@ body.plain-page {
 .sheet {
 	width: min(440px, calc(100vw - 2 * var(--gap-out)));
 	max-height: calc(
+		100vh - var(--safe-top) - var(--safe-bottom) - 2 * var(--gap-out)
+	);
+	max-height: calc(
 		100dvh - var(--safe-top) - var(--safe-bottom) - 2 * var(--gap-out)
 	);
 	display: flex;
@@ -589,7 +652,11 @@ body.plain-page {
 .ome-phone {
 	display: flex;
 	flex-direction: column;
+	height: 100vh;
 	height: 100dvh;
+	padding-left: var(--safe-left);
+	padding-right: var(--safe-right);
+	box-sizing: border-box;
 	background: var(--bg);
 	color: var(--body);
 	font-family: var(--mono);
@@ -601,7 +668,8 @@ body.plain-page {
 	display: flex;
 	align-items: center;
 	gap: 0.6rem;
-	padding: calc(var(--safe-top) + 8px) 10px 8px;
+	padding: calc(var(--safe-top) + 8px) calc(10px + var(--safe-right)) 8px
+		calc(10px + var(--safe-left));
 	background: var(--o-bg-dark);
 	border-bottom: 1px solid var(--line);
 }
@@ -636,6 +704,9 @@ body.plain-page {
 	flex: none;
 	display: flex;
 	gap: 0;
+	padding-left: var(--safe-left);
+	padding-right: var(--safe-right);
+	box-sizing: border-box;
 	overflow-x: auto;
 	scrollbar-width: none;
 	border-bottom: 1px solid var(--line);
@@ -646,6 +717,8 @@ body.plain-page {
 	flex: none;
 	position: relative;
 	padding: 0.7rem 0.9rem;
+	min-height: 44px;
+	box-sizing: border-box;
 	background: none;
 	border: 0;
 	color: var(--muted);
@@ -653,6 +726,10 @@ body.plain-page {
 	font-size: 0.82rem;
 	white-space: nowrap;
 	cursor: pointer;
+}
+
+.lane-tab.on {
+	background: var(--accent-soft);
 }
 
 .lane-tab .count {
@@ -690,10 +767,15 @@ body.plain-page {
 	flex: none;
 	width: 100%;
 	height: 100%;
+	min-height: 0;
 	padding: var(--gap-in);
 	box-sizing: border-box;
 	scroll-snap-align: start;
 	scroll-snap-stop: always;
+	/* The lane's column scrolls inside the pager, never the page. */
+	overflow-x: hidden;
+	overflow-y: auto;
+	overscroll-behavior: contain;
 }
 
 .lane-page > section {
@@ -707,6 +789,7 @@ body.plain-page {
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
+	overscroll-behavior: contain;
 }
 
 .tabbar {
@@ -717,6 +800,11 @@ body.plain-page {
 	box-sizing: border-box;
 	height: calc(var(--tabbar) + var(--safe-bottom));
 	padding-bottom: var(--safe-bottom);
+	padding-left: var(--safe-left);
+	padding-right: var(--safe-right);
+	/* The background runs through the home-indicator padding to the
+	   viewport edge, unbroken. */
+	background-clip: border-box;
 	background: var(--o-bg-dark);
 	border-top: 1px solid var(--line);
 }
@@ -728,11 +816,12 @@ body.plain-page {
 	align-items: center;
 	justify-content: center;
 	gap: 3px;
+	min-height: 44px;
 	background: none;
 	border: 0;
 	color: var(--muted);
 	font: inherit;
-	font-size: 0.68rem;
+	font-size: 0.75rem;
 	cursor: pointer;
 }
 
@@ -743,32 +832,31 @@ body.plain-page {
 
 .tab.on {
 	color: var(--text);
+	background: var(--accent-soft);
 }
 
 .tab.on::before {
 	content: '';
 	position: absolute;
 	top: 0;
-	left: 30%;
-	right: 30%;
-	height: 2px;
+	left: 18%;
+	right: 18%;
+	height: 3px;
 	background: var(--accent);
 }
 
-/* Every side panel — a ticket, a diff, a lane's figures — opens over the whole screen on a phone. */
+/* Every side panel — a ticket, a diff, a lane's figures — opens over the whole screen on a phone.
+   inset:0 owns the box (no height needed); the padding carries the
+   safe-area insets plus the panel's own 20px gutter. */
 .phone-sheet {
 	position: fixed !important;
 	inset: 0 !important;
 	width: 100% !important;
 	min-width: 0 !important;
 	max-width: none !important;
-	height: 100dvh !important;
 	z-index: 800;
-	/* NOTE: the inline padding in Aside.tsx is authoritative (inline style
-	   beats these longhands in the cascade) — it carries the safe-area
-	   insets for the phone sheet. These are fallback/documentation only. */
-	padding-top: var(--safe-top);
-	padding-bottom: var(--safe-bottom);
+	padding: var(--safe-top) calc(var(--safe-right) + 20px) var(--safe-bottom)
+		calc(var(--safe-left) + 20px);
 	box-sizing: border-box;
 	background: var(--bg);
 	animation: rise-in var(--t-in) var(--ease-out);
@@ -783,15 +871,26 @@ body.plain-page {
 	background: var(--o-bg-dark);
 }
 
+.phone-sheet-bar .button,
+.phone-sheet-bar select {
+	min-height: 44px;
+}
+
 .phone-sheet-bar select {
 	flex: 1;
 	min-width: 0;
+}
+
+/* Phone touch floor: every button on the phone column meets 44px. */
+.ome-phone .button {
+	min-height: 44px;
 }
 
 .phone-me {
 	flex: 1;
 	min-height: 0;
 	overflow: auto;
+	overscroll-behavior: contain;
 	padding: 0.8rem;
 	display: flex;
 	flex-direction: column;
