@@ -79,7 +79,7 @@ glance, what this fork adds:
   board to OME's on-disk layout with a dry run, a backup and a printed
   rollback.
 - **A pruned, forgiving agent MCP**. One update tool, brief reads by
-  default, ids or refs everywhere, idempotent no-ops, and a core surface with
+  default, ids or refs everywhere, idempotent no-ops, and a core toolset with
   the rest behind an opt-in flag. The board workflow ships to every connected
   client, so a project carries no agent files.
 - **Ideas, picker and collab**. Every project starts with an Ideas board
