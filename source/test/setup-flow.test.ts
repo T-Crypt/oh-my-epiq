@@ -1,6 +1,7 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {failed, succeeded} from '../lib/model/result-types.js';
 import {emailLinkKey} from '../lib/model/email-link.js';
+import {useProjectRoot} from './helpers/project-root.js';
 
 /**
  * Where the command line goes after a setup answer lands.
@@ -39,10 +40,15 @@ vi.mock('../lib/project-setup/project-setup.js', async importOriginal => ({
 	),
 }));
 
+// The board this process is looking at has to be a real `.ome/project.json` on
+// disk — `currentBoardId` reads one — and a fresh clone carries none: it is
+// per-machine identity, untracked. The root below stands in for the checkout.
+const projectRoot = useProjectRoot();
+
 vi.mock('../lib/storage/paths.js', async importOriginal => ({
 	...(await importOriginal<typeof import('../lib/storage/paths.js')>()),
 	resolveClosestOmeProjectRoot: vi.fn(() =>
-		succeeded('Resolved', process.cwd()),
+		succeeded('Resolved', projectRoot()),
 	),
 }));
 

@@ -2,17 +2,21 @@ import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {ulid} from 'ulid';
 import {bootStateFromEventLog} from '../lib/board/board-boot.js';
 import {isFail, succeeded} from '../lib/model/result-types.js';
+import {useProjectRoot} from './helpers/project-root.js';
+
+// Booting a board to give the resolver something to resolve against reads a
+// real `.ome/project.json`, and a fresh clone carries none: it is per-machine
+// identity, untracked. The root below stands in for the checkout. The git and
+// derivation calls are mocked, so nothing else touches the repository.
+const projectRoot = useProjectRoot();
 
 // Partial: the resolver is the only thing this test needs to steer, and listing
 // the rest by hand meant adding an export every time something new in the graph
 // asked paths a question.
 vi.mock('../lib/storage/paths.js', async importOriginal => ({
 	...(await importOriginal<typeof import('../lib/storage/paths.js')>()),
-	// The worktree itself, because booting a board to give the resolver
-	// something to resolve against reads a real `.ome/project.json`. The git
-	// and derivation calls are mocked, so nothing else touches the repository.
 	resolveClosestOmeProjectRoot: vi.fn(() =>
-		succeeded('Resolved', process.cwd()),
+		succeeded('Resolved', projectRoot()),
 	),
 }));
 
