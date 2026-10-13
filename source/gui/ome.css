@@ -488,8 +488,12 @@ body.plain-page {
 
 .sheet {
 	width: min(440px, calc(100vw - 2 * var(--gap-out)));
-	max-height: calc(100dvh - 2 * var(--gap-out));
-	overflow: auto;
+	max-height: calc(
+		100dvh - var(--safe-top) - var(--safe-bottom) - 2 * var(--gap-out)
+	);
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
 	background: var(--bg);
 	border: var(--border) solid var(--accent);
 	color: var(--body);
@@ -500,6 +504,7 @@ body.plain-page {
 }
 
 .sheet-head {
+	flex: none;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -508,9 +513,19 @@ body.plain-page {
 	border-bottom: 1px solid var(--line);
 	color: var(--text);
 	font-weight: 700;
+	background: inherit;
+}
+
+.sheet > :not(.sheet-head) {
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow-y: auto;
 }
 
 .sheet-body {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
 	display: flex;
 	flex-direction: column;
 	gap: 0.8rem;
@@ -699,6 +714,7 @@ body.plain-page {
 	display: grid;
 	grid-auto-flow: column;
 	grid-auto-columns: 1fr;
+	box-sizing: border-box;
 	height: calc(var(--tabbar) + var(--safe-bottom));
 	padding-bottom: var(--safe-bottom);
 	background: var(--o-bg-dark);

@@ -97,6 +97,7 @@ describe('websocket project:open', () => {
 	let bareRoot: string;
 	let projectRoot: string;
 	let originalGlobalDir: string | undefined;
+	let originalScan: string | undefined;
 	const onStateChanged = vi.fn();
 
 	const waitFor = async (predicate: () => boolean, label: string) => {
@@ -121,7 +122,9 @@ describe('websocket project:open', () => {
 			error: vi.fn(),
 		};
 
+		originalScan = process.env['OME_PROJECT_SCAN'];
 		originalGlobalDir = process.env['OME_GLOBAL_DIR'];
+		process.env['OME_PROJECT_SCAN'] = '0';
 		process.env['OME_GLOBAL_DIR'] = path.join(makeTempDir(), '.ome-global');
 
 		bareRoot = makeTempDir();
@@ -163,6 +166,9 @@ describe('websocket project:open', () => {
 	afterEach(async () => {
 		client.close();
 		await new Promise<void>(resolve => server.close(() => resolve()));
+
+		if (originalScan === undefined) delete process.env['OME_PROJECT_SCAN'];
+		else process.env['OME_PROJECT_SCAN'] = originalScan;
 
 		if (originalGlobalDir === undefined) delete process.env['OME_GLOBAL_DIR'];
 		else process.env['OME_GLOBAL_DIR'] = originalGlobalDir;

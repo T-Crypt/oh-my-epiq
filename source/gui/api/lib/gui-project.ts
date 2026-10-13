@@ -12,6 +12,7 @@ import {loadSettingsFromConfig} from '../../../lib/config/user-config.js';
 import {
 	listRecentProjects,
 	recentProjectName,
+	scanAndRecordProjects,
 } from '../../../lib/config/recent-projects.js';
 import {
 	failed,
@@ -34,6 +35,11 @@ export type RecentProjectView = {
 };
 
 export const recentProjectViews = (exclude: string): RecentProjectView[] => {
+	// A board initialised anywhere else on this device (TUI `:init`,
+	// `ome_project_init`, a fresh clone's adopt) joins the picker without
+	// anyone typing its path. Best-effort: a failed scan reads as-is.
+	scanAndRecordProjects();
+
 	const result = listRecentProjects({exclude});
 	if (isFail(result)) return [];
 
@@ -49,7 +55,23 @@ export const recentProjectViews = (exclude: string): RecentProjectView[] => {
 // detection, which validates the path itself: the socket is origin-guarded,
 // but a message still should not be able to aim the server at a path that
 // fails that check.
+export const scanProjectViews = (exclude: string): RecentProjectView[] => {
+	scanAndRecordProjects();
+
+	const result = listRecentProjects({exclude});
+	if (isFail(result)) return [];
+
+	return result.value.map(entry => ({
+		projectId: entry.projectId,
+		name: recentProjectName(entry.root),
+		root: entry.root,
+		lastOpenedAt: entry.lastOpenedAt,
+	}));
+};
+
 export const resolveRecentProjectRoot = (root: string): Result<string> => {
+	scanAndRecordProjects();
+
 	const result = listRecentProjects();
 	if (isFail(result)) return failed(result.message);
 

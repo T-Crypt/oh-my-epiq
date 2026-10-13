@@ -77,8 +77,12 @@ import {
 	resolveRecentProjectRoot,
 	detectProjectState,
 	repairWorkspace,
+	scanProjectViews,
 } from './gui-project.js';
-import {recentProjectName} from '../../../lib/config/recent-projects.js';
+import {
+	recentProjectName,
+	recordRecentProject,
+} from '../../../lib/config/recent-projects.js';
 import {GuiMessage} from './websocket.model.js';
 import {isForeignOrigin} from './origin-guard.js';
 import {authorize, type RemoteAccess} from './remote-access.js';
@@ -227,7 +231,7 @@ export const setupWebsocket = (
 				const {type} = message;
 				const repoRoot = project.repoRoot;
 
-				if (type === 'project:list') {
+				if (type === 'project:list' || type === 'project:scan') {
 					return sendSocket(socket, {
 						type: 'project:list:result',
 						payload: {
@@ -235,7 +239,7 @@ export const setupWebsocket = (
 								root: repoRoot,
 								name: recentProjectName(repoRoot),
 							},
-							projects: recentProjectViews(repoRoot),
+							projects: scanProjectViews(repoRoot),
 						},
 					});
 				}
@@ -245,10 +249,12 @@ export const setupWebsocket = (
 					const listed = resolveRecentProjectRoot(requested);
 
 					// A root the registry lists takes the short path: it booted
-					// before, so it boots again.
+					// before, so it boots again. Re-recorded so a rescan that
+					// reordered the registry still marks this the latest open.
 					if (!isFail(listed)) {
 						sendSocket(socket, {type: 'project:open:result', payload: listed});
 						project.repoRoot = listed.value;
+						recordRecentProject({root: listed.value});
 						return sendGuiState(socket, listed.value);
 					}
 
@@ -263,6 +269,11 @@ export const setupWebsocket = (
 					}
 
 					project.repoRoot = detection.value.root;
+					// A typed path that turns out ready joins the registry, so
+					// the next `project:list` offers it without typing again.
+					if (detection.value.slot === 'ready') {
+						recordRecentProject({root: detection.value.root});
+					}
 					sendSocket(socket, {
 						type: 'project:open:result',
 						payload: succeeded(

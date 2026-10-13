@@ -42,7 +42,8 @@ import {
 	requestOrigin,
 	signInPage,
 } from './lib/remote-access.js';
-import {GuiProject} from './lib/gui-project.js';
+import {GuiProject, scanProjectViews} from './lib/gui-project.js';
+import {recentProjectName} from '../../lib/config/recent-projects.js';
 import {setupWebsocket} from './lib/websocket.js';
 
 const distRoot = path.dirname(fileURLToPath(import.meta.url));
@@ -464,6 +465,19 @@ export const startGuiServer = async (input: {
 			const link = `${origin}/join/${code}`;
 
 			return sendJson(res, 200, {code, expiresAt, link, qr: qrSvg(link)});
+		}
+
+		// The portfolio: every board on this device, so one GUI reaches all
+		// of them. Scanned on read, like `project:list`, so a board made
+		// elsewhere shows up without a restart.
+		if (req.method === 'GET' && url.pathname === '/api/projects') {
+			return sendJson(res, 200, {
+				current: {
+					root: project.repoRoot,
+					name: recentProjectName(project.repoRoot),
+				},
+				projects: scanProjectViews(project.repoRoot),
+			});
 		}
 
 		if (req.method === 'POST' && url.pathname === '/api/access/signout') {

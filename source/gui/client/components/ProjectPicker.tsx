@@ -12,16 +12,20 @@ type Props = {
 	current: ProjectListCurrent | null;
 	projects: RecentProjectView[];
 	error: string | null;
+	scanning?: boolean;
 	onOpen: (root: string) => void;
 	onClose: () => void;
+	onScan?: () => void;
 };
 
 export const ProjectPicker = ({
 	current,
 	projects,
 	error,
+	scanning = false,
 	onOpen,
 	onClose,
+	onScan,
 }: Props) => {
 	const [typedRoot, setTypedRoot] = useState('');
 
@@ -46,7 +50,7 @@ export const ProjectPicker = ({
 				}}
 				style={{
 					width: 440,
-					maxHeight: '80vh',
+					maxHeight: '80dvh',
 					overflowY: 'auto',
 					background: GUI_THEME.panel,
 					border: `1px solid ${GUI_THEME.line}`,
@@ -119,13 +123,31 @@ export const ProjectPicker = ({
 					<div style={{display: 'flex', flexDirection: 'column', gap: 8}}>
 						<div
 							style={{
-								color: GUI_THEME.accent,
-								fontSize: 10,
-								letterSpacing: 1,
-								textTransform: 'uppercase',
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'space-between',
+								gap: 8,
 							}}
 						>
-							Known projects
+							<div
+								style={{
+									color: GUI_THEME.accent,
+									fontSize: 10,
+									letterSpacing: 1,
+									textTransform: 'uppercase',
+								}}
+							>
+								Known projects ({projects.length})
+							</div>
+							{onScan && (
+								<Button
+									variant="ghost"
+									onClick={onScan}
+									data-testid="project-picker-scan"
+								>
+									{scanning ? 'scanning…' : 'rescan'}
+								</Button>
+							)}
 						</div>
 
 						{projects.map(project => (
