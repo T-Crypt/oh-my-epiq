@@ -10,6 +10,7 @@ coverage
 # [ome]: local hydrated state is never committed
 .ome/events/
 .ome/log/
+.ome/project.json
 .DS_Store
 
 # [ome]: operator-only docs and agent worktrees, local and never committed
