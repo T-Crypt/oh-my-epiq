@@ -45,3 +45,50 @@ test('switching the theme repaints a JavaScript-sourced scrim without reload', a
 	expect(after).not.toBe(before);
 	expect(pageErrors).toEqual([]);
 });
+
+test('every theme carries the semantic aliases in both modes', async ({
+	page,
+	appUrl,
+	pageErrors,
+}) => {
+	await page.goto(appUrl);
+	await expect(page.getByTestId('board-switcher')).toContainText('Default');
+	await page.waitForFunction(() => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const w = window as any;
+		return typeof w.__omeApplyTheme === 'function';
+	});
+
+	const missing = await page.evaluate(() => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const w = window as any;
+		const names = [
+			'--color-background',
+			'--surface',
+			'--surface-raised',
+			'--border',
+			'--text-primary',
+			'--text-secondary',
+			'--text-muted',
+			'--text-disabled',
+			'--accent',
+			'--focus',
+			'--success',
+			'--warning',
+			'--danger',
+			'--warn',
+			'--ok',
+		];
+		const gaps: string[] = [];
+		for (const id of ['tokyo-night', 'hackerman', 'white', 'rose-pine']) {
+			w.__omeApplyTheme(id);
+			const root = document.documentElement;
+			for (const name of names) {
+				if (!root.style.getPropertyValue(name)) gaps.push(`${id} ${name}`);
+			}
+		}
+		return gaps;
+	});
+	expect(missing).toEqual([]);
+	expect(pageErrors).toEqual([]);
+});

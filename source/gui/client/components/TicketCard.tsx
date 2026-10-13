@@ -273,7 +273,7 @@ export const TicketCard = ({
 								alignItems: 'center',
 								gap: CARD_DIFF_GAP,
 								color: GUI_THEME.dim2,
-								fontSize: 10,
+								fontSize: 11,
 							}}
 						>
 							<CopyRef refValue={ticket.ref} />

@@ -234,7 +234,7 @@ export const Header = ({
 								variant="ghost"
 								onClick={onReconnect}
 								title="Not connected — reconnect now"
-								style={{color: GUI_THEME.red, fontSize: 10}}
+								style={{color: GUI_THEME.red, fontSize: 11}}
 							>
 								reconnect
 							</Button>

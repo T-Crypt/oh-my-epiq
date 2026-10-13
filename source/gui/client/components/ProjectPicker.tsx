@@ -65,7 +65,7 @@ export const ProjectPicker = ({
 				<div
 					style={{
 						...OME_MARK_STYLE,
-						fontSize: 10,
+						fontSize: 11,
 						letterSpacing: 1,
 						textTransform: 'uppercase',
 					}}
@@ -132,7 +132,7 @@ export const ProjectPicker = ({
 							<div
 								style={{
 									color: GUI_THEME.accent,
-									fontSize: 10,
+									fontSize: 11,
 									letterSpacing: 1,
 									textTransform: 'uppercase',
 								}}
@@ -167,7 +167,7 @@ export const ProjectPicker = ({
 									<div
 										style={{
 											color: GUI_THEME.dim,
-											fontSize: 10,
+											fontSize: 11,
 											overflow: 'hidden',
 											textOverflow: 'ellipsis',
 											whiteSpace: 'nowrap',

@@ -285,12 +285,14 @@ export const Aside = forwardRef<
 				background: GUI_THEME.panel,
 				// None at the top on desktop: the header band below carries the
 				// inset that puts it on the line the board's and the log's
-				// headers keep. On the phone sheet the inline padding is
-				// authoritative (it beats .phone-sheet's padding longhands in
-				// the cascade), so it carries the safe-area insets itself.
-				padding: sheet.phone
-					? `var(--safe-top) ${ASIDE_PADDING}px var(--safe-bottom)`
-					: `0 ${ASIDE_PADDING}px ${ASIDE_PADDING}px`,
+				// headers keep. On the phone sheet .phone-sheet in ome.css
+				// owns the safe-area insets plus the gutter, so no padding
+				// here — an inline padding would shadow it in the cascade.
+				// (no inline padding on the phone sheet at all: any inline
+				// longhand would shadow the class in the cascade).
+				...(!sheet.phone && {
+					padding: `0 ${ASIDE_PADDING}px ${ASIDE_PADDING}px`,
+				}),
 				fontSize: 12,
 				// The band and the pane stack, and the pane takes what is left.
 				display: 'flex',

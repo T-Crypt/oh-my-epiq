@@ -1,5 +1,11 @@
 import {describe, expect, it} from 'vitest';
-import {resolvePalette, themeIds, themeVars, FALLBACK} from './theme';
+import {
+	resolvePalette,
+	semanticVars,
+	themeIds,
+	themeVars,
+	FALLBACK,
+} from './theme';
 
 describe('resolvePalette', () => {
 	it('returns the palette for a known id', () => {
@@ -93,5 +99,66 @@ describe('themeVars', () => {
 		const p = resolvePalette('nord');
 		const vars = themeVars(p);
 		expect(vars['--o-accent']).toBe('#81a1c1');
+	});
+});
+
+describe('semanticVars', () => {
+	const ALIASES = [
+		'--color-background',
+		'--surface',
+		'--surface-raised',
+		'--border',
+		'--text-primary',
+		'--text-secondary',
+		'--text-muted',
+		'--text-disabled',
+		'--accent',
+		'--focus',
+		'--success',
+		'--warning',
+		'--danger',
+		'--warn',
+		'--ok',
+	];
+
+	it('defines every alias for a dark theme', () => {
+		const vars = semanticVars(resolvePalette('tokyo-night'));
+		for (const name of ALIASES) expect(vars[name], name).toBeTruthy();
+	});
+
+	it('defines every alias for a light theme', () => {
+		const vars = semanticVars(resolvePalette('white'));
+		for (const name of ALIASES) expect(vars[name], name).toBeTruthy();
+	});
+
+	it('guarantees --warn/--ok in dark mode', () => {
+		const vars = semanticVars(resolvePalette('tokyo-night'));
+		expect(vars['--warn']).toBe('var(--o-yellow)');
+		expect(vars['--ok']).toBe('var(--o-green)');
+	});
+
+	it('derives warn/ok/danger toward the foreground in light mode', () => {
+		const vars = semanticVars(resolvePalette('white'));
+		expect(vars['--warn']).toContain('var(--o-fg)');
+		expect(vars['--ok']).toContain('var(--o-fg)');
+		expect(vars['--danger']).toContain('var(--o-fg)');
+	});
+
+	it('is a derivation only: every value references a --o-* variable', () => {
+		for (const id of themeIds()) {
+			const vars = semanticVars(resolvePalette(id));
+			for (const [name, value] of Object.entries(vars)) {
+				expect(value, `${id} ${name}`).toContain('var(--o-');
+			}
+		}
+	});
+
+	it('themeVars emits the aliases alongside the palette', () => {
+		const vars = themeVars(resolvePalette('gruvbox'));
+		expect(vars['--text-muted']).toContain('75%');
+		expect(vars['--warn']).toBe('var(--o-yellow)');
+		const light = themeVars(resolvePalette('white'));
+		expect(light['--text-muted']).toContain('86%');
+		expect(light['--ok']).toContain('var(--o-fg)');
 	});
 });

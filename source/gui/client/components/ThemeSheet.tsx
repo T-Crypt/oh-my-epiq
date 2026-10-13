@@ -124,7 +124,7 @@ export function ThemeSheet({onClose}: {onClose: () => void}) {
 					<span>Theme</span>
 					<button
 						className="rail-button"
-						style={{width: 32, height: 32}}
+						style={{width: 44, height: 44}}
 						title="Close"
 						onClick={onClose}
 					>
