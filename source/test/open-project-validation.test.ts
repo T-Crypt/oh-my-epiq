@@ -3,6 +3,13 @@ import os from 'node:os';
 import path from 'node:path';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {failed, succeeded} from '../lib/model/result-types.js';
+import {useProjectRoot} from './helpers/project-root.js';
+
+// This suite's own directory. It has to be a real `.ome/project.json` — the
+// availability gate reads one — and a fresh clone carries none: it is
+// per-machine identity, untracked. The fixture root stands in for the checkout,
+// while every other path (the temp projects below) still resolves for real.
+const projectRoot = useProjectRoot();
 
 vi.mock('../lib/state/state.js', () => ({
 	getState: () => ({
@@ -40,7 +47,7 @@ vi.mock('../lib/project-setup/project-setup.js', async importOriginal => {
 		// other path has to go through untouched — faking them all collapsed two
 		// recent projects into one.
 		readProjectId: vi.fn((root: string) =>
-			root === process.cwd()
+			root === projectRoot()
 				? succeeded('Read', 'BOARD')
 				: actual.readProjectId(root),
 		),
@@ -57,21 +64,26 @@ let initialized = false;
 //
 // Only the call about the current directory is faked. The `:open` completions
 // read real project files out of real temp directories, passing their own
-// paths, and those must go through untouched.
+// paths, and those must go through untouched. The current directory is the
+// checkout, which no longer carries a descriptor, so the fixture root is what
+// it resolves to.
 vi.mock('../lib/storage/paths.js', async importOriginal => {
 	const actual = await importOriginal<
 		typeof import('../lib/storage/paths.js')
 	>();
 
+	const isCurrentDirectory = (from?: string): boolean =>
+		from === undefined || from === process.cwd() || from === projectRoot();
+
 	return {
 		...actual,
 		resolveClosestOmeProjectRoot: vi.fn((from?: string) => {
-			if (from !== undefined && from !== process.cwd()) {
-				return actual.resolveClosestOmeProjectRoot(from);
+			if (!isCurrentDirectory(from)) {
+				return actual.resolveClosestOmeProjectRoot(from!);
 			}
 
 			return initialized
-				? succeeded('Resolved', process.cwd())
+				? succeeded('Resolved', projectRoot())
 				: failed('Not an ome project');
 		}),
 	};

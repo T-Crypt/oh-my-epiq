@@ -79,11 +79,14 @@
 		"inspect:mcp": "npx @modelcontextprotocol/inspector",
 		"lint": "eslint .",
 		"lint:err": "eslint . --quiet",
-		"prepare": "husky"
+		"prepare": "node source/scripts/prepare.mjs"
 	},
 	"files": [
 		"dist"
 	],
+	"publishConfig": {
+		"access": "public"
+	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "^1.32.1",
 		"@pierre/diffs": "^1.3.6",
@@ -129,9 +132,5 @@
 		"typescript-eslint": "^8.46.0",
 		"vitest": "4.1.11"
 	},
-	"prettier": "@vdemedes/prettier-config",
-	"allowScripts": {
-		"esbuild@0.28.2": true,
-		"node-pty@1.1.0": true
-	}
+	"prettier": "@vdemedes/prettier-config"
 }

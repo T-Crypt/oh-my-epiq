@@ -5,6 +5,9 @@ export default defineConfig({
 		// Fail a test that aims git at the checkout instead of a temp dir, and
 		// one that resolves the real OME global dir (the live state worktree).
 		setupFiles: [
+			// First: strips host-injected GIT_CONFIG_* keys from the gitEnv
+			// snapshot before any test (or other setup file) can load git.
+			'source/test/setup/git-env-isolated.ts',
 			'source/test/setup/no-git-outside-tmp.ts',
 			'source/test/setup/global-dir-in-tmp.ts',
 		],
