@@ -65,7 +65,23 @@ describe('an issue parent must be a swimlane', () => {
 			parentId: board.id,
 		});
 
-		expect(failure(result)).toBe('Target must be a swimlane');
+		expect(failure(result)).toBe(
+			"That is a board id. An issue files under one of a board's swimlanes, not the board itself. Pass a swimlane id from ome_swimlane_list, or omit parentId to use the first open lane.",
+		);
+	});
+
+	it('createIssue refuses an issue as the lane, saying issues do not nest', async () => {
+		const {repoRoot, issue} = await seedBoard();
+
+		const result = await createIssue({
+			repoRoot,
+			title: 'nested under an issue',
+			parentId: issue.id,
+		});
+
+		expect(failure(result)).toBe(
+			'That is an issue id. An issue files under a swimlane and does not nest under another issue. Pass a swimlane id from ome_swimlane_list, or omit parentId to use the first open lane.',
+		);
 	});
 
 	it('createIssue refuses an unknown id', async () => {
