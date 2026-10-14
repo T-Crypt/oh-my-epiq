@@ -2521,6 +2521,19 @@ export const App = () => {
 								{timeScrubber}
 							</div>
 
+							{boardTabs ? (
+								<div
+									style={{
+										flex: 'none',
+										paddingTop: 8,
+										overflowX: 'auto',
+										maxWidth: '100%',
+										pointerEvents: theatre ? 'none' : undefined,
+									}}
+								>
+									{boardTabs}
+								</div>
+							) : null}
 							{/* Dimmed while offline so the board reads as inert. The topbar stays at
 			    full strength: it carries the reason and the way back. */}
 							<div
@@ -2618,7 +2631,6 @@ export const App = () => {
 												transition: 'padding-bottom 240ms ease',
 											}}
 										>
-											{boardTabs}
 											{shownSwimlanes.map(renderSwimlane)}
 
 											{/* Appends: `createSwimlane` ranks at the end, so the ghost sits
@@ -2921,6 +2933,19 @@ export const App = () => {
 										/>
 									</div>
 
+									{boardTabs ? (
+										<div
+											style={{
+												flex: 'none',
+												paddingTop: 8,
+												overflowX: 'auto',
+												maxWidth: '100%',
+												pointerEvents: theatre ? 'none' : undefined,
+											}}
+										>
+											{boardTabs}
+										</div>
+									) : null}
 									{/* Dimmed while offline so the board reads as inert. The topbar stays at
 			    full strength: it carries the reason and the way back. */}
 									<div
@@ -3022,7 +3047,6 @@ export const App = () => {
 														transition: 'padding-bottom 240ms ease',
 													}}
 												>
-													{boardTabs}
 													{shownSwimlanes.map(renderSwimlane)}
 
 													{/* Appends: `createSwimlane` ranks at the end, so the ghost sits
