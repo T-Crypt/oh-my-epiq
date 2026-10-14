@@ -1231,6 +1231,82 @@ describe('mcp tools', () => {
 		);
 	});
 
+	it('ignores a closed board when choosing the default lane', async () => {
+		// A closed board is readonly and its lanes are too, and its id can still
+		// sort first, which used to make it the target of a create with no parent.
+		nodes['a-closed-board'] = {
+			id: 'a-closed-board',
+			title: 'Closed',
+			context: 'BOARD',
+			parentNodeId: 'workspace-1',
+			readonly: true,
+			isDeleted: false,
+			rank: 'z0',
+		};
+		nodes['a-closed-lane'] = {
+			id: 'a-closed-lane',
+			title: 'Archive',
+			context: 'SWIMLANE',
+			parentNodeId: 'a-closed-board',
+			readonly: true,
+			isDeleted: false,
+			rank: 'a0',
+		};
+
+		try {
+			const result = await tools.createIssue({
+				repoRoot: '/repo',
+				title: 'New issue',
+			});
+
+			expect(isFail(result)).toBe(false);
+			expect(persistModule.materializeAndPersistAll).toHaveBeenCalledWith(
+				[
+					expect.objectContaining({
+						action: 'add.issue',
+						payload: expect.objectContaining({parent: 'swimlane-1'}),
+					}),
+				],
+				'/state',
+			);
+		} finally {
+			delete nodes['a-closed-board'];
+			delete nodes['a-closed-lane'];
+		}
+	});
+
+	it('ignores a readonly lane when choosing the default lane', async () => {
+		nodes['swimlane-0'] = {
+			id: 'swimlane-0',
+			title: 'Archive',
+			context: 'SWIMLANE',
+			parentNodeId: 'board-1',
+			readonly: true,
+			isDeleted: false,
+			rank: 'a0',
+		};
+
+		try {
+			const result = await tools.createIssue({
+				repoRoot: '/repo',
+				title: 'New issue',
+			});
+
+			expect(isFail(result)).toBe(false);
+			expect(persistModule.materializeAndPersistAll).toHaveBeenCalledWith(
+				[
+					expect.objectContaining({
+						action: 'add.issue',
+						payload: expect.objectContaining({parent: 'swimlane-1'}),
+					}),
+				],
+				'/state',
+			);
+		} finally {
+			delete nodes['swimlane-0'];
+		}
+	});
+
 	// Everything accepted here is appended to a log that is never rewritten and
 	// replicated to every clone, so nothing may be unbounded.
 	describe('createIssue input limits', () => {

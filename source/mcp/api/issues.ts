@@ -355,12 +355,14 @@ export const createIssue = async (input: CreateIssueInput) => {
 	let parentId = input.parentId;
 
 	if (!parentId) {
+		// A closed board is readonly and every lane under it inherits that, so it
+		// can never be a create target even when its id happens to sort first.
 		const boards = Object.values(ready.value.state.nodes)
-			.filter(n => n.context === 'BOARD' && !n.isDeleted)
+			.filter(n => n.context === 'BOARD' && !n.isDeleted && !n.readonly)
 			.sort((a, b) => (a.id < b.id ? -1 : 1));
 
 		if (boards.length === 0) {
-			return failed('No boards found — create one first');
+			return failed('No open board found — create one first, or pass parentId');
 		}
 
 		const firstBoard = boards[0]!;
@@ -370,13 +372,14 @@ export const createIssue = async (input: CreateIssueInput) => {
 				n =>
 					n.context === 'SWIMLANE' &&
 					!n.isDeleted &&
+					!n.readonly &&
 					n.parentNodeId === firstBoard.id,
 			)
 			.sort((a, b) => (a.id < b.id ? -1 : 1));
 
 		if (lanes.length === 0) {
 			return failed(
-				`Board "${firstBoard.title}" has no lanes — create one first, or pass parentId`,
+				`Board "${firstBoard.title}" has no open lanes — create one first, or pass parentId`,
 			);
 		}
 
