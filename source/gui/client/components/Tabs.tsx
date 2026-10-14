@@ -40,6 +40,7 @@ export const Tabs = <T extends string>({
 				<button
 					key={tab.id}
 					type="button"
+					data-active={active ? 'true' : undefined}
 					onClick={() => onChange(tab.id)}
 					style={{
 						background: 'transparent',

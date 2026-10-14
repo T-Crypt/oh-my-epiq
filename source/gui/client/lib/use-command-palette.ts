@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react';
+import {isTypingTarget} from './typing-target';
 
 /**
  * Whether the palette is open, and the one key that opens it.
@@ -11,20 +12,6 @@ import {useEffect, useState} from 'react';
  * Held out of a field: somebody typing a ticket title should get a `k`, not a
  * palette over what they were writing.
  */
-const isTypingTarget = (target: EventTarget | null): boolean => {
-	const element = target as HTMLElement | null;
-	if (!element) return false;
-
-	const tag = element.tagName;
-
-	return (
-		tag === 'INPUT' ||
-		tag === 'TEXTAREA' ||
-		tag === 'SELECT' ||
-		element.isContentEditable
-	);
-};
-
 export const useCommandPalette = (): {
 	open: boolean;
 	setOpen: (next: boolean) => void;
