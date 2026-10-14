@@ -274,7 +274,7 @@ export const createMcpServer = () => {
 		'ome_issue_create',
 		{
 			description:
-				'Create an OME issue. parentId is the swimlane id (ome_swimlane_list), never a board id. Omit parentId to place the issue in the first open lane of the first board. Optionally set description, tags, and assignees atomically in the same call.',
+				'Create an OME issue and file it under a swimlane. parentId is a swimlane id from ome_swimlane_list. An issue never nests under another issue, so a ticket or board id is refused. Omit parentId to place the issue in the first open lane of the first board. Optionally set description, tags, and assignees in the same call.',
 			inputSchema: z.object({
 				title: z.string().min(1).max(MAX_TITLE_LENGTH),
 				parentId: z.string().min(1).optional(),

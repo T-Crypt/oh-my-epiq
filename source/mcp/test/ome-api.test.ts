@@ -1462,6 +1462,36 @@ describe('mcp tools', () => {
 		}
 	});
 
+	it('names an issue id passed as the lane and says issues do not nest', async () => {
+		const result = await tools.createIssue({
+			repoRoot: '/repo',
+			title: 'New issue',
+			parentId: fixtureId('issue-1'),
+		});
+
+		expect(isFail(result)).toBe(true);
+		if (isFail(result)) {
+			expect(result.message).toBe(
+				'That is an issue id. An issue files under a swimlane and does not nest under another issue. Pass a swimlane id from ome_swimlane_list, or omit parentId to use the first open lane.',
+			);
+		}
+	});
+
+	it('names a board id passed as the lane', async () => {
+		const result = await tools.createIssue({
+			repoRoot: '/repo',
+			title: 'New issue',
+			parentId: 'board-1',
+		});
+
+		expect(isFail(result)).toBe(true);
+		if (isFail(result)) {
+			expect(result.message).toBe(
+				"That is a board id. An issue files under one of a board's swimlanes, not the board itself. Pass a swimlane id from ome_swimlane_list, or omit parentId to use the first open lane.",
+			);
+		}
+	});
+
 	it('closes an issue', async () => {
 		const result = await tools.closeIssue({
 			repoRoot: '/repo',
