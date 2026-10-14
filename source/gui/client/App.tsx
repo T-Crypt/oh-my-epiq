@@ -68,9 +68,12 @@ import {EventLog} from './components/EventLog';
 import {FollowBanner} from './components/FollowBanner';
 import {useAsideDock} from './lib/aside-dock';
 import {CommandPalette} from './components/CommandPalette';
+import {ShortcutsSheet} from './components/ShortcutsSheet';
+import {BoardTabsBand} from './components/BoardTabsBand';
 import {buildCommandRegistry} from './lib/commands/command-registry';
 import {useRecentCommands} from './lib/commands/command-recents';
 import {useCommandPalette} from './lib/use-command-palette';
+import {useBoardHotkeys} from './lib/use-board-hotkeys';
 import {moveIssue} from './lib/gui-move-issue';
 import {moveSwimlane} from './lib/gui-move-swimlane';
 import {DropTarget} from './lib/gui-result.model';
@@ -1726,11 +1729,35 @@ export const App = () => {
 	);
 
 	const commandPalette = useCommandPalette();
+
+	useBoardHotkeys({
+		boards: state?.boards ?? [],
+		currentBoardId: selectedBoardId,
+		selectBoard,
+		onPlayTheatre: startTheatre,
+		onFocusFilter: () => {
+			document
+				.querySelector<HTMLInputElement>('[data-testid="text-filter"]')
+				?.focus();
+		},
+		onToggleLog: () => setLogOpen(!logOpen),
+		onShowShortcuts: () => setShortcutsOpen(true),
+		suppressed: commandPalette.open || theatre !== null,
+	});
+
+	// Keep the active board's tab in view when many boards overflow the band.
+	useEffect(() => {
+		document
+			.querySelector<HTMLElement>('[data-testid="board-tabs"] [data-active]')
+			?.scrollIntoView({inline: 'nearest'});
+	}, [selectedBoardId]);
+
 	// The phone layout and its tab, and the Devices sheet on a desktop.
 	const phone = useIsPhone();
 	const [phoneTab, setPhoneTab] = useState<PhoneTab>('board');
 	const [devicesOpen, setDevicesOpen] = useState(false);
 	const [themeSheetOpen, setThemeSheetOpen] = useState(false);
+	const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
 	// The phone's Activity tab is the log, so it is open while that tab shows:
 	// the log only loads its lines while open.
@@ -2446,6 +2473,9 @@ export const App = () => {
 
 	return (
 		<TicketRefLinksProvider value={ticketRefLinks}>
+			{shortcutsOpen && (
+				<ShortcutsSheet onClose={() => setShortcutsOpen(false)} />
+			)}
 			{phone ? (
 				<div
 					className={phone ? 'ome-phone' : undefined}
@@ -2521,19 +2551,7 @@ export const App = () => {
 								{timeScrubber}
 							</div>
 
-							{boardTabs ? (
-								<div
-									style={{
-										flex: 'none',
-										paddingTop: 8,
-										overflowX: 'auto',
-										maxWidth: '100%',
-										pointerEvents: theatre ? 'none' : undefined,
-									}}
-								>
-									{boardTabs}
-								</div>
-							) : null}
+							<BoardTabsBand boardTabs={boardTabs} theatre={theatre !== null} />
 							{/* Dimmed while offline so the board reads as inert. The topbar stays at
 			    full strength: it carries the reason and the way back. */}
 							<div
@@ -2933,19 +2951,10 @@ export const App = () => {
 										/>
 									</div>
 
-									{boardTabs ? (
-										<div
-											style={{
-												flex: 'none',
-												paddingTop: 8,
-												overflowX: 'auto',
-												maxWidth: '100%',
-												pointerEvents: theatre ? 'none' : undefined,
-											}}
-										>
-											{boardTabs}
-										</div>
-									) : null}
+									<BoardTabsBand
+										boardTabs={boardTabs}
+										theatre={theatre !== null}
+									/>
 									{/* Dimmed while offline so the board reads as inert. The topbar stays at
 			    full strength: it carries the reason and the way back. */}
 									<div
