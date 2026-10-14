@@ -13,6 +13,7 @@ import {
 import {resolveReopenParentFromLog} from '../../lib/board/log-utils.js';
 import {CLOSED_SWIMLANE_ID} from '../../lib/board/static-ids.js';
 import {
+	isBoardNode,
 	isTicketNode,
 	isSwimlaneNode,
 	Ticket,
@@ -387,7 +388,27 @@ export const createIssue = async (input: CreateIssueInput) => {
 	}
 
 	const laneResult = findWritableSwimlane(parentId);
-	if (isFail(laneResult)) return laneResult;
+	if (isFail(laneResult)) {
+		// The usual mistake is reading parentId as the parent ticket. An issue
+		// files under a swimlane, so a ticket or board id here is named plainly,
+		// with the way out, instead of the bare kind guard's "Target must be a
+		// swimlane". A lane that is genuinely unknown or readonly is passed
+		// through unchanged.
+		const nodes = ready.value.state.nodes;
+		const node = nodes[parentId] ?? nodes[resolveIssueId(parentId)];
+
+		if (node && isTicketNode(node)) {
+			return failed(
+				'That is an issue id. An issue files under a swimlane and does not nest under another issue. Pass a swimlane id from ome_swimlane_list, or omit parentId to use the first open lane.',
+			);
+		}
+		if (node && isBoardNode(node)) {
+			return failed(
+				"That is a board id. An issue files under one of a board's swimlanes, not the board itself. Pass a swimlane id from ome_swimlane_list, or omit parentId to use the first open lane.",
+			);
+		}
+		return laneResult;
+	}
 
 	const rankResult = resolveAndPersistRankForCreate(
 		parentId,
