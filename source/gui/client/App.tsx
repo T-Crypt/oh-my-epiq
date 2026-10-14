@@ -2629,19 +2629,6 @@ export const App = () => {
 										{/* Scrolling sideways is this row's job; scrolling down is each
 					    column's. Both on one element gives a page-level vertical bar
 					    alongside each column's own. */}
-										{boardTabs ? (
-											<div
-												style={{
-													flex: 'none',
-													paddingTop: 8,
-													overflowX: 'auto',
-													maxWidth: '100%',
-													pointerEvents: theatre ? 'none' : undefined,
-												}}
-											>
-												{boardTabs}
-											</div>
-										) : null}
 										<div
 											style={{
 												display: 'flex',
@@ -3047,19 +3034,6 @@ export const App = () => {
 												{/* Scrolling sideways is this row's job; scrolling down is each
 					    column's. Both on one element gives a page-level vertical bar
 					    alongside each column's own. */}
-												{boardTabs ? (
-													<div
-														style={{
-															flex: 'none',
-															paddingTop: 8,
-															overflowX: 'auto',
-															maxWidth: '100%',
-															pointerEvents: theatre ? 'none' : undefined,
-														}}
-													>
-														{boardTabs}
-													</div>
-												) : null}
 												<div
 													style={{
 														display: 'flex',
