@@ -173,11 +173,16 @@ body {
 	-webkit-tap-highlight-color: transparent;
 }
 
-/* One ground behind the phone column: any overshoot below the tab bar
-   (rubber-band, dvh rounding, keyboard resize) reads as more of the app
-   rather than a dark strip. */
+/* One ground behind the phone column: any strip the shell leaves uncovered
+   (rubber-band, dvh rounding, keyboard resize) reads as more of the tab bar
+   rather than a dark gap. The tab bar ends in --o-bg-dark, so the ground
+   behind it is the same token, in every theme. */
 body:has(.ome-phone) {
-	background: var(--bg);
+	background: var(--o-bg-dark);
+}
+
+#root:has(.ome-phone) {
+	background: var(--o-bg-dark);
 }
 
 #root {
@@ -660,6 +665,10 @@ body.plain-page {
 	/* lib/viewport sets --app-h to the visible viewport where the platform draws chrome over the app and describes
 	   none of it; everywhere else this is the dvh above. */
 	height: var(--app-h, 100dvh);
+	/* A floor under the height: dvh sub-pixel rounding can only shrink, never grow. */
+	min-height: 100vh;
+	min-height: 100dvh;
+	min-height: var(--app-h, 100dvh);
 	padding-left: var(--safe-left);
 	padding-right: var(--safe-right);
 	box-sizing: border-box;
@@ -800,6 +809,12 @@ body.plain-page {
 
 .tabbar {
 	flex: none;
+	/* Glued to the shell's bottom edge: if the shell height lands short of the
+	   visible viewport, the bar still sits on the edge instead of floating
+	   above a strip. Sticky keeps it in the flex flow (no content gutter
+	   needed), and .phone-sheet (z-index 800, fixed) still covers it. */
+	position: sticky;
+	bottom: 0;
 	display: grid;
 	grid-auto-flow: column;
 	grid-auto-columns: 1fr;

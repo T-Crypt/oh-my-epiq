@@ -31,12 +31,35 @@ export type ViewportFix = {
 };
 
 /**
+ * Where the page runs. Only an installed web app draws chrome over the page that no inset describes; a browser
+ * tab reports honestly (`100dvh` already follows its toolbar), so a covered strip there is transient — a toolbar
+ * mid-flight, a pinch zoom — and shrinking the shell to it floats the tab bar above a gap.
+ */
+export type ViewportContext = {
+	/** `display-mode: standalone` matches, or the legacy iOS `navigator.standalone` flag is set. */
+	standalone: boolean;
+};
+
+/**
+ * Whether this page runs as an installed web app: the only place platform chrome can sit over the page without an
+ * inset describing it.
+ */
+export const isStandaloneApp = (win: Window = window): boolean =>
+	win.matchMedia('(display-mode: standalone)').matches ||
+	(win.navigator as {standalone?: boolean}).standalone === true;
+
+/**
  * The correction to apply, or null to leave the stylesheet in charge. Null is the answer everywhere the platform
  * tells the truth: `100dvh` is then both correct and cheaper than a value re-measured on every toolbar change.
  */
 export const resolveViewportFix = (
 	reading: ViewportReading,
+	context: ViewportContext = {standalone: false},
 ): ViewportFix | null => {
+	// A browser tab is left to the stylesheet: any covered strip there is transient, and a shell shrunk to it
+	// stays shrunk (and the tab bar floats) until the next viewport event. Only an installed web app keeps
+	// chrome drawn over the page.
+	if (!context.standalone) return null;
 	const {layoutHeight, visibleHeight, safeBottom, typing} = reading;
 	if (typing) return null;
 	if (!Number.isFinite(layoutHeight) || !Number.isFinite(visibleHeight))
@@ -111,7 +134,9 @@ const showReadout = (doc: Document, probe: HTMLElement): void => {
 	const line = (name: string, value: unknown) => `${name}: ${String(value)}`;
 	const draw = (): void => {
 		const visual = window.visualViewport;
-		const fix = resolveViewportFix(readViewport(probe));
+		const fix = resolveViewportFix(readViewport(probe), {
+			standalone: isStandaloneApp(),
+		});
 		const modes = ['standalone', 'fullscreen', 'minimal-ui', 'browser'].filter(
 			mode => window.matchMedia(`(display-mode: ${mode})`).matches,
 		);
@@ -163,7 +188,9 @@ export const installViewportHeight = (
 	}
 
 	const apply = (): void => {
-		const fix = resolveViewportFix(readViewport(probe));
+		const fix = resolveViewportFix(readViewport(probe), {
+			standalone: isStandaloneApp(win),
+		});
 
 		if (!fix) {
 			root.style.removeProperty('--app-h');

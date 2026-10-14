@@ -61,6 +61,19 @@ test.describe('phone', () => {
 	}) => {
 		const chrome = 49;
 		await page.addInitScript((covered: number) => {
+			// The shell fix only fires for an installed web app, so emulate
+			// `display-mode: standalone` alongside the covered strip.
+			const original = window.matchMedia.bind(window);
+			window.matchMedia = (query => {
+				const list = original(query);
+				if (query === '(display-mode: standalone)') {
+					Object.defineProperty(list, 'matches', {
+						value: true,
+						configurable: true,
+					});
+				}
+				return list;
+			}) as typeof window.matchMedia;
 			const fake = {
 				width: window.innerWidth,
 				height: window.innerHeight - covered,
