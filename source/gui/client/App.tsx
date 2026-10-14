@@ -3173,6 +3173,10 @@ export const App = () => {
 								<DevicesSheet onClose={() => setDevicesOpen(false)} />
 							)}
 
+							{themeSheetOpen && (
+								<ThemeSheet onClose={() => setThemeSheetOpen(false)} />
+							)}
+
 							{pickerOpen && (
 								<ProjectPicker
 									current={projectList?.current ?? null}
