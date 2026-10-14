@@ -2,6 +2,10 @@
 
 > **The Epiq you love, with batteries included.**
 
+<p align="center">
+  <img src="source/assets/banner.png" alt="Oh-My-Epiq: a local-first, Git-backed issue board, with CLI, terminal UI, browser board and MCP faces" width="100%">
+</p>
+
 Oh-My-Epiq (**OME**) is a local-first, Git-backed issue board with four faces, a **CLI** (`ome`), a **terminal UI**, a **browser board** (`ome gui`) and an
 **agent MCP server** (`ome-mcp`). It is a hard fork of
 [Epiq](https://github.com/ljtn/epiq) by [@ljtn](https://github.com/ljtn):
@@ -12,7 +16,9 @@ State is an immutable, append-only event log, versioned and synchronized over
 Git. No accounts, no SaaS, no database. Your board lives next to your code and
 travels with it.
 
-![Oh-My-Epiq on a desktop: the rail, the event log, the board and a ticket's linked commits under the time-travel timeline](source/assets/gui-desktop.png)
+![The OME browser board: the icon rail and command bar, the time-travel timeline, and the board's lanes under the tab strip](source/assets/gui-desktop.png)
+
+![The theme switcher: bundled palettes as rows of colour swatches, Tokyo Night selected](source/assets/gui-theme.png)
 
 ## Batteries included
 
