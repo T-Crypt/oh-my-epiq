@@ -270,6 +270,7 @@ export const SwimlaneColumn = ({
 					</span>
 
 					<strong
+						data-testid="swimlane-title"
 						style={{
 							color: selected ? GUI_THEME.accent : GUI_THEME.primary,
 							fontSize: TEXT.prose,
@@ -284,6 +285,7 @@ export const SwimlaneColumn = ({
 					</strong>
 
 					<span
+						data-testid="swimlane-count"
 						style={{
 							border: `1px solid ${GUI_THEME.line}`,
 							padding: '0 5px',

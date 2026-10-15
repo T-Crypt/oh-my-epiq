@@ -16,7 +16,9 @@ test('creates a swimlane from the ghost column at the end of the board', async (
 	await page.getByPlaceholder('swimlane name').press('Enter');
 
 	// Appended, so it is the last column and the ghost stays to its right.
-	const columns = page.locator('section').filter({hasText: /\(\d+\)/});
+	const columns = page.locator('section').filter({
+		has: page.getByTestId('swimlane-count'),
+	});
 	await expect(columns.last()).toContainText(name);
 	await expect(page.getByTestId('add-swimlane')).toBeVisible();
 

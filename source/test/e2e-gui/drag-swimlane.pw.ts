@@ -43,7 +43,7 @@ new Promise(async resolve => {
 `;
 
 const ORDER = `[...document.querySelectorAll('[data-testid="swimlane-handle"]')]
-	.map(h => h.textContent.trim().split('(')[0].trim())`;
+	.map(h => h.querySelector('[data-testid="swimlane-title"]').textContent.trim())`;
 
 // A drop reorders optimistically; the order that counts is the one left once
 // the server has answered, since that answer can put a lane back. The tap
