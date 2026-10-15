@@ -39,7 +39,11 @@ export const ConfirmModal = ({
 			}}
 			onMouseDown={event => event.stopPropagation()}
 			onKeyDown={event => {
-				if (event.key === 'Escape') onClose();
+				if (event.key !== 'Escape') return;
+				// Owned here, or the board's own Esc listener would clear the
+				// whole multi-selection underneath the closing modal.
+				event.stopPropagation();
+				onClose();
 			}}
 			style={{
 				marginTop: '-200px',
