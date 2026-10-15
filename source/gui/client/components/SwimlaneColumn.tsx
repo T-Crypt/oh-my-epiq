@@ -1,7 +1,7 @@
 import React from 'react';
 import {DropIndicator} from '../App';
 import {GuiComment, GuiIssue, GuiSwimlane} from '../lib/gui-state.model';
-import {GUI_THEME} from '../lib/gui-theme';
+import {GUI_THEME, TEXT} from '../lib/gui-theme';
 import {formatDuration} from '../lib/gui-format.helper';
 import {dwellLevel, dwellOf, laneDwell} from '../lib/lane-dwell';
 import {RefDiffStats} from '../../../lib/stats/ref-diff-stats.model.js';
@@ -160,7 +160,7 @@ export const SwimlaneColumn = ({
 				height: '100%',
 				// Panel's 1px border would otherwise add to the 100% and overflow the row.
 				boxSizing: 'border-box',
-				background: dragOver ? 'var(--o-selection)' : GUI_THEME.bg,
+				background: dragOver ? 'var(--o-selection)' : GUI_THEME.tile,
 				padding: `0 ${COLUMN_PADDING}px`,
 				display: 'flex',
 				flexDirection: 'column',
@@ -250,6 +250,7 @@ export const SwimlaneColumn = ({
 					justifyContent: 'space-between',
 					alignItems: 'center',
 					cursor: swimlane.readonly ? 'default' : 'grab',
+					borderBottom: '1px solid ' + GUI_THEME.line,
 				}}
 			>
 				<div
@@ -271,6 +272,7 @@ export const SwimlaneColumn = ({
 					<strong
 						style={{
 							color: selected ? GUI_THEME.accent : GUI_THEME.primary,
+							fontSize: TEXT.prose,
 							// The lane's own figures are the fixed part of this row: a
 							// title long enough to crowd them out is cut instead.
 							overflow: 'hidden',
@@ -281,7 +283,19 @@ export const SwimlaneColumn = ({
 						{swimlane.title}
 					</strong>
 
-					<span style={{color: GUI_THEME.dim}}>({swimlane.issues.length})</span>
+					<span
+						style={{
+							border: `1px solid ${GUI_THEME.line}`,
+							padding: '0 5px',
+							lineHeight: '16px',
+							fontSize: TEXT.label,
+							color: GUI_THEME.dim2,
+							flexShrink: 0,
+							fontVariantNumeric: 'tabular-nums',
+						}}
+					>
+						{swimlane.issues.length}
+					</span>
 
 					{live && (
 						<IconButton

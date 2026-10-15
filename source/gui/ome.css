@@ -59,6 +59,7 @@
 	--hover: color-mix(in srgb, var(--o-fg) 8%, transparent);
 	--line: color-mix(in srgb, var(--o-fg) 13%, var(--o-bg));
 	--line-strong: color-mix(in srgb, var(--o-fg) 26%, var(--o-bg));
+	--o-tile: color-mix(in srgb, var(--o-fg) 4%, var(--o-bg));
 	--text: var(--o-fg-bright);
 	--body: var(--o-fg);
 	--muted: color-mix(in oklab, var(--o-fg) 75%, var(--o-bg));
@@ -146,6 +147,7 @@
    stops rather than to nothing. */
 @supports not (background: color-mix(in srgb, red 50%, blue)) {
 	:root {
+		--o-tile: var(--o-bg-light);
 		--muted: var(--o-fg);
 		--faint: var(--o-fg);
 		--text-muted: var(--o-fg);
@@ -799,6 +801,7 @@ body.plain-page {
 	min-height: 0;
 	padding: var(--gap-in);
 	box-sizing: border-box;
+	background: var(--o-tile);
 	scroll-snap-align: start;
 	scroll-snap-stop: always;
 	/* The lane's column scrolls inside the pager, never the page. */

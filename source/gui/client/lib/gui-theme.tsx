@@ -88,8 +88,16 @@ export const GUI_THEME = Object.freeze({
 	get panel2() {
 		return readVar('--o-bg-darker', '#252734');
 	},
+	// The ground a lane lifts off the board on: the foreground laid over the
+	// ground at four percent, the same mix the shell's --card spells.
+	get tile() {
+		return readVar('--o-tile', '#20242d');
+	},
 	get line() {
 		return `rgba(${hexToRgb(readVar('--o-fg', '#a9b1d6'))}, 0.13)`;
+	},
+	get lineStrong() {
+		return readVar('--line-strong', 'rgba(169, 177, 214, 0.26)');
 	},
 	// The detail panel's own outer edge. `line` divides sections inside one
 	// surface; this one has to hold the panel apart from the board behind it.
