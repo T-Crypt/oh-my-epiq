@@ -144,11 +144,11 @@ export const EarlierRow = ({
 );
 
 // One element, a span for who did it, and one text node. The clock and the
-// kind dot are pseudo-elements of this row rather than spans in it — see
+// kind tick are pseudo-elements of this row rather than spans in it — see
 // EVENT_LOG_STYLES — because the panel holds hundreds of these and three spans
 // apiece is three hundred nodes of nothing.
 //
-// The clock, the dot and the name are shown or hidden by the pane's class;
+// The clock, the tick and the name are shown or hidden by the pane's class;
 // the label is the one field with no element of its own to hide, so it is the
 // one the row is told about.
 export const EventRow = ({
