@@ -6,6 +6,7 @@ import {formatDuration} from '../lib/gui-format.helper';
 import {dwellLevel, dwellOf, laneDwell} from '../lib/lane-dwell';
 import {RefDiffStats} from '../../../lib/stats/ref-diff-stats.model.js';
 import {CardDwell} from './TicketCard';
+import {IconCheck} from './IconCheck';
 import {IconLaneStats} from './IconLaneStats';
 import {IconLock} from './IconLock';
 import {Panel} from './Panel';
@@ -52,6 +53,12 @@ export const SwimlaneColumn = ({
 	statsOpen,
 	onOpenStats,
 	diffStats,
+	selectMode,
+	onToggleSelectMode,
+	laneIssueIds,
+	pickedCount,
+	onSelectAllInLane,
+	onClearPicked,
 }: {
 	swimlane: GuiSwimlane;
 	selected: boolean;
@@ -72,6 +79,17 @@ export const SwimlaneColumn = ({
 	// event that just landed happened to, and `flashKey` that event's id, which
 	// is what restarts the flash when two of them in a row touch one ticket.
 	theatre: {flashIssueId: string | null; flashKey: string | null} | null;
+	// Touch-select mode: taps toggle tickets and every card draws its
+	// checkbox. The toggle lives here so the phone's one-lane pager and the
+	// desktop share it.
+	selectMode: boolean;
+	onToggleSelectMode: () => void;
+	// Every ticket id in this lane, for select-all; the board's total picked
+	// count, so the row reads while this lane holds none of them.
+	laneIssueIds: readonly string[];
+	pickedCount: number;
+	onSelectAllInLane: () => void;
+	onClearPicked: () => void;
 	// Which edge of this column the dragged swimlane would land on, if any.
 	dropSide: 'left' | 'right' | null;
 	onSwimlaneDragOver: (swimlaneId: string, side: 'left' | 'right') => void;
@@ -292,6 +310,17 @@ export const SwimlaneColumn = ({
 				</div>
 				<div style={{display: 'flex', alignItems: 'center', gap: 2}}>
 					<IconButton
+						testId="lane-select-mode"
+						title={selectMode ? 'Leave select mode' : 'Select tickets'}
+						pressed={selectMode}
+						onClick={event => {
+							event.stopPropagation();
+							onToggleSelectMode();
+						}}
+					>
+						<IconCheck size={ICON_SIZE} />
+					</IconButton>
+					<IconButton
 						// Named as well as titled, like the fullscreen toggle:
 						// TooltipLayer takes the `title` away while its tooltip is
 						// open, and a click leaves the pointer here — so a locator
@@ -329,6 +358,62 @@ export const SwimlaneColumn = ({
 				</div>
 			</header>
 
+			{selectMode && (
+				<div
+					style={{
+						display: 'flex',
+						alignItems: 'center',
+						gap: 8,
+						minHeight: 44,
+						padding: '4px 0',
+						fontSize: 12,
+						color: GUI_THEME.secondary,
+					}}
+				>
+					<button
+						type="button"
+						data-testid="lane-select-all"
+						title={`Select every ticket in ${swimlane.title}`}
+						onClick={event => {
+							event.stopPropagation();
+							onSelectAllInLane();
+						}}
+						style={{
+							background: 'none',
+							border: 'none',
+							padding: '10px 4px',
+							cursor: 'pointer',
+							color: GUI_THEME.accent,
+							font: 'inherit',
+							fontWeight: 600,
+						}}
+					>
+						all ({laneIssueIds.length})
+					</button>
+					<span data-testid="lane-selected-count">{pickedCount} selected</span>
+					<span style={{flex: 1}} />
+					<button
+						type="button"
+						data-testid="lane-select-clear"
+						title="Clear the selection"
+						onClick={event => {
+							event.stopPropagation();
+							onClearPicked();
+						}}
+						style={{
+							background: 'none',
+							border: 'none',
+							padding: '10px 4px',
+							cursor: 'pointer',
+							color: GUI_THEME.dim,
+							font: 'inherit',
+						}}
+					>
+						clear
+					</button>
+				</div>
+			)}
+
 			{/* The same gutter the panel on the right puts its scrollbar in. */}
 			<div
 				style={{
@@ -352,6 +437,7 @@ export const SwimlaneColumn = ({
 									index={index}
 									isSelected={ticket.id === selectedIssueId}
 									isPicked={pickedIssueIds.includes(ticket.id)}
+									selectMode={selectMode}
 									onSelect={options => onSelectIssue(ticket.id, options)}
 									onOpenComments={onSelectIssueComments}
 									onOpenCode={onSelectIssueCode}

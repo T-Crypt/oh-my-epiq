@@ -43,11 +43,16 @@ const DWELL_COLOR: Record<DwellLevel, string> = {
 	alert: GUI_THEME.red,
 };
 
+// A touch held this long becomes a selection, the stand-in for
+// modifier-click where there is no keyboard.
+const LONG_PRESS_MS = 450;
+
 export const TicketCard = ({
 	ticket,
 	index,
 	isSelected,
 	isPicked,
+	selectMode,
 	commentCount,
 	onOpenComments,
 	onOpenCode,
@@ -67,6 +72,9 @@ export const TicketCard = ({
 	// Part of a multi-ticket selection, which reads differently from the one
 	// ticket whose details are open.
 	isPicked: boolean;
+	// The board is in touch-select mode: a tap toggles the ticket instead of
+	// opening it, and the checkbox is always drawn.
+	selectMode: boolean;
 	onSelect: (options: {toggle: boolean}) => void;
 	commentCount: number;
 	onOpenComments: (issueId: string) => void;
@@ -96,6 +104,17 @@ export const TicketCard = ({
 }) => {
 	const cardRef = useRef<HTMLDivElement | null>(null);
 	const [diffHovered, setDiffHovered] = useState(false);
+	const pressTimer = useRef<number | null>(null);
+	// Set when the press timer fires, so the click that follows a long-press
+	// is swallowed instead of opening the ticket just selected.
+	const pressedLong = useRef(false);
+
+	const cancelPress = () => {
+		if (pressTimer.current !== null) {
+			window.clearTimeout(pressTimer.current);
+			pressTimer.current = null;
+		}
+	};
 
 	// Opening the details panel takes 440px off the board, which can leave the
 	// card that was just clicked behind it.
@@ -139,8 +158,30 @@ export const TicketCard = ({
 			// selection this click just made.
 			onClick={event => {
 				event.stopPropagation();
-				onSelect({toggle: event.metaKey || event.ctrlKey || event.shiftKey});
+				if (pressedLong.current) {
+					pressedLong.current = false;
+					return;
+				}
+				const toggle =
+					selectMode || event.metaKey || event.ctrlKey || event.shiftKey;
+				if (toggle && ticket.readonly) return;
+				onSelect({toggle});
 			}}
+			// Touch-only: the desktop already has modifier-click and the
+			// select-mode checkbox. A drag scrolls, so movement cancels.
+			onTouchStart={() => {
+				if (ticket.readonly) return;
+				pressedLong.current = false;
+				cancelPress();
+				pressTimer.current = window.setTimeout(() => {
+					pressTimer.current = null;
+					pressedLong.current = true;
+					onSelect({toggle: true});
+				}, LONG_PRESS_MS);
+			}}
+			onTouchMove={cancelPress}
+			onTouchEnd={cancelPress}
+			onTouchCancel={cancelPress}
 			// Carries the id and nothing else. Selecting here would navigate to
 			// the issue route mid-drag, remounting the board under the pointer so
 			// the drop never lands.
@@ -208,6 +249,56 @@ export const TicketCard = ({
 				animation: theatre ? THEATRE_CARD_IN_ANIMATION : undefined,
 			}}
 		>
+			{(selectMode || isPicked) && (
+				<button
+					type="button"
+					data-testid="ticket-select"
+					aria-pressed={isPicked}
+					title={isPicked ? 'Remove from selection' : 'Add to selection'}
+					// Stopped here, or the click would also toggle the card — landing
+					// back where it started.
+					onClick={event => {
+						event.stopPropagation();
+						if (ticket.readonly) return;
+						pressedLong.current = false;
+						cancelPress();
+						onSelect({toggle: true});
+					}}
+					style={{
+						flexShrink: 0,
+						width: 32,
+						height: 32,
+						margin: '-8px 0 -8px -8px',
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+						background: 'none',
+						border: 'none',
+						cursor: 'pointer',
+						color: isPicked ? GUI_THEME.accent : GUI_THEME.dim,
+						fontSize: 16,
+						lineHeight: 1,
+					}}
+				>
+					<span
+						aria-hidden
+						style={{
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+							width: 16,
+							height: 16,
+							borderRadius: 5,
+							border: `1.5px solid ${
+								isPicked ? GUI_THEME.accent : GUI_THEME.dim
+							}`,
+							background: isPicked ? GUI_THEME.accentWash : 'transparent',
+						}}
+					>
+						{isPicked && '✓'}
+					</span>
+				</button>
+			)}
 			{/* The card's number, on the title's first line. */}
 			<span
 				data-testid="ticket-index"

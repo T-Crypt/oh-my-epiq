@@ -75,6 +75,7 @@ import {useRecentCommands} from './lib/commands/command-recents';
 import {useCommandPalette} from './lib/use-command-palette';
 import {useBoardHotkeys} from './lib/use-board-hotkeys';
 import {moveIssue} from './lib/gui-move-issue';
+import {appendToDescription, toggleIdInList} from './lib/bulk-edit';
 import {moveSwimlane} from './lib/gui-move-swimlane';
 import {DropTarget} from './lib/gui-result.model';
 import {deriveBoardStats} from '../../lib/stats/board-stats.js';
@@ -340,6 +341,9 @@ export const App = () => {
 	// Tickets picked for a bulk action. The route still tracks the single ticket
 	// whose details are open, which is a different thing.
 	const [pickedIssueIds, setPickedIssueIds] = useState<string[]>([]);
+	// Touch-select mode: taps toggle tickets instead of opening them, and
+	// every card draws its checkbox.
+	const [selectMode, setSelectMode] = useState(false);
 	const [boardMenuOpen, setBoardMenuOpen] = useState(false);
 	const [createIssueModal, setCreateIssueModal] = useState<{
 		swimlaneId: string;
@@ -1136,14 +1140,34 @@ export const App = () => {
 	};
 
 	const togglePicked = (nextIssueId: string) => {
-		setPickedIssueIds(current =>
-			current.includes(nextIssueId)
-				? current.filter(id => id !== nextIssueId)
-				: [...current, nextIssueId],
-		);
+		setPickedIssueIds(current => toggleIdInList(current, nextIssueId));
 	};
 
 	const clearPicked = () => setPickedIssueIds([]);
+
+	// Escape drops the multi-selection, never half-written text: a focused
+	// field or a modal owns the key while it is up.
+	useEffect(() => {
+		const onKey = (event: KeyboardEvent) => {
+			if (event.key !== 'Escape') return;
+
+			const target = event.target as HTMLElement | null;
+			if (
+				target &&
+				(target.tagName === 'INPUT' ||
+					target.tagName === 'TEXTAREA' ||
+					target.tagName === 'SELECT' ||
+					target.isContentEditable)
+			) {
+				return;
+			}
+
+			setPickedIssueIds(current => (current.length === 0 ? current : []));
+		};
+
+		document.addEventListener('keydown', onKey);
+		return () => document.removeEventListener('keydown', onKey);
+	}, []);
 
 	const [bulkTagName, setBulkTagName] = useState('');
 	const [bulkAssigneeName, setBulkAssigneeName] = useState('');
@@ -1154,12 +1178,6 @@ export const App = () => {
 		.flatMap(board => board.swimlanes)
 		.flatMap(swimlane => swimlane.issues)
 		.filter(issue => pickedIssueIds.includes(issue.id));
-
-	// Each bulk action fans out to the per-issue message, so the server needs no
-	// bulk API and every change stays one auditable event.
-	const forPicked = (act: (issueId: string) => void) => {
-		for (const issue of pickedIssues) act(issue.id);
-	};
 
 	const selectIssue = (nextIssueId: string, {toggle} = {toggle: false}) => {
 		if (toggle) return togglePicked(nextIssueId);
@@ -1498,6 +1516,20 @@ export const App = () => {
 	// lit-and-inert state both of them exist to prevent.
 	const boardIsLive =
 		connected && state?.timeTravel?.mode !== 'scrub' && !theatre;
+
+	// The tickets a bulk action may touch: writable ones only, on a live and
+	// writable board. pickedIssues reads state.boards directly, which the
+	// offline overlay never touches, so the board-level lock comes from
+	// boardIsLive and the board flag rather than the per-ticket ones.
+	const bulkIssues = pickedIssues.filter(issue => !issue.readonly);
+	const bulkLocked = !boardIsLive || selectedBoard?.readonly === true;
+
+	// Each bulk action fans out to the per-issue message, so the server needs no
+	// bulk API and every change stays one auditable event.
+	const forPicked = (act: (issueId: string) => void) => {
+		if (bulkLocked) return;
+		for (const issue of bulkIssues) act(issue.id);
+	};
 
 	const {following, setFollowing} = useFollowLog({
 		// The panel may be beside the board or in a window of its own; either
@@ -2001,6 +2033,21 @@ export const App = () => {
 					: null
 			}
 			pickedIssueIds={pickedIssueIds}
+			selectMode={selectMode}
+			onToggleSelectMode={() => setSelectMode(current => !current)}
+			laneIssueIds={swimlane.issues.map(issue => issue.id)}
+			pickedCount={pickedIssueIds.length}
+			onSelectAllInLane={() =>
+				setPickedIssueIds(current => [
+					...new Set([
+						...current,
+						...swimlane.issues
+							.filter(issue => !issue.readonly)
+							.map(issue => issue.id),
+					]),
+				])
+			}
+			onClearPicked={clearPicked}
 			onDragOver={setDragOverSwimlaneId}
 			onDragOverIssue={(swimlaneId, index) =>
 				setDropTarget({swimlaneId, index})
@@ -2137,44 +2184,79 @@ export const App = () => {
 				/>
 			)}
 
-			{!theatre && !commitDiff && !statsSwimlane && pickedIssues.length > 1 && (
-				<BulkDetails
-					dock={asideDock}
-					issues={pickedIssues}
-					knownTags={state?.tags ?? []}
-					knownAssignees={contributors}
-					tagName={bulkTagName}
-					assigneeName={bulkAssigneeName}
-					onChangeTagName={setBulkTagName}
-					onChangeAssigneeName={setBulkAssigneeName}
-					onAddTag={name => {
-						forPicked(id => addIssueTag(id, name));
-						setBulkTagName('');
-					}}
-					onRemoveTag={tagId => forPicked(id => removeIssueTag(id, tagId))}
-					onAddAssignee={assigneeId =>
-						forPicked(id => addIssueAssignee(id, assigneeId))
-					}
-					onRemoveAssignee={assigneeId =>
-						forPicked(id => removeIssueAssignee(id, assigneeId))
-					}
-					onCloseIssues={() => {
-						// Skips the ones already closed: the event log would otherwise
-						// carry a second "Closed" for each of them.
-						for (const issue of pickedIssues) {
-							if (!issue.isClosed) closeIssue(issue.id);
+			{!theatre &&
+				!commitDiff &&
+				!statsSwimlane &&
+				!bulkLocked &&
+				bulkIssues.length > 1 && (
+					<BulkDetails
+						key={bulkIssues.map(issue => issue.id).join(',')}
+						dock={asideDock}
+						issues={bulkIssues}
+						knownTags={state?.tags ?? []}
+						knownAssignees={contributors}
+						tagName={bulkTagName}
+						assigneeName={bulkAssigneeName}
+						onChangeTagName={setBulkTagName}
+						onChangeAssigneeName={setBulkAssigneeName}
+						onAddTag={name => {
+							forPicked(id => addIssueTag(id, name));
+							setBulkTagName('');
+						}}
+						onRemoveTag={tagId => forPicked(id => removeIssueTag(id, tagId))}
+						onAddAssignee={assigneeId =>
+							forPicked(id => addIssueAssignee(id, assigneeId))
 						}
-						clearPicked();
-					}}
-					onReopenIssues={() => {
-						for (const issue of pickedIssues) {
-							if (issue.isClosed) reopenIssue(issue.id);
+						onRemoveAssignee={assigneeId =>
+							forPicked(id => removeIssueAssignee(id, assigneeId))
 						}
-						clearPicked();
-					}}
-					onClear={clearPicked}
-				/>
-			)}
+						onCloseIssues={() => {
+							if (bulkLocked) return;
+							// Skips the ones already closed: the event log would otherwise
+							// carry a second "Closed" for each of them.
+							for (const issue of bulkIssues) {
+								if (!issue.isClosed) closeIssue(issue.id);
+							}
+							clearPicked();
+						}}
+						onReopenIssues={() => {
+							if (bulkLocked) return;
+							for (const issue of bulkIssues) {
+								if (issue.isClosed) reopenIssue(issue.id);
+							}
+							clearPicked();
+						}}
+						onAddCommentAll={body => forPicked(id => addIssueComment(id, body))}
+						onAppendDescription={text => {
+							if (bulkLocked) return;
+							for (const issue of bulkIssues) {
+								editIssueDescription(
+									issue.id,
+									appendToDescription(issue.description, text),
+								);
+							}
+						}}
+						onReplaceDescription={text =>
+							forPicked(id => editIssueDescription(id, text))
+						}
+						swimlanes={(selectedBoard?.swimlanes ?? []).map(swimlane => ({
+							id: swimlane.id,
+							title: swimlane.title,
+						}))}
+						onMoveAll={swimlaneId => {
+							if (bulkLocked) return;
+							// Lands at the end, the same as dropping a card on empty
+							// lane space; clears like a drag-move does.
+							moveIssue(state, setState, send)(
+								bulkIssues.map(issue => issue.id),
+								swimlaneId,
+								'end',
+							);
+							clearPicked();
+						}}
+						onClear={clearPicked}
+					/>
+				)}
 
 			{!theatre &&
 				!commitDiff &&
