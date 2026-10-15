@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState} from 'react';
 import {GuiComment, GuiIssue} from '../lib/gui-state.model';
-import {GUI_THEME} from '../lib/gui-theme';
+import {GUI_THEME, TEXT} from '../lib/gui-theme';
 import {tagColorToThemeHue} from '../lib/tag-colors';
 import {
 	THEATRE_CARD_IN_ANIMATION,
@@ -23,10 +23,10 @@ import {User} from './User';
 
 // The title's first line, which the controls at the card's right edge — the
 // dwell, the comment count, the assignees — centre themselves on.
-const TITLE_LINE_HEIGHT = 16;
+const TITLE_LINE_HEIGHT = 17;
 
-// The index's box at the card's left edge: three figures at 10px, and the
-// gap after it. Fixed, so a longer number never moves the title.
+// The index's box at the card's left edge: three figures at the meta step,
+// and the gap after it. Fixed, so a longer number never moves the title.
 const CARD_INDEX_WIDTH = 22;
 const CARD_INDEX_GAP = 8;
 
@@ -243,6 +243,9 @@ export const TicketCard = ({
 				border: `1px solid ${
 					isSelected || isPicked ? GUI_THEME.accent : 'transparent'
 				}`,
+				borderLeft:
+					'2px solid ' +
+					(isSelected || isPicked ? GUI_THEME.accent : GUI_THEME.lineStrong),
 				// The flash is applied to the node directly (see above), so it must
 				// not be set here too or React would put it back on every render and
 				// cut the running one short.
@@ -309,14 +312,13 @@ export const TicketCard = ({
 					flexShrink: 0,
 					lineHeight: `${TITLE_LINE_HEIGHT}px`,
 					textAlign: 'right',
-					fontSize: 10,
+					fontSize: TEXT.meta,
 					whiteSpace: 'nowrap',
 					overflow: 'hidden',
 					// A mark in the margin, not a figure to read: well under the
 					// ref's tone, and no brighter on the selected card, so it can
 					// never draw the eye off the title.
 					color: GUI_THEME.dim,
-					opacity: 0.4,
 					fontVariantNumeric: 'tabular-nums',
 				}}
 			>
@@ -348,8 +350,8 @@ export const TicketCard = ({
 							WebkitLineClamp: 2,
 							WebkitBoxOrient: 'vertical',
 							overflow: 'hidden',
-							fontWeight: 400,
-							fontSize: 12,
+							fontWeight: 500,
+							fontSize: TEXT.prose,
 							lineHeight: `${TITLE_LINE_HEIGHT}px`,
 							wordBreak: 'break-word',
 						}}
