@@ -108,12 +108,18 @@ export const Rail = ({
 		<span className="rail-brand" aria-hidden="true">
 			:ome
 		</span>
-		<button className="rail-button on" title="Board" aria-current="page">
+		<button
+			className="rail-button on"
+			title="Board"
+			aria-label="Board"
+			aria-current="page"
+		>
 			<IconBoard />
 		</button>
 		<button
 			className={`rail-button${logOpen ? ' on' : ''}`}
 			title="Activity (the event log)"
+			aria-label="Activity (the event log)"
 			aria-pressed={logOpen}
 			onClick={onToggleLog}
 		>
@@ -122,18 +128,25 @@ export const Rail = ({
 		<button
 			className="rail-button"
 			title="Commands and search (Ctrl K)"
+			aria-label="Commands and search (Ctrl K)"
 			onClick={onOpenCommands}
 		>
 			<IconSearch />
 		</button>
 		<div className="rail-fill" />
-		<button className="rail-button" title="Theme" onClick={onOpenTheme}>
+		<button
+			className="rail-button"
+			title="Theme"
+			aria-label="Theme"
+			onClick={onOpenTheme}
+		>
 			<IconPalette />
 		</button>
 		<button
 			className="rail-button"
 			data-testid="rail-devices"
 			title="Devices: open this board on a phone"
+			aria-label="Devices: open this board on a phone"
 			onClick={onOpenDevices}
 		>
 			<IconDevices />
@@ -308,6 +321,7 @@ export const DevicesSheet = ({onClose}: {onClose: () => void}) => {
 						className="rail-button"
 						style={{width: 44, height: 44}}
 						title="Close"
+						aria-label="Close"
 						onClick={onClose}
 					>
 						<IconClose />
@@ -350,6 +364,31 @@ export const PhoneTopBar = ({
 );
 
 /**
+ * Which lane tab a tabs-pattern key press moves to. Arrow keys walk
+ * neighbours, Home and End jump to the ends, anything else stays put.
+ * Pure so the keyboard walk has a unit test beside this file.
+ */
+export const nextLaneIndex = (
+	current: number,
+	key: string,
+	count: number,
+): number | null => {
+	if (count < 1) return null;
+	switch (key) {
+		case 'ArrowRight':
+			return (current + 1) % count;
+		case 'ArrowLeft':
+			return (current - 1 + count) % count;
+		case 'Home':
+			return 0;
+		case 'End':
+			return count - 1;
+		default:
+			return null;
+	}
+};
+
+/**
  * The board one lane at a time: tabs along the top, and the lanes themselves
  * side by side in a pager that snaps to each, so a swipe and a tap on a tab
  * both land on a whole lane.
@@ -362,24 +401,49 @@ export const LanePager = ({
 	renderLane: (swimlane: GuiSwimlane) => React.ReactNode;
 }) => {
 	const pagerRef = useRef<HTMLDivElement | null>(null);
+	const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
 	const [index, setIndex] = useState(0);
 	const shown = Math.min(index, Math.max(0, swimlanes.length - 1));
 
 	const goTo = (next: number) => {
 		const pager = pagerRef.current;
+		setIndex(next);
+		tabRefs.current[next]?.focus();
 		if (!pager) return;
 
-		pager.scrollTo({left: next * pager.clientWidth, behavior: 'smooth'});
+		// A person who asks for reduced motion gets the lane jump, not the glide.
+		const calm =
+			typeof window !== 'undefined' &&
+			window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		pager.scrollTo({
+			left: next * pager.clientWidth,
+			behavior: calm ? 'auto' : 'smooth',
+		});
+	};
+
+	const onTabListKeyDown = (event: React.KeyboardEvent) => {
+		const next = nextLaneIndex(shown, event.key, swimlanes.length);
+		if (next === null || next === shown) return;
+
+		event.preventDefault();
+		event.stopPropagation();
+		goTo(next);
 	};
 
 	return (
 		<>
-			<div className="lane-tabs" role="tablist">
+			<div className="lane-tabs" role="tablist" onKeyDown={onTabListKeyDown}>
 				{swimlanes.map((swimlane, at) => (
 					<button
 						key={swimlane.id}
+						ref={element => {
+							tabRefs.current[at] = element;
+						}}
+						id={`lane-tab-${swimlane.id}`}
 						role="tab"
 						aria-selected={at === shown}
+						aria-controls={`lane-panel-${swimlane.id}`}
+						tabIndex={at === shown ? 0 : -1}
 						className={`lane-tab${at === shown ? ' on' : ''}`}
 						onClick={() => goTo(at)}
 					>
@@ -397,8 +461,14 @@ export const LanePager = ({
 					if (next !== index) setIndex(next);
 				}}
 			>
-				{swimlanes.map(swimlane => (
-					<div className="lane-page" key={swimlane.id}>
+				{swimlanes.map((swimlane, at) => (
+					<div
+						className="lane-page"
+						key={swimlane.id}
+						id={`lane-panel-${swimlane.id}`}
+						role="tabpanel"
+						aria-labelledby={`lane-tab-${swimlane.id}`}
+					>
 						{renderLane(swimlane)}
 					</div>
 				))}

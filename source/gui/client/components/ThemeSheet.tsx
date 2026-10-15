@@ -126,6 +126,7 @@ export function ThemeSheet({onClose}: {onClose: () => void}) {
 						className="rail-button"
 						style={{width: 44, height: 44}}
 						title="Close"
+						aria-label="Close"
 						onClick={onClose}
 					>
 						<svg
