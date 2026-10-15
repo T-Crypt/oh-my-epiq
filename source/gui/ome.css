@@ -870,6 +870,7 @@ body.plain-page {
 
 .tab.on {
 	color: var(--text);
+	font-weight: 700;
 	background: var(--accent-soft);
 }
 
@@ -881,6 +882,10 @@ body.plain-page {
 	right: 18%;
 	height: 3px;
 	background: var(--accent);
+}
+
+.tab:not(.on) svg {
+	opacity: 0.55;
 }
 
 /* Every side panel — a ticket, a diff, a lane's figures — opens over the whole screen on a phone.
