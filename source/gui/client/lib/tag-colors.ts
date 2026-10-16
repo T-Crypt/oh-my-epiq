@@ -2,6 +2,8 @@
 // The TUI uses six fixed hues; the theme has the same six under --o-red .. --o-magenta.
 // We match by comparing hue angles and pick the nearest theme hue.
 
+import {themeVar} from './gui-theme.js';
+
 export const HUES = [
 	'red',
 	'orange',
@@ -80,4 +82,75 @@ export function tagColorToThemeHue(tagColor: string): HueKey | null {
 	}
 
 	return bestDist < 60 ? best : null;
+}
+
+// ─── A chip's colour: the name decides, the theme paints ──────────
+//
+// Above maps a *stored* colour to the nearest theme hue, which is a guess: a
+// name-hashed hex sits at an arbitrary angle, and one more than 60 degrees from
+// every accent was drawn in a colour the theme had never heard of and would
+// not repaint on a theme switch. A chip is drawn from the name instead — one of
+// the palette's own eight accents, always, read from the theme so every bundled
+// theme paints it and a switch repaints the fill as well as the name.
+
+/** The eight accents a tag may wear, in the order the palette declares them. */
+export const TAG_ACCENTS = [
+	'accent',
+	'cyan',
+	'magenta',
+	'green',
+	'yellow',
+	'orange',
+	'red',
+	'blue',
+] as const;
+
+export type TagAccent = (typeof TAG_ACCENTS)[number];
+
+/**
+ * djb2 over the name, so a tag's colour follows its name and nothing else: the
+ * same tag is the same colour on every board, in every session, on both
+ * machines, without anything being stored for it.
+ */
+export function tagAccent(name: string): TagAccent {
+	let hash = 5381;
+
+	for (let at = 0; at < name.length; at += 1) {
+		hash = (hash * 33 + name.charCodeAt(at)) >>> 0;
+	}
+
+	return TAG_ACCENTS[hash % TAG_ACCENTS.length] ?? 'accent';
+}
+
+// Tokyo Night's own values, for a render that lands before the theme is applied.
+const ACCENT_FALLBACK: Record<TagAccent, string> = {
+	accent: '#7aa2f7',
+	cyan: '#449dab',
+	magenta: '#ad8ee6',
+	green: '#9ece6a',
+	yellow: '#e0af68',
+	orange: '#eb927b',
+	red: '#f7768e',
+	blue: '#7aa2f7',
+};
+
+export type TagChipColor = {
+	accent: TagAccent;
+	// The theme's own hex for that accent. `Button` builds a chip's fill and
+	// border by appending an alpha to it, which a `var()` reference cannot take.
+	tint: string;
+	// The name's colour: the accent lifted toward the bright foreground, so the
+	// word is read and the wash behind it is not.
+	text: string;
+};
+
+/** The two colours a tag chip is drawn in, from the tag's name. */
+export function tagChipColor(name: string): TagChipColor {
+	const accent = tagAccent(name);
+
+	return {
+		accent,
+		tint: themeVar(`--o-${accent}`, ACCENT_FALLBACK[accent]),
+		text: `color-mix(in oklab, var(--o-${accent}) 62%, var(--o-fg-bright))`,
+	};
 }

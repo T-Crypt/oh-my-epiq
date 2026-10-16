@@ -8,6 +8,10 @@ test.skip(!process.env['SHOOT'], 'screenshots on demand only');
 const desktop = {
 	viewport: {width: 1600, height: 960},
 	deviceScaleFactor: 2,
+	// Settle the sheet's scrim and rise before the frame lands: the scrim fades
+	// over 150ms and the sheet over 410ms, and a mid-animation capture left the
+	// README previews with a half-opaque overlay over the board.
+	reducedMotion: 'reduce' as const,
 };
 
 test.use(desktop);
@@ -45,6 +49,7 @@ test.describe('phone', () => {
 		viewport: {width: 393, height: 659},
 		deviceScaleFactor: 3,
 		hasTouch: true,
+		reducedMotion: 'reduce' as const,
 	});
 
 	test('board tab', async ({page, appUrl}) => {
@@ -52,6 +57,11 @@ test.describe('phone', () => {
 		await expect(page.getByTestId('board-switcher')).toContainText('Default');
 
 		await addTicket(page, 'Ship the launch');
+
+		// Adding opens the ticket as a sheet on a phone. Back on the board for
+		// the frame, or the preview is the sheet, not the board.
+		await page.getByRole('button', {name: '← Board'}).click();
+		await expect(page.getByRole('button', {name: '← Board'})).toHaveCount(0);
 
 		await page.screenshot({path: 'source/assets/phone-board.png'});
 	});

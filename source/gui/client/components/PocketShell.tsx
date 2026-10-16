@@ -89,18 +89,27 @@ export const IconPalette = () => (
 	</Icon>
 );
 
+export const IconKeyboard = () => (
+	<Icon>
+		<rect x="2.5" y="6" width="19" height="12" />
+		<path d="M6 10h.01M9.5 10h.01M13 10h.01M16.5 10h.01M8 14h8" />
+	</Icon>
+);
+
 // ─── Desktop: the rail ────────────────────────────────────────────────
 
 export const Rail = ({
 	logOpen,
 	onToggleLog,
 	onOpenCommands,
+	onOpenShortcuts,
 	onOpenDevices,
 	onOpenTheme,
 }: {
 	logOpen: boolean;
 	onToggleLog: () => void;
 	onOpenCommands: () => void;
+	onOpenShortcuts: () => void;
 	onOpenDevices: () => void;
 	onOpenTheme: () => void;
 }) => (
@@ -132,6 +141,17 @@ export const Rail = ({
 			onClick={onOpenCommands}
 		>
 			<IconSearch />
+		</button>
+		{/* The list the `?` key opens, drawn as a rail button too: a key nobody
+		    knows about is not a way in, and this is where the others are. */}
+		<button
+			className="rail-button"
+			data-testid="rail-shortcuts"
+			title="Keyboard shortcuts (?)"
+			aria-label="Keyboard shortcuts"
+			onClick={onOpenShortcuts}
+		>
+			<IconKeyboard />
 		</button>
 		<div className="rail-fill" />
 		<button

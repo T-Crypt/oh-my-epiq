@@ -36,6 +36,7 @@ import {Dropdown} from './components/Dropdown';
 import {Tabs} from './components/Tabs';
 import {ProjectListCurrent, ProjectPicker} from './components/ProjectPicker';
 import {Header} from './components/Header';
+import {DensityControl, useDensity} from './components/DensityControl';
 import {IssueDetails} from './components/IssueDetails';
 import {
 	FileTicketParams,
@@ -295,6 +296,10 @@ export const App = () => {
 	// The log panel is open. Owned here rather than in the scrubber: it is a
 	// panel in the board's own row, and the board moves over for it.
 	const [logOpen, setLogOpen] = usePersistedFlag(LOG_STORAGE_KEY, false);
+	// How much air a card gets. Read here rather than inside the header, because
+	// the board's own root is what the card styles hang off: this is written onto
+	// it as data-density and read back as the density tokens in ome.css.
+	const [density, setDensity] = useDensity();
 	// Held on screen for the length of its closing move, so the pane slides out
 	// beside the board rather than being taken off it.
 	const logReveal = useReveal(
@@ -2535,6 +2540,12 @@ export const App = () => {
 						>
 							change theme
 						</Button>
+						{/* The same control the desktop's topbar carries: a phone shows five
+						    cards where a desktop shows fifteen, so density is worth moving
+						    here as well. */}
+						<div style={{marginTop: 8}}>
+							<DensityControl density={density} onChange={setDensity} />
+						</div>
 					</div>
 					<div className="tile">
 						<div className="sheet-head">Devices</div>
@@ -2561,6 +2572,10 @@ export const App = () => {
 			{phone ? (
 				<div
 					className={phone ? 'ome-phone' : undefined}
+					// The board's own density, worn on the root the cards are drawn in,
+					// so one choice covers the desktop board, a window of its own, and
+					// the phone's lane pager.
+					data-density={density}
 					style={{
 						// Height lives in .ome-phone (ome.css, vh + dvh
 						// fallback); an inline height would win over it.
@@ -2619,6 +2634,8 @@ export const App = () => {
 										scrubbing={state?.timeTravel?.mode === 'scrub'}
 										syncStatus={syncStatus}
 										onOpenCommands={() => commandPalette.setOpen(true)}
+										density={density}
+										onChangeDensity={setDensity}
 										project={projectSwitcher}
 										board={boardSwitcher}
 										identity={{
@@ -2696,7 +2713,7 @@ export const App = () => {
 										style={{
 											// No inset of its own: the columns' own top edge is what lines
 											// up with the panes either side, and a lane's header carries
-											// the gap above its title itself, in the 48px row it stands in.
+											// the gap above its title itself, in the lane header's own row.
 											padding: `0 0 0 ${BOARD_GUTTER}px`,
 											flex: 1,
 											// Beside the log it has to be able to give up the width the
@@ -2714,7 +2731,9 @@ export const App = () => {
 										<div
 											style={{
 												display: 'flex',
-												gap: 8,
+												// A density token, so compact tightens the space between the lanes as
+												// well as the space inside a card.
+												gap: 'var(--lane-gap, 8px)',
 												flex: 1,
 												minHeight: 0,
 												overflowX: 'auto',
@@ -2907,12 +2926,18 @@ export const App = () => {
 						logOpen={logOpen}
 						onToggleLog={() => setLogOpen(!logOpen)}
 						onOpenCommands={() => commandPalette.setOpen(true)}
+						onOpenShortcuts={() => setShortcutsOpen(true)}
 						onOpenDevices={() => setDevicesOpen(true)}
 						onOpenTheme={() => setThemeSheetOpen(true)}
 					/>
 					<div className="ome-window main active">
 						<div
 							className={phone ? 'ome-phone' : undefined}
+							// The board's density, on the root the cards are drawn inside: the
+							// card styles read the density tokens this selects. Set here as
+							// well as on the phone's own root, since a desktop board is drawn
+							// in this window rather than in that one.
+							data-density={density}
 							style={{
 								// Height lives in .ome-phone (ome.css, vh + dvh
 								// fallback); an inline height would win over it.
@@ -2971,6 +2996,8 @@ export const App = () => {
 												scrubbing={state?.timeTravel?.mode === 'scrub'}
 												syncStatus={syncStatus}
 												onOpenCommands={() => commandPalette.setOpen(true)}
+												density={density}
+												onChangeDensity={setDensity}
 												project={projectSwitcher}
 												board={boardSwitcher}
 												identity={{
@@ -3101,7 +3128,7 @@ export const App = () => {
 												style={{
 													// No inset of its own: the columns' own top edge is what lines
 													// up with the panes either side, and a lane's header carries
-													// the gap above its title itself, in the 48px row it stands in.
+													// the gap above its title itself, in the lane header's own row.
 													padding: `0 0 0 ${BOARD_GUTTER}px`,
 													flex: 1,
 													// Beside the log it has to be able to give up the width the
@@ -3119,7 +3146,9 @@ export const App = () => {
 												<div
 													style={{
 														display: 'flex',
-														gap: 8,
+														// A density token, so compact tightens the space between the lanes as
+														// well as the space inside a card.
+														gap: 'var(--lane-gap, 8px)',
 														flex: 1,
 														minHeight: 0,
 														overflowX: 'auto',

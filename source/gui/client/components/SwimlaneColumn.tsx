@@ -1,7 +1,7 @@
 import React from 'react';
 import {DropIndicator} from '../App';
 import {GuiComment, GuiIssue, GuiSwimlane} from '../lib/gui-state.model';
-import {GUI_THEME} from '../lib/gui-theme';
+import {GUI_THEME, TEXT} from '../lib/gui-theme';
 import {formatDuration} from '../lib/gui-format.helper';
 import {dwellLevel, dwellOf, laneDwell} from '../lib/lane-dwell';
 import {RefDiffStats} from '../../../lib/stats/ref-diff-stats.model.js';
@@ -160,7 +160,7 @@ export const SwimlaneColumn = ({
 				height: '100%',
 				// Panel's 1px border would otherwise add to the 100% and overflow the row.
 				boxSizing: 'border-box',
-				background: dragOver ? 'var(--o-selection)' : GUI_THEME.bg,
+				background: dragOver ? 'var(--o-selection)' : GUI_THEME.tile,
 				padding: `0 ${COLUMN_PADDING}px`,
 				display: 'flex',
 				flexDirection: 'column',
@@ -243,13 +243,14 @@ export const SwimlaneColumn = ({
 				}}
 				onDragEnd={onSwimlaneDragEnd}
 				style={{
-					height: 48,
+					height: 52,
 					flexShrink: 0,
 					display: 'flex',
 					fontSize: 12,
 					justifyContent: 'space-between',
 					alignItems: 'center',
 					cursor: swimlane.readonly ? 'default' : 'grab',
+					borderBottom: '1px solid ' + GUI_THEME.line,
 				}}
 			>
 				<div
@@ -269,8 +270,15 @@ export const SwimlaneColumn = ({
 					</span>
 
 					<strong
+						data-testid="swimlane-title"
 						style={{
 							color: selected ? GUI_THEME.accent : GUI_THEME.primary,
+							// The board's heading step: the same 15px a card's title takes,
+							// one weight up and a hair of tracking, so a lane names the
+							// column under it rather than sitting in it as another card.
+							fontSize: TEXT.heading,
+							fontWeight: 700,
+							letterSpacing: '0.02em',
 							// The lane's own figures are the fixed part of this row: a
 							// title long enough to crowd them out is cut instead.
 							overflow: 'hidden',
@@ -281,7 +289,25 @@ export const SwimlaneColumn = ({
 						{swimlane.title}
 					</strong>
 
-					<span style={{color: GUI_THEME.dim}}>({swimlane.issues.length})</span>
+					<span
+						data-testid="swimlane-count"
+						style={{
+							border: `1px solid ${GUI_THEME.line}`,
+							padding: '0 6px',
+							lineHeight: '17px',
+							// The figure beside a 15px title: the metadata step, so the
+							// count is read as a number about the lane and not as part of
+							// its name.
+							fontSize: TEXT.meta,
+							// The board's quiet step rather than the chrome's dimmest:
+							// at 11px on a lane's tile the old grey was a smudge.
+							color: GUI_THEME.faint,
+							flexShrink: 0,
+							fontVariantNumeric: 'tabular-nums',
+						}}
+					>
+						{swimlane.issues.length}
+					</span>
 
 					{live && (
 						<IconButton

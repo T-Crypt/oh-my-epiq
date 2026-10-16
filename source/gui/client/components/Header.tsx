@@ -6,9 +6,20 @@ import {GUI_THEME, OME_MARK_STYLE} from '../lib/gui-theme';
 import {SyncStatus} from '../lib/gui-sync-statusmodel';
 import {Button} from './Button';
 import {CommandPaletteHint} from './CommandPaletteHint';
+import {Density, DensityControl} from './DensityControl';
 import {Panel} from './Panel';
 import {User} from './User';
 import {OME_VERSION} from '../../../version.js';
+
+const pill: React.CSSProperties = {
+	display: 'inline-flex',
+	alignItems: 'center',
+	gap: 6,
+	border: `1px solid ${GUI_THEME.line}`,
+	padding: '4px 9px',
+	fontSize: 11,
+	whiteSpace: 'nowrap',
+};
 
 type HeaderProps = {
 	state: GuiState | null;
@@ -19,6 +30,10 @@ type HeaderProps = {
 	scrubbing: boolean;
 	syncStatus: SyncStatus;
 	onOpenCommands: () => void;
+	// How much air a card gets, and the control that changes it. The board reads
+	// the choice off its own root, so the header only carries the switch.
+	density: Density;
+	onChangeDensity: (next: Density) => void;
 	// The board switcher, placed here rather than over the columns: it names
 	// what everything below is showing, the timeline included, and this is the
 	// one row that outlives every panel and collapse below it.
@@ -41,6 +56,8 @@ export const Header = ({
 	scrubbing,
 	syncStatus,
 	onOpenCommands,
+	density,
+	onChangeDensity,
 	board,
 	project,
 	identity,
@@ -154,6 +171,11 @@ export const Header = ({
 
 					{board}
 
+					{/* The board's density, beside the board's name and the way into the
+					    palette: the three controls that say what the columns below
+					    are showing and how much of them fit. */}
+					<DensityControl density={density} onChange={onChangeDensity} />
+
 					<CommandPaletteHint onOpen={onOpenCommands} />
 				</div>
 
@@ -174,12 +196,9 @@ export const Header = ({
 						}}
 					>
 						{scrubbing && (
-							<>
-								<span style={{color: GUI_THEME.accent, fontWeight: 700}}>
-									Read-only
-								</span>
-								<span style={{color: GUI_THEME.dim}}>|</span>
-							</>
+							<span style={{color: GUI_THEME.accent, fontWeight: 700}}>
+								Read-only
+							</span>
 						)}
 
 						{/* The colour is the whole message, so the word beside it only
@@ -187,65 +206,60 @@ export const Header = ({
 						    git output never fitted there anyway. The hit area is a
 						    button's rather than the dot's own, since the state is now
 						    only readable by hovering it. */}
-						<span
-							data-testid="sync-dot"
-							title={syncTitle}
-							style={{
-								display: 'inline-flex',
-								alignItems: 'center',
-								justifyContent: 'center',
-								padding: '5px 7px',
-							}}
-						>
-							{/* Four, as the ticket that dropped the label asked for: a
-							    marker, not a light. At six it was the loudest thing in a
-							    bar of 11px grey type, which is the opposite of what
-							    dropping the word was for. What makes a dot this small
-							    usable is the hit area around it, and that is unchanged. */}
+						<span style={pill}>
 							<span
+								data-testid="sync-dot"
+								title={syncTitle}
 								style={{
-									width: 4,
-									height: 4,
-									borderRadius: 999,
-									background:
-										connection === 'connected' ? syncColor : GUI_THEME.dim,
+									display: 'inline-flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+									padding: '5px 7px',
 								}}
-							/>
+							>
+								{/* Four, as the ticket that dropped the label asked for: a
+								    marker, not a light. At six it was the loudest thing in a
+								    bar of 11px grey type, which is the opposite of what
+								    dropping the word was for. What makes a dot this small
+								    usable is the hit area around it, and that is unchanged. */}
+								<span
+									style={{
+										width: 4,
+										height: 4,
+										borderRadius: 999,
+										background:
+											connection === 'connected' ? syncColor : GUI_THEME.dim,
+									}}
+								/>
+							</span>
+
+							{connection === 'connected' ? (
+								<span style={{color: GUI_THEME.dim}}>connected</span>
+							) : connection === 'connecting' ? (
+								<span style={{color: GUI_THEME.dim}}>connecting…</span>
+							) : connection === 'reconnecting' ? (
+								<span
+									data-testid="reconnecting"
+									style={{color: GUI_THEME.accent}}
+								>
+									reconnecting…
+								</span>
+							) : (
+								// The button alone says it: an offer to reconnect only makes
+								// sense if the connection is gone.
+								<Button
+									data-testid="connection-lost"
+									variant="ghost"
+									onClick={onReconnect}
+									title="Not connected — reconnect now"
+									style={{color: GUI_THEME.red, fontSize: 11}}
+								>
+									reconnect
+								</Button>
+							)}
 						</span>
 
-						<span style={{color: GUI_THEME.dim}}>|</span>
-
-						{connection === 'connected' ? (
-							<span style={{color: GUI_THEME.dim}}>connected</span>
-						) : connection === 'connecting' ? (
-							<span style={{color: GUI_THEME.dim}}>connecting…</span>
-						) : connection === 'reconnecting' ? (
-							<span
-								data-testid="reconnecting"
-								style={{color: GUI_THEME.accent}}
-							>
-								reconnecting…
-							</span>
-						) : (
-							// The button alone says it: an offer to reconnect only makes
-							// sense if the connection is gone.
-							<Button
-								data-testid="connection-lost"
-								variant="ghost"
-								onClick={onReconnect}
-								title="Not connected — reconnect now"
-								style={{color: GUI_THEME.red, fontSize: 11}}
-							>
-								reconnect
-							</Button>
-						)}
-
-						<span style={{color: GUI_THEME.dim}}>|</span>
-						<span
-							style={{
-								color: GUI_THEME.dim,
-							}}
-						>
+						<span style={{...pill, color: GUI_THEME.dim}}>
 							{'v' + OME_VERSION}
 						</span>
 					</div>

@@ -4,7 +4,10 @@
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {commitAuthorLabel} from '../lib/commit-author';
 import {actorDisplay} from '../lib/agent-identity';
-import {formatDateTime} from '../../../lib/utils/date.utils.js';
+import {
+	formatDateTime,
+	formatTimeOfDay,
+} from '../../../lib/utils/date.utils.js';
 import {maxOf} from '../../../lib/utils/minmax.js';
 import {
 	GuiCommitEntry,
@@ -1243,6 +1246,15 @@ export const TimeScrubber = ({
 		? 'Too many events in this window to play it — narrow the window'
 		: 'Not enough history in this window to play';
 
+	const nowLabel = !connected
+		? null
+		: timeTravel.mode === 'live'
+		? formatTimeOfDay(new Date(axis.latest > 0 ? axis.latest : Date.now()))
+		: timeTravel.asOfTime !== null
+		? formatTimeOfDay(new Date(timeTravel.asOfTime))
+		: null;
+	const live = timeTravel.mode === 'live';
+
 	return (
 		<ScrubberLayout
 			collapsed={collapsed}
@@ -1255,6 +1267,8 @@ export const TimeScrubber = ({
 			standDown={theatreOpen}
 			controls={{
 				connected,
+				nowLabel,
+				live,
 				scope,
 				zoomed: zoom !== null,
 				windowOnly,
@@ -1363,6 +1377,8 @@ export const TimeScrubber = ({
 						? segmentAt(hoveredSegmentTime, grainUnit)
 						: null,
 				connected,
+				nowLabel,
+				live,
 				thumbFraction: dragFraction ?? confirmedFraction,
 				// Follows a drag, so the stretch moves with the needle rather than
 				// waiting for the checkout the drag will ask for.

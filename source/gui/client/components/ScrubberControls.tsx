@@ -4,7 +4,7 @@
 // is TimeScrubber's.
 
 import {useContext, useRef} from 'react';
-import {GUI_THEME} from '../lib/gui-theme';
+import {GUI_THEME, TEXT} from '../lib/gui-theme';
 import {PanelGlowContext} from './Panel';
 import {
 	isPeriodWindow,
@@ -66,6 +66,8 @@ export const ScrubberControls = ({
 	canPlay,
 	playTitle,
 	onPlay,
+	nowLabel,
+	live,
 	following,
 	canFollow,
 	followTitle,
@@ -116,6 +118,9 @@ export const ScrubberControls = ({
 	canPlay: boolean;
 	playTitle: string;
 	onPlay: () => void;
+	// The transport's readout and whether it stands on the present.
+	nowLabel: string | null;
+	live: boolean;
 	// The live half of the transport. Owned above this row, because the log
 	// panel reads it too and the board turns it off when the reader reaches for
 	// it — three places, so it cannot live in any one of them.
@@ -396,6 +401,32 @@ export const ScrubberControls = ({
 					onPlay={onPlay}
 				/>
 			</LabelledGroup>
+			{nowLabel !== null && (
+				<span
+					style={{
+						display: 'inline-flex',
+						alignItems: 'center',
+						gap: 6,
+						fontSize: TEXT.ui,
+						color: GUI_THEME.dim2,
+						fontVariantNumeric: 'tabular-nums',
+					}}
+				>
+					{nowLabel}
+					{live && (
+						<span
+							style={{
+								fontSize: TEXT.label,
+								letterSpacing: '0.14em',
+								textTransform: 'uppercase',
+								color: GUI_THEME.accent,
+							}}
+						>
+							now
+						</span>
+					)}
+				</span>
+			)}
 		</div>
 	);
 };

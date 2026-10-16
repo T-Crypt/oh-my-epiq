@@ -5,7 +5,7 @@
 
 import {memo} from 'react';
 import {GuiCommitEntry} from '../lib/gui-state.model';
-import {GUI_THEME} from '../lib/gui-theme';
+import {GUI_THEME, TEXT} from '../lib/gui-theme';
 import {
 	dotAppearAnimation,
 	dotDetail,
@@ -202,6 +202,13 @@ export type ScrubberChart = {
 	hoveredGrain: Segment | null;
 	// Nothing can be asked for with the socket down.
 	connected: boolean;
+	// The transport's readout: the moment the board is standing on. The wall
+	// clock's edge while live, the scrubbed moment off it. Null where the
+	// socket is down, which names nothing.
+	nowLabel: string | null;
+	// True while the board stands on the present, so the readout wears the
+	// 'now' mark beside its time.
+	live: boolean;
 	// The board below is narrowed to this window, so the timeline is not only a
 	// picture of it but the control hiding the tickets that are missing.
 	scoped: boolean;
@@ -350,6 +357,33 @@ export const ScrubberLayout = ({
 									onPlay={onPlay}
 								/>
 							</span>
+
+							{chart.nowLabel !== null && (
+								<span
+									style={{
+										display: 'inline-flex',
+										alignItems: 'center',
+										gap: 6,
+										fontSize: TEXT.ui,
+										color: GUI_THEME.dim2,
+										fontVariantNumeric: 'tabular-nums',
+									}}
+								>
+									{chart.nowLabel}
+									{chart.live && (
+										<span
+											style={{
+												fontSize: TEXT.label,
+												letterSpacing: '0.14em',
+												textTransform: 'uppercase',
+												color: GUI_THEME.accent,
+											}}
+										>
+											now
+										</span>
+									)}
+								</span>
+							)}
 						</div>
 					) : (
 						<ScrubberControls

@@ -1,7 +1,10 @@
 import {describe, expect, test} from 'vitest';
 import {
 	resolveTagColorHue,
+	tagAccent,
+	tagChipColor,
 	tagColorToThemeHue,
+	TAG_ACCENTS,
 	HUES,
 } from '../gui/client/lib/tag-colors.js';
 
@@ -77,5 +80,38 @@ describe('tagColorToThemeHue', () => {
 	test('maps grayscale to nearest hue', () => {
 		// #000000 is grayscale (hue 0), matches red
 		expect(tagColorToThemeHue('#000000')).not.toBeNull();
+	});
+});
+
+describe('tagAccent', () => {
+	test('picks one of the theme accents, and always the same one', () => {
+		for (const name of ['urgent', 'ship the launch', 'a', 'zzzz', 't1749']) {
+			const accent = tagAccent(name);
+
+			expect(TAG_ACCENTS).toContain(accent);
+			expect(tagAccent(name)).toBe(accent);
+		}
+	});
+
+	test('spreads names over the accents rather than piling them on one', () => {
+		const names = Array.from({length: 64}, (_, at) => `tag-${at}`);
+		const used = new Set(names.map(tagAccent));
+
+		expect(used.size).toBe(TAG_ACCENTS.length);
+	});
+
+	test('survives a name with nothing in it', () => {
+		expect(TAG_ACCENTS).toContain(tagAccent(''));
+	});
+});
+
+describe('tagChipColor', () => {
+	test('takes the tint and the name colour from the accent', () => {
+		const {accent, tint, text} = tagChipColor('urgent');
+
+		expect(text).toContain(`var(--o-${accent})`);
+		// A hex, because the chip's fill and border are built by appending an
+		// alpha to it. Tokyo Night's own value stands in before the theme lands.
+		expect(tint).toMatch(/^#[0-9a-f]{6}$/i);
 	});
 });

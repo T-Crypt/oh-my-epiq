@@ -10,7 +10,7 @@ const laneWithTickets = async (page: Page): Promise<Locator> => {
 	for (let index = 0; index < (await headers.count()); index++) {
 		const header = headers.nth(index);
 		const count = Number(
-			(await header.textContent())?.match(/\((\d+)\)/)?.[1] ?? 0,
+			(await header.getByTestId('swimlane-count').textContent()) ?? 0,
 		);
 
 		if (count > 0) return header;
@@ -140,7 +140,7 @@ test('an empty lane still opens its stats, with no figure in the title', async (
 	await filter.fill('zzzz-no-such-ticket');
 
 	const header = page.getByTestId('swimlane-handle').first();
-	await expect(header).toContainText('(0)');
+	await expect(header.getByTestId('swimlane-count')).toHaveText('0');
 
 	const stats = header.getByTestId('swimlane-stats-open');
 	await expect(stats).toHaveAttribute('title', 'Swimlane Stats');

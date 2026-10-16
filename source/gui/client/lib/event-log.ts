@@ -19,7 +19,7 @@ import {EVENT_CATEGORY_COLORS, GUI_THEME, TEXT} from './gui-theme';
 import {LOG_ROW_SELECTOR} from './log-destination';
 import {categoryOf} from './scrubber';
 
-// One line of the log. `color` is the dot it is marked with, which is the whole
+// One line of the log. `color` is the tick it is marked with, which is the whole
 // of what says a line is a commit rather than a board event — so it is resolved
 // once here rather than being decided again wherever a row is drawn.
 export type LogEntry = {
@@ -344,18 +344,18 @@ export const CRAWL_TIMING: KeyframeAnimationOptions = {
 };
 
 // A line is one element, a span for who signed it, and for a commit a span
-// holding its stat. Its clock and its dot are drawn as pseudo-elements off the
+// holding its stat. Its clock and its tick are drawn as pseudo-elements off the
 // row itself rather than as spans inside it, which is the difference between
 // five nodes a line and two or three — and the panel can hold hundreds.
 //
-// The clock is `attr()`ed off the row, the dot's colour comes in as a custom
+// The clock is `attr()`ed off the row, the tick's colour comes in as a custom
 // property, and both are laid out in `ch` so the columns hold at whatever size
 // the row's font ends up.
 //
 // Which of them a row shows is the pane's say — see lib/log-fields — carried
 // as a class on it: the clock's column collapses to nothing when it is off,
-// and the dot goes with it into the gap the row keeps in front of its text.
-// That gap is the lead below: room for the dot while it is drawn, a word
+// and the tick goes with it into the gap the row keeps in front of its text.
+// That gap is the lead below: room for the tick while it is drawn, a word
 // space after the clock once it is not, and nothing once the clock goes too.
 export const LOG_TIME_CHARS = 5;
 export const LOG_DOT_COLOR_PROPERTY = '--ome-log-dot';
@@ -452,10 +452,9 @@ export const EVENT_LOG_STYLES = `
 	position: absolute;
 	left: calc(var(${TIME_BLOCK_PROPERTY}) + 4px);
 	top: 50%;
-	width: 5px;
-	height: 5px;
-	margin-top: -2.5px;
-	border-radius: 50%;
+	width: 2px;
+	height: 12px;
+	margin-top: -6px;
 	background: var(${LOG_DOT_COLOR_PROPERTY});
 }
 .${LOG_ACTOR_CLASS} {
