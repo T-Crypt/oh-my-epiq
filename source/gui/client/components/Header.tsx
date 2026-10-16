@@ -6,6 +6,7 @@ import {GUI_THEME, OME_MARK_STYLE} from '../lib/gui-theme';
 import {SyncStatus} from '../lib/gui-sync-statusmodel';
 import {Button} from './Button';
 import {CommandPaletteHint} from './CommandPaletteHint';
+import {Density, DensityControl} from './DensityControl';
 import {Panel} from './Panel';
 import {User} from './User';
 import {OME_VERSION} from '../../../version.js';
@@ -29,6 +30,10 @@ type HeaderProps = {
 	scrubbing: boolean;
 	syncStatus: SyncStatus;
 	onOpenCommands: () => void;
+	// How much air a card gets, and the control that changes it. The board reads
+	// the choice off its own root, so the header only carries the switch.
+	density: Density;
+	onChangeDensity: (next: Density) => void;
 	// The board switcher, placed here rather than over the columns: it names
 	// what everything below is showing, the timeline included, and this is the
 	// one row that outlives every panel and collapse below it.
@@ -51,6 +56,8 @@ export const Header = ({
 	scrubbing,
 	syncStatus,
 	onOpenCommands,
+	density,
+	onChangeDensity,
 	board,
 	project,
 	identity,
@@ -163,6 +170,11 @@ export const Header = ({
 					<span style={{color: GUI_THEME.dim, fontSize: 12}}>/</span>
 
 					{board}
+
+					{/* The board's density, beside the board's name and the way into the
+					    palette: the three controls that say what the columns below
+					    are showing and how much of them fit. */}
+					<DensityControl density={density} onChange={onChangeDensity} />
 
 					<CommandPaletteHint onOpen={onOpenCommands} />
 				</div>

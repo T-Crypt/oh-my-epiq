@@ -1,57 +1,56 @@
-import {useEffect} from 'react';
-import {GUI_THEME, TEXT} from '../lib/gui-theme';
+import {useEffect, useRef} from 'react';
+import {IconClose} from './PocketShell';
 
-// The chord as the platform writes it, so the pill teaches the right key.
+// The chord as the platform writes it, so the pill teaches the right key. A Mac
+// reader shown `Ctrl` reaches for the wrong one, and a list of keys that lies is
+// worse than no list.
 const isApple = (): boolean =>
 	typeof navigator !== 'undefined' &&
 	/Mac|iPhone|iPad/.test(navigator.userAgent);
 
-const Key = ({children}: {children: string}) => (
-	<kbd
-		style={{
-			display: 'inline-flex',
-			alignItems: 'center',
-			justifyContent: 'center',
-			minWidth: 18,
-			height: 18,
-			padding: '0 5px',
-			boxSizing: 'border-box',
-			borderRadius: 4,
-			background: GUI_THEME.panel2,
-			border: `1px solid ${GUI_THEME.line}`,
-			color: GUI_THEME.secondary,
-			font: 'inherit',
-			fontSize: TEXT.label,
-			lineHeight: 1,
-		}}
-	>
-		{children}
-	</kbd>
-);
+const modifier = isApple() ? ['⌘', 'K'] : ['Ctrl', 'K'];
 
 type Row = {keys: string[]; label: string};
 
-const modifier = isApple() ? ['⌘', 'K'] : ['Ctrl', 'K'];
-
-const rows: Row[] = [
+// Every row here is a key the board actually answers to today: the board's own
+// bare presses (use-board-hotkeys), the palette's chord and its colon
+// (use-command-palette), Escape, the palette's own list keys, and the lane tabs'
+// walk. Nothing is listed that is not bound somewhere in the client.
+const ROWS: Row[] = [
 	{keys: modifier, label: 'Command palette'},
 	{keys: [':'], label: 'Command palette'},
 	{keys: ['['], label: 'Previous board'},
 	{keys: [']'], label: 'Next board'},
 	{keys: ['/'], label: 'Filter tickets'},
-	{keys: ['l'], label: 'Toggle the activity log'},
+	{keys: ['l'], label: 'The activity log'},
 	{keys: ['t'], label: 'Play the board back'},
 	{keys: ['?'], label: 'This list'},
+	{keys: ['Esc'], label: 'Close a sheet, or clear the selection'},
+	{keys: ['↑', '↓'], label: 'Move in the command palette'},
+	{keys: ['←', '→'], label: 'Walk the lane tabs on a phone'},
 ];
 
 /**
  * Every shortcut in one place.
  *
  * A shortcut nobody can find is a shortcut nobody uses, so `?` opens this and
- * lists what the board answers to. Escape or a click past the sheet closes it,
- * the way the other sheets close.
+ * lists what the board answers to. It is a sheet like the Devices one — the same
+ * scrim, the same head, the same Escape and click-past-it — because a second way
+ * of drawing a sheet over the board would be a second thing to keep in step.
+ *
+ * Two test ids, deliberately: `shortcuts-sheet` has been the name of the
+ * overlay since the sheet existed and is not renamed here, and `shortcut-sheet`
+ * names the dialog itself, which is the part a reader means by "the sheet".
  */
 export const ShortcutsSheet = ({onClose}: {onClose: () => void}) => {
+	const closeRef = useRef<HTMLButtonElement | null>(null);
+
+	// Focus lands on the way out: a sheet opened from the keyboard has to be
+	// closable from the keyboard, and Tab from here reaches the way out too.
+	useEffect(() => {
+		closeRef.current?.focus();
+	}, []);
+
 	useEffect(() => {
 		const onKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') {
@@ -66,83 +65,43 @@ export const ShortcutsSheet = ({onClose}: {onClose: () => void}) => {
 
 	return (
 		<div
+			className="sheet-scrim"
 			data-testid="shortcuts-sheet"
-			role="dialog"
-			aria-modal="true"
-			aria-label="Keyboard shortcuts"
-			onMouseDown={onClose}
-			style={{
-				position: 'fixed',
-				inset: 0,
-				background: GUI_THEME.scrim,
-				display: 'flex',
-				alignItems: 'flex-start',
-				justifyContent: 'center',
-				paddingTop: '12vh',
-				zIndex: 1100,
-			}}
+			onClick={onClose}
 		>
 			<div
-				onMouseDown={event => event.stopPropagation()}
-				style={{
-					width: 'min(420px, calc(100vw - 32px))',
-					background: GUI_THEME.panel,
-					border: `1px solid ${GUI_THEME.edge}`,
-					borderRadius: 8,
-					boxShadow: `0 16px 48px ${GUI_THEME.shadow}`,
-					padding: 16,
-				}}
+				className="sheet"
+				data-testid="shortcut-sheet"
+				role="dialog"
+				aria-modal="true"
+				aria-label="Keyboard shortcuts"
+				onClick={event => event.stopPropagation()}
 			>
-				<div
-					style={{
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'space-between',
-						marginBottom: 8,
-					}}
-				>
-					<span style={{fontSize: TEXT.ui, color: GUI_THEME.primary}}>
-						Keyboard shortcuts
-					</span>
+				<div className="sheet-head">
+					<span>Keyboard shortcuts</span>
 					<button
-						type="button"
-						onClick={onClose}
+						ref={closeRef}
+						className="rail-button"
+						style={{width: 44, height: 44}}
+						title="Close"
 						aria-label="Close"
-						style={{
-							background: 'transparent',
-							border: 'none',
-							color: GUI_THEME.dim,
-							fontSize: TEXT.label,
-							fontFamily: 'inherit',
-							cursor: 'pointer',
-						}}
+						onClick={onClose}
 					>
-						Close
+						<IconClose />
 					</button>
 				</div>
-
-				{rows.map(row => (
-					<div
-						key={row.label}
-						style={{
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'space-between',
-							gap: 16,
-							padding: '7px 0',
-							borderTop: `1px solid ${GUI_THEME.line}`,
-						}}
-					>
-						<span style={{fontSize: TEXT.ui, color: GUI_THEME.secondary}}>
-							{row.label}
-						</span>
-						<span style={{display: 'inline-flex', gap: 3, flexShrink: 0}}>
-							{row.keys.map((key, index) => (
-								<Key key={index}>{key}</Key>
-							))}
-						</span>
-					</div>
-				))}
+				<div className="sheet-body">
+					{ROWS.map(row => (
+						<div className="shortcut-row" key={row.label}>
+							<span className="shortcut-label">{row.label}</span>
+							<span className="shortcut-keys">
+								{row.keys.map((key, index) => (
+									<kbd key={index}>{key}</kbd>
+								))}
+							</span>
+						</div>
+					))}
+				</div>
 			</div>
 		</div>
 	);
