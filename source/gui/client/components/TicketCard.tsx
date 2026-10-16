@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {GuiComment, GuiIssue} from '../lib/gui-state.model';
 import {GUI_THEME, TEXT} from '../lib/gui-theme';
-import {tagColorToThemeHue} from '../lib/tag-colors';
+import {tagChipColor} from '../lib/tag-colors';
 import {
 	THEATRE_CARD_IN_ANIMATION,
 	THEATRE_FLASH_FRAMES,
@@ -22,8 +22,14 @@ import {IconComment} from './IconComment';
 import {User} from './User';
 
 // The title's first line, which the controls at the card's right edge — the
-// dwell, the comment count, the assignees — centre themselves on.
-const TITLE_LINE_HEIGHT = 17;
+// dwell, the comment count, the assignees — centre themselves on. Set by the
+// title's own 15px step rather than by its old 13px one.
+const TITLE_LINE_HEIGHT = 20;
+
+// How many of a ticket's tags a card shows before it counts the rest. A card is
+// read down a column of thirty, and a ticket tagged six ways was six chips of
+// height in every one of them.
+const TAGS_SHOWN = 2;
 
 // The index's box at the card's left edge: three figures at the meta step,
 // and the gap after it. Fixed, so a longer number never moves the title.
@@ -223,23 +229,31 @@ export const TicketCard = ({
 				alignItems: 'flex-start',
 				// Inherited by the title and nothing else: everything else on the card
 				// sets a tone of its own.
-				color:
-					isSelected || isPicked ? GUI_THEME.accent : GUI_THEME.primarySoft,
+				color: isSelected || isPicked ? GUI_THEME.accent : GUI_THEME.body,
 				fontSize: 11,
 				cursor: ticket.readonly ? 'default' : 'grab',
 				// A selected card is a step above a resting one, not a different
 				// colour at the same weight: the two washes have to move together,
 				// or picking one stops reading as picking it up.
+				//
+				// A resting card is a further step above the lane it stands in — the
+				// foreground at ten percent, laid over the lane's own tile — where it
+				// used to be the hover wash, which was faint enough that a column of
+				// cards read as one grey block rather than as a column of cards.
 				background:
-					isSelected || isPicked ? GUI_THEME.accentWash : GUI_THEME.hover,
+					isSelected || isPicked ? GUI_THEME.accentWash : GUI_THEME.card,
 				// Roomier than a list row: a card is read, not scanned, and the
 				// air around its title is what keeps a column of them from
 				// running together.
 				// None on the left: the index's box is the margin there.
-				padding: '12px 18px 12px 0',
-				minHeight: '58px',
-				borderRadius: '8px',
-				marginBottom: 12,
+				//
+				// The four steps below are the density tokens (ome.css), so the
+				// comfortable/compact control moves a card without a second set of
+				// card styles to keep in step with these.
+				padding: 'var(--card-pad, 12px 18px 12px 0)',
+				minHeight: 'var(--card-min-h, 58px)',
+				borderRadius: '0',
+				marginBottom: 'var(--card-gap, 12px)',
 				border: `1px solid ${
 					isSelected || isPicked ? GUI_THEME.accent : 'transparent'
 				}`,
@@ -350,8 +364,10 @@ export const TicketCard = ({
 							WebkitLineClamp: 2,
 							WebkitBoxOrient: 'vertical',
 							overflow: 'hidden',
-							fontWeight: 500,
-							fontSize: TEXT.prose,
+							// A step above the metadata around it and a weight above the
+							// lane's own title, so a card is read title first, tags second.
+							fontWeight: 600,
+							fontSize: 'var(--card-title-size, 15px)',
 							lineHeight: `${TITLE_LINE_HEIGHT}px`,
 							wordBreak: 'break-word',
 						}}
@@ -365,8 +381,8 @@ export const TicketCard = ({
 								display: 'flex',
 								alignItems: 'center',
 								gap: CARD_DIFF_GAP,
-								color: GUI_THEME.dim2,
-								fontSize: 11,
+								color: GUI_THEME.faint,
+								fontSize: TEXT.meta,
 							}}
 						>
 							<CopyRef refValue={ticket.ref} />
@@ -420,45 +436,98 @@ export const TicketCard = ({
 						</div>
 					)}
 
-					<div
-						style={{
-							display: 'flex',
-							flexWrap: 'wrap',
-							gap: 6,
-							alignItems: 'center',
-						}}
-					>
-						{ticket.tags.map(tag => {
-							const isolated = tag.id === isolatedTagId;
-							const hue = tagColorToThemeHue(tag.color);
-							const tagTextColor = hue ? `var(--o-${hue})` : tag.color;
+					{/* A card's tags: a dot in the tag's own accent and its name, capped
+					    at two with a count of the rest. The tag is the ticket's, but the
+					    colour is the theme's — the name picks one of the palette's eight,
+					    so the chip repaints with a theme switch and the same word is the
+					    same colour on every board. */}
+					{ticket.tags.length > 0 && (
+						<div
+							data-testid="card-tag"
+							style={{
+								display: 'flex',
+								// Nothing wraps: a chip that broke across two lines would be a
+								// second line of card height for one word.
+								flexWrap: 'nowrap',
+								gap: 6,
+								alignItems: 'center',
+								minWidth: 0,
+							}}
+						>
+							{ticket.tags.slice(0, TAGS_SHOWN).map(tag => {
+								const isolated = tag.id === isolatedTagId;
+								const chip = tagChipColor(tag.name);
 
-							return (
-								<Button
-									key={tag.id}
-									variant="chip"
-									data-testid="ticket-tag"
-									aria-pressed={isolated}
-									tint={tag.color}
-									held={isolated}
-									dense
-									title={
-										isolated
-											? 'Show every ticket again'
-											: `Show only tickets tagged ${tag.name}`
-									}
-									// Stopped here, or the click would also select the card.
-									onClick={event => {
-										event.stopPropagation();
-										onFilterByTag(tag.id);
+								return (
+									<Button
+										key={tag.id}
+										variant="chip"
+										data-testid="ticket-tag"
+										aria-pressed={isolated}
+										tint={chip.tint}
+										held={isolated}
+										dense
+										title={
+											isolated
+												? 'Show every ticket again'
+												: `Show only tickets tagged ${tag.name}`
+										}
+										// Stopped here, or the click would also select the card.
+										onClick={event => {
+											event.stopPropagation();
+											onFilterByTag(tag.id);
+										}}
+										style={{
+											display: 'inline-flex',
+											alignItems: 'center',
+											gap: 5,
+											whiteSpace: 'nowrap',
+											minWidth: 0,
+											color: chip.text,
+										}}
+									>
+										<span
+											aria-hidden
+											style={{
+												width: 6,
+												height: 6,
+												flexShrink: 0,
+												background: `var(--o-${chip.accent})`,
+											}}
+										/>
+										{/* Bounded rather than left to run: a name long enough to
+										    take the row is cut, and the title above holds it whole. */}
+										<span
+											style={{
+												overflow: 'hidden',
+												textOverflow: 'ellipsis',
+											}}
+										>
+											{tag.name}
+										</span>
+									</Button>
+								);
+							})}
+
+							{ticket.tags.length > TAGS_SHOWN && (
+								<span
+									title={ticket.tags
+										.slice(TAGS_SHOWN)
+										.map(tag => tag.name)
+										.join(', ')}
+									aria-label={`${ticket.tags.length - TAGS_SHOWN} more tags`}
+									style={{
+										fontSize: TEXT.label,
+										color: GUI_THEME.dim2,
+										fontVariantNumeric: 'tabular-nums',
+										flexShrink: 0,
 									}}
-									style={{color: tagTextColor}}
 								>
-									{tag.name}
-								</Button>
-							);
-						})}
-					</div>
+									+{ticket.tags.length - TAGS_SHOWN}
+								</span>
+							)}
+						</div>
+					)}
 				</div>
 
 				{/* The controls, each centred on the title's first line whatever its

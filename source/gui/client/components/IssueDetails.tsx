@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {CONTENT_FONT, GUI_THEME, TEXT} from '../lib/gui-theme';
-import {tagColorToThemeHue} from '../lib/tag-colors';
+import {tagChipColor} from '../lib/tag-colors';
 import {
 	GuiContributor,
 	GuiUser,
@@ -760,8 +760,7 @@ export const IssueDetails = ({
 									<Empty>No tags</Empty>
 								) : (
 									issue.tags.map(tag => {
-										const hue = tagColorToThemeHue(tag.color);
-										const tagTextColor = hue ? `var(--o-${hue})` : tag.color;
+										const chip = tagChipColor(tag.name);
 										return (
 											<Button
 												key={tag.id}
@@ -769,8 +768,8 @@ export const IssueDetails = ({
 												disabled={issue.readonly}
 												onClick={() => onRemoveTag(issue.id, tag.id)}
 												title="Remove tag"
-												tint={tag.color}
-												style={{color: tagTextColor}}
+												tint={chip.tint}
+												style={{color: chip.text}}
 											>
 												{tag.name} {!issue.readonly && '×'}
 											</Button>
@@ -782,8 +781,7 @@ export const IssueDetails = ({
 							{addingTag && (
 								<ChipRow>
 									{availableTags.map(tag => {
-										const hue = tagColorToThemeHue(tag.color);
-										const tagTextColor = hue ? `var(--o-${hue})` : tag.color;
+										const chip = tagChipColor(tag.name);
 										return (
 											<Button
 												key={tag.id}
@@ -791,8 +789,8 @@ export const IssueDetails = ({
 												disabled={issue.readonly}
 												onClick={() => onAddTag(issue.id, tag.name)}
 												title="Add existing tag"
-												tint={tag.color}
-												style={{color: tagTextColor, opacity: 0.55}}
+												tint={chip.tint}
+												style={{color: chip.text, opacity: 0.55}}
 											>
 												+ {tag.name}
 											</Button>

@@ -2,7 +2,7 @@ import {useState} from 'react';
 import {GuiContributor, GuiIssue, GuiTag} from '../lib/gui-state.model';
 import {GUI_THEME} from '../lib/gui-theme';
 import {bulkCloseTargets, bulkReopenTargets} from '../lib/bulk-edit';
-import {tagColorToThemeHue} from '../lib/tag-colors';
+import {tagChipColor} from '../lib/tag-colors';
 import {Aside} from './Aside';
 import {AsideDock} from '../lib/aside-dock';
 import {Button} from './Button';
@@ -150,16 +150,15 @@ export const BulkDetails = ({
 						<Empty>No tags</Empty>
 					) : (
 						tags.map(({item, count}) => {
-							const hue = tagColorToThemeHue(item.color);
-							const tagTextColor = hue ? `var(--o-${hue})` : item.color;
+							const chip = tagChipColor(item.name);
 							return (
 								<Button
 									key={item.id}
 									variant="chip"
 									title="Remove from every selected ticket"
 									onClick={() => onRemoveTag(item.id)}
-									tint={item.color}
-									style={{color: tagTextColor}}
+									tint={chip.tint}
+									style={{color: chip.text}}
 								>
 									{item.name}
 									{partial(count)} ×
@@ -171,16 +170,15 @@ export const BulkDetails = ({
 
 				<ChipRow>
 					{availableTags.map(tag => {
-						const hue = tagColorToThemeHue(tag.color);
-						const tagTextColor = hue ? `var(--o-${hue})` : tag.color;
+						const chip = tagChipColor(tag.name);
 						return (
 							<Button
 								key={tag.id}
 								variant="chip"
 								title="Add to every selected ticket"
 								onClick={() => onAddTag(tag.name)}
-								tint={tag.color}
-								style={{color: tagTextColor, opacity: 0.6}}
+								tint={chip.tint}
+								style={{color: chip.text, opacity: 0.6}}
 							>
 								+ {tag.name}
 							</Button>

@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {CODE_FONT} from '../lib/code-text.style';
 import {CONTENT_FONT, GUI_THEME, TEXT} from '../lib/gui-theme';
-import {tagColorToThemeHue} from '../lib/tag-colors';
+import {tagChipColor} from '../lib/tag-colors';
 import {
 	HOVER_DELAY_MS,
 	Placement,
@@ -74,15 +74,11 @@ const Tags = ({preview}: {preview: TicketPreview}) => (
 			fontSize: TEXT.label,
 		}}
 	>
-		{preview.tags.map(tag => {
-			const hue = tagColorToThemeHue(tag.color);
-			const tagTextColor = hue ? `var(--o-${hue})` : tag.color;
-			return (
-				<span key={tag.id} style={{color: tagTextColor}}>
-					{tag.name}
-				</span>
-			);
-		})}
+		{preview.tags.map(tag => (
+			<span key={tag.id} style={{color: tagChipColor(tag.name).text}}>
+				{tag.name}
+			</span>
+		))}
 	</div>
 );
 
