@@ -58,6 +58,11 @@ test.describe('phone', () => {
 
 		await addTicket(page, 'Ship the launch');
 
+		// Adding opens the ticket as a sheet on a phone. Back on the board for
+		// the frame, or the preview is the sheet, not the board.
+		await page.getByRole('button', {name: '← Board'}).click();
+		await expect(page.getByRole('button', {name: '← Board'})).toHaveCount(0);
+
 		await page.screenshot({path: 'source/assets/phone-board.png'});
 	});
 
