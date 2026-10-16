@@ -8,6 +8,10 @@ test.skip(!process.env['SHOOT'], 'screenshots on demand only');
 const desktop = {
 	viewport: {width: 1600, height: 960},
 	deviceScaleFactor: 2,
+	// Settle the sheet's scrim and rise before the frame lands: the scrim fades
+	// over 150ms and the sheet over 410ms, and a mid-animation capture left the
+	// README previews with a half-opaque overlay over the board.
+	reducedMotion: 'reduce' as const,
 };
 
 test.use(desktop);
@@ -45,6 +49,7 @@ test.describe('phone', () => {
 		viewport: {width: 393, height: 659},
 		deviceScaleFactor: 3,
 		hasTouch: true,
+		reducedMotion: 'reduce' as const,
 	});
 
 	test('board tab', async ({page, appUrl}) => {
