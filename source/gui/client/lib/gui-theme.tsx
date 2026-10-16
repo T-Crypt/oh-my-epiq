@@ -18,6 +18,10 @@ export const TEXT = {
 	meta: 11,
 	ui: 12,
 	prose: 13,
+	// The two headings the board is read by: a lane's title above its column and
+	// a card's title inside it. One step, so the board has one size of heading
+	// and everything else is either a label or prose.
+	heading: 15,
 	title: 18,
 } as const;
 
@@ -56,6 +60,14 @@ function readVar(name: string, fallback: string): string {
 	return value || fallback;
 }
 
+/**
+ * The same read, for the places that need a variable's own value rather than a
+ * reference to it: a tag chip builds its wash by appending an alpha to the hex
+ * the theme holds, and a var() reference cannot be string-built that way.
+ */
+export const themeVar = (name: string, fallback: string): string =>
+	readVar(name, fallback);
+
 function currentMode(): 'dark' | 'light' {
 	if (typeof document === 'undefined') return 'dark';
 	return document.documentElement.dataset['mode'] === 'light'
@@ -89,15 +101,31 @@ export const GUI_THEME = Object.freeze({
 		return readVar('--o-bg-darker', '#252734');
 	},
 	// The ground a lane lifts off the board on: the foreground laid over the
-	// ground at four percent, the same mix the shell's --card spells.
+	// ground at ten percent, the same mix the shell's --o-tile spells.
 	get tile() {
 		return readVar('--o-tile', '#20242d');
 	},
+	// A resting card's own ground, laid over the lane's tile rather than over the
+	// board: the foreground at ten percent, transparent, so a card is a further
+	// step above the lane it stands in instead of the same grey as it.
+	get card() {
+		return `rgba(${hexToRgb(readVar('--o-fg', '#a9b1d6'))}, 0.1)`;
+	},
+	// The board's body text: one step above the chrome's foreground, so titles
+	// and prose read as the lit part of the screen. Matches the shell's --body.
+	get body() {
+		return readVar('--body', '#b4bee6');
+	},
+	// The quietest step that is still meant to be read: a card's ref, its tags,
+	// the dwell beside them. Matches the shell's --faint.
+	get faint() {
+		return readVar('--faint', '#7d84a5');
+	},
 	get line() {
-		return `rgba(${hexToRgb(readVar('--o-fg', '#a9b1d6'))}, 0.13)`;
+		return `rgba(${hexToRgb(readVar('--o-fg', '#a9b1d6'))}, 0.18)`;
 	},
 	get lineStrong() {
-		return readVar('--line-strong', 'rgba(169, 177, 214, 0.26)');
+		return readVar('--line-strong', 'rgba(169, 177, 214, 0.36)');
 	},
 	// The detail panel's own outer edge. `line` divides sections inside one
 	// surface; this one has to hold the panel apart from the board behind it.
@@ -139,10 +167,10 @@ export const GUI_THEME = Object.freeze({
 		return `rgba(${hexToRgb(readVar('--o-fg', '#a9b1d6'))}, 0.08)`;
 	},
 	get raised() {
-		return `rgba(${hexToRgb(readVar('--o-fg', '#a9b1d6'))}, 0.11)`;
+		return `rgba(${hexToRgb(readVar('--o-fg', '#a9b1d6'))}, 0.18)`;
 	},
 	get raisedHover() {
-		return `rgba(${hexToRgb(readVar('--o-fg', '#a9b1d6'))}, 0.16)`;
+		return `rgba(${hexToRgb(readVar('--o-fg', '#a9b1d6'))}, 0.24)`;
 	},
 	// Pocket's accent, Tokyo Night blue. Selection, links, the selected card and
 	// the follower all take it.
@@ -203,11 +231,16 @@ export const GUI_THEME = Object.freeze({
 	get danger() {
 		return readVar('--danger', '#f7768e');
 	},
-	// Theme-driven overlay: a scrim that adapts to light and dark palettes.
+	// Theme-driven overlay: the shell's own --scrim, so an inline backdrop and a
+	// stylesheet one are the same wash at the same strength in every theme.
 	get scrim() {
 		const bgDark = readVar('--o-bg-darker', '#0e0e14');
-		const opacity = currentMode() === 'light' ? 0.55 : 0.62;
-		return `color-mix(in srgb, ${bgDark} ${opacity * 100}%, transparent)`;
+		return readVar(
+			'--scrim',
+			`color-mix(in srgb, ${bgDark} ${
+				currentMode() === 'light' ? 70 : 78
+			}%, transparent)`,
+		);
 	},
 	// Theme-driven box-shadow colour (the alpha is per-component).
 	get shadow() {

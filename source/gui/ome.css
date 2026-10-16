@@ -50,18 +50,23 @@
 	--o-active: linear-gradient(#7aa2f7, #7aa2f7);
 	--o-inactive: rgba(89, 89, 89, 0.67);
 
-	/* Surfaces: the foreground laid over the ground at a few percent. */
+	/* Surfaces: the foreground laid over the ground at a few percent. The ground
+	   (--o-bg) deliberately does not move with the steps above it: the chrome is
+	   the room and the board is what is lit in it, so the lifted parts are what
+	   separate, and the room they are lifted off stays where it is. */
 	--desk: var(--o-bg-darker);
 	--bg: var(--o-bg);
-	--card: color-mix(in srgb, var(--o-fg) 4%, var(--o-bg));
-	--card-2: color-mix(in srgb, var(--o-fg) 8%, var(--o-bg));
-	--raised: color-mix(in srgb, var(--o-fg) 11%, var(--o-bg));
+	--card: color-mix(in srgb, var(--o-fg) 10%, var(--o-bg));
+	--card-2: color-mix(in srgb, var(--o-fg) 14%, var(--o-bg));
+	--raised: color-mix(in srgb, var(--o-fg) 18%, var(--o-bg));
 	--hover: color-mix(in srgb, var(--o-fg) 8%, transparent);
-	--line: color-mix(in srgb, var(--o-fg) 13%, var(--o-bg));
-	--line-strong: color-mix(in srgb, var(--o-fg) 26%, var(--o-bg));
-	--o-tile: color-mix(in srgb, var(--o-fg) 4%, var(--o-bg));
+	--line: color-mix(in srgb, var(--o-fg) 18%, var(--o-bg));
+	--line-strong: color-mix(in srgb, var(--o-fg) 36%, var(--o-bg));
+	--o-tile: color-mix(in srgb, var(--o-fg) 10%, var(--o-bg));
 	--text: var(--o-fg-bright);
-	--body: var(--o-fg);
+	/* Body text is a step above the chrome's own foreground, so prose on a
+	   surface reads as the lit part of the screen rather than as more chrome. */
+	--body: var(--o-fg-light);
 	--muted: color-mix(in oklab, var(--o-fg) 75%, var(--o-bg));
 	--faint: color-mix(in oklab, var(--o-fg) 55%, var(--o-bg));
 	/* Semantic aliases (static fallbacks; theme.ts emits the live values
@@ -87,7 +92,7 @@
 	--accent-ink: color-mix(in oklab, var(--o-bg) 60%, black);
 	--accent-soft: color-mix(in srgb, var(--o-accent) 13%, transparent);
 	--err: var(--o-red);
-	--scrim: color-mix(in srgb, var(--o-bg-darker) 62%, transparent);
+	--scrim: color-mix(in srgb, var(--o-bg-darker) 78%, transparent);
 	--mark: linear-gradient(
 		100deg,
 		var(--o-cyan) 0%,
@@ -109,6 +114,16 @@
 	--mono: 'JetBrains Mono', 'JetBrainsMono Nerd Font', ui-monospace, 'SF Mono',
 		Menlo, Consolas, monospace;
 
+	/* Board density. A card is drawn with inline styles from gui-theme.tsx, and an
+	   inline style outranks any rule a stylesheet could write against it — so what
+	   compact changes has to be a token those styles read, set on the board's own
+	   root (data-density), rather than a second set of card rules. */
+	--card-pad: 12px 18px 12px 0;
+	--card-gap: 12px;
+	--card-min-h: 58px;
+	--card-title-size: 15px;
+	--lane-gap: 8px;
+
 	/* What a phone keeps clear: the notch, the home indicator, and in
 	   landscape the camera cutout on either side. */
 	--safe-top: env(safe-area-inset-top, 0px);
@@ -120,6 +135,16 @@
 	--pad-bottom: var(--safe-bottom);
 	--tabbar: 56px;
 	color-scheme: dark;
+}
+
+/* Compact mode: the same board with less air between and inside the cards, for
+   reading a long lane at once. Every value is one of the density tokens above. */
+[data-density="compact"] {
+	--card-pad: 6px 18px 6px 0;
+	--card-gap: 4px;
+	--card-min-h: 40px;
+	--card-title-size: 13px;
+	--lane-gap: 6px;
 }
 
 /* Light themes: quieter text and the status colors darken toward the foreground,
@@ -627,6 +652,54 @@ body.plain-page {
 	color: var(--muted);
 }
 
+/* ─── Shortcuts ──────────────────────────────────────────────── */
+
+/* One shortcut: what it does on the left, the caps to press on the right. The
+   rule between rows is the shell's own --line, so the list reads as part of the
+   sheet rather than as a table dropped into it. */
+.shortcut-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	min-height: 30px;
+	padding: 5px 0;
+	border-top: 1px solid var(--line);
+}
+
+.shortcut-row:first-child {
+	border-top: 0;
+}
+
+.shortcut-label {
+	font-size: 0.8rem;
+	color: var(--body);
+}
+
+.shortcut-keys {
+	display: inline-flex;
+	gap: 3px;
+	flex: none;
+}
+
+/* A key cap, at the sheet's own size. Scoped to the row rather than to `kbd`
+   itself: the topbar's hint draws its own caps inline and must not move. */
+.shortcut-row kbd {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 20px;
+	height: 20px;
+	padding: 0 5px;
+	box-sizing: border-box;
+	border: 1px solid var(--line-strong);
+	background: var(--card-2);
+	color: var(--text);
+	font: inherit;
+	font-size: 0.7rem;
+	line-height: 1;
+}
+
 .qr {
 	align-self: center;
 	width: min(260px, 70vw);
@@ -754,7 +827,11 @@ body.plain-page {
 	border: 0;
 	color: var(--muted);
 	font: inherit;
-	font-size: 0.82rem;
+	/* The lane title's own step, shared with the column header: 15px, bold, and
+	   a hair of tracking so a run of them along the top reads as titles. */
+	font-size: 15px;
+	font-weight: 700;
+	letter-spacing: 0.02em;
 	white-space: nowrap;
 	cursor: pointer;
 }
@@ -765,7 +842,11 @@ body.plain-page {
 
 .lane-tab .count {
 	margin-left: 0.4rem;
+	font-size: 11px;
+	font-weight: 400;
+	letter-spacing: 0;
 	color: var(--faint);
+	font-variant-numeric: tabular-nums;
 }
 
 .lane-tab.on {
