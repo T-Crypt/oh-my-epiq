@@ -59,8 +59,50 @@ and `bulk-actions.pw.ts:20` (bulk action applied beyond the selection) —
 recorded as baseline defects, not fixed.
 
 Not verified yet: vitest e2e (needs container or local browser env),
-competitor source teardowns (Phase 1), storage claims (Phase 3 spikes).
+storage claims (Phase 3 spikes).
 
-Next concrete actions: record Playwright result and commit Phase 0; open
-`port/upstream-1.17.1`; clone Priority-A set to `~/ome-research/sources/`;
-operator gates on name lock and xd:// device location.
+### Phase 1 (same session, 14:53 onward)
+
+- `port/upstream-1.17.1` branch built: upstream `d66d1db7` (v1.17.1) +
+  the OME rename map (`research/port/apply-rename.sh`, 373 files,
+  15 paths renamed, attribution URLs + LICENSE protected). Committed
+  as `f48db959`. tsc clean; unit suite **2592/2592** (one test fix:
+  a sort-order assertion that only sorted correctly under the name
+  epiq). Note: the port initially absorbed local untracked state
+  (`.router/`, `docs/VISION.md`, worktree gitlinks); amended out of
+  the commit, fork's ignore lines applied.
+- 246-commit upstream analysis (`research/port/PORT_NOTES.md`):
+  seven axes — Goals entity, repos-as-board-events (project.json no
+  longer edited), `Epiq-Ref` trailer + git-search commit lookup,
+  filter axes (tag/contributor/goal), CI stress at **400k events / 2 s
+  read SLO**, compact MCP replies + descriptions riding with
+  assume/get, sync hardening (tombstones, unpushed-branch publish).
+  Fork gap list: 8 items.
+- Competitor clones in `~/ome-research/sources/` (depth 50):
+  beads, vibe-kanban, git-bug.
+- Teardowns (`research/teardowns/`):
+  - **BEADS** — Dolt/SQLite storage (PG/MySQL adapters built then
+    deleted for simplicity); CAS claim semantics, no TTL; 18-tool
+    MCP with progressive disclosure; memory plane with
+    convergent-on-pull merge class; 30 ms ready-work at 10K.
+  - **VIBE_KANBAN** — server-centric; flat SQLite + 40+ migrations;
+    workspace = worktree + branch + terminal + dev server; 10+ agent
+    executors (ACP first-class); inline diff comments become the
+    agent's next prompt via stdin; attempt/turn/seen bookkeeping.
+  - **GIT_BUG** — closest architecturally: event-sourced entities on
+    git, content-addressed sha256 ids, persisted Lamport clocks,
+    DQL query language (lexer + parser), prefix id resolution
+    "long enough to be unique".
+- `research/PHASE1_SYNTHESIS.md`: 6 decisions confirmed, 3 changed or
+  sharpened (DQL-shaped qualifier filters; attempt/turn/seen
+  bookkeeping on record types; ops as addressable entities), 7
+  patterns explicitly rejected with named reasons, work items fed
+  into P2/P3/P5.
+
+Not verified yet: competitor teardowns are from depth-50 clones
+(full-history claims, e.g. beads proposal dates, unverified);
+upstream GUI behaviour (Goals UI, filters) not exercised in a
+browser, only read from the diffed tree and commit subjects.
+
+Next concrete actions: operator gates on name lock and xd:// device
+location; P2 architecture draft against the 400k/2s bar.
