@@ -451,7 +451,7 @@ test('a bare board link lets go of a stored goal that is gone', async ({
 	await page.evaluate(
 		goalId =>
 			localStorage.setItem(
-				'epiq.board.selection',
+				'ome.board.selection',
 				JSON.stringify({scope: 'all', layout: 'even', only: {goal: [goalId]}}),
 			),
 		id!,

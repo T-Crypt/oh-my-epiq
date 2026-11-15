@@ -56,7 +56,7 @@ test('the scrubber filter list stays above a diff header in the panel', async ({
 			'\n',
 	);
 	// Wide enough to reach under the series popover, so the two actually meet.
-	await page.evaluate(`localStorage.setItem('epiq.aside.width', '700')`);
+	await page.evaluate(`localStorage.setItem('ome.aside.width', '700')`);
 	await page.reload();
 	await expect(page.locator('aside')).toContainText(`Stacking ${stamp}`);
 	await expandDiff(page, 'add notes', linkedFileName(ref!));

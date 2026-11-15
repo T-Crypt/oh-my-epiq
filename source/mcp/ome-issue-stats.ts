@@ -5,7 +5,7 @@ import {failed, isFail, Result, succeeded} from '../lib/model/result-types.js';
 import {deriveIssueStats} from '../lib/stats/issue-stats.js';
 import {IssueStats, StatsCommit} from '../lib/stats/issue-stats.model.js';
 import {nodeRef, NODE_REF_LENGTH} from '../lib/utils/node-ref.js';
-import {resolveClosestEpiqProjectRoot} from '../lib/storage/paths.js';
+import {resolveClosestOMEProjectRoot} from '../lib/storage/paths.js';
 import {withCommitAuthors} from './api/commit-authors.js';
 import {
 	CommitEntry,
@@ -60,7 +60,7 @@ const asStatsCommits = <T extends CommitEntry>(
 };
 
 const projectRoot = (repoRoot?: string): Result<string> => {
-	const result = resolveClosestEpiqProjectRoot(repoRoot ?? process.cwd());
+	const result = resolveClosestOMEProjectRoot(repoRoot ?? process.cwd());
 	return isFail(result) ? failed(result.message) : result;
 };
 
@@ -92,7 +92,7 @@ export const getIssueStats = async (
 	const raw = input.idOrRef.trim();
 	if (!raw) return failed('idOrRef must not be empty');
 
-	// A full id is accepted too, like epiq_issue_get: callers hold ids.
+	// A full id is accepted too, like ome_issue_get: callers hold ids.
 	const ref = raw.length > NODE_REF_LENGTH ? nodeRef(raw) : raw.toUpperCase();
 
 	const repoRoot = projectRoot(input.repoRoot);

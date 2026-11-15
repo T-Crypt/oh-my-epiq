@@ -28,7 +28,7 @@ test('opening a commit from the log folds the others and brings it into view', a
 			`${word} of ${ref}`,
 			lines(150, word),
 			new Date(now - ago),
-			[`Epiq-Ref: ${ref}`],
+			[`OME-Ref: ${ref}`],
 		);
 	}
 
@@ -102,7 +102,7 @@ test('a ticket opened at one commit can still switch to the whole diff', async (
 		`flatten of ${ref}`,
 		lines(3, 'flat'),
 		new Date(),
-		[`Epiq-Ref: ${ref}`],
+		[`OME-Ref: ${ref}`],
 	);
 
 	await page.reload();

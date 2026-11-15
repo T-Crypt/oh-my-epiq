@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 // Written by serve.ts, read by the fixture. Keyed by checkout so concurrent runs
-// don't delete each other's; `EPIQ_GUI_E2E_HANDOFF` overrides it.
+// don't delete each other's; `OME_GUI_E2E_HANDOFF` overrides it.
 const handoffFileName = (): string => {
 	const key = crypto
 		.createHash('sha256')
@@ -11,11 +11,11 @@ const handoffFileName = (): string => {
 		.digest('hex')
 		.slice(0, 12);
 
-	return `epiq-gui-e2e-handoff-${key}.json`;
+	return `ome-gui-e2e-handoff-${key}.json`;
 };
 
 export const HANDOFF_PATH =
-	process.env['EPIQ_GUI_E2E_HANDOFF'] ??
+	process.env['OME_GUI_E2E_HANDOFF'] ??
 	path.join(os.tmpdir(), handoffFileName());
 
 // Each Playwright worker gets its own server, and so its own handoff file.
@@ -25,7 +25,7 @@ export const handoffPathFor = (workerIndex: number): string =>
 export type Handoff = {
 	baseUrl: string;
 	repoRoot: string;
-	// A second server over a directory with no epiq project, so the "nothing to
+	// A second server over a directory with no ome project, so the "nothing to
 	// load here" screen can be opened without tearing down the seeded one.
 	bareUrl: string;
 	bareRepoRoot: string;

@@ -56,7 +56,7 @@ const commitLogEntry = (
 	// The same label the scrubber gives this commit.
 	actor: {name: commitAuthorLabel(commit)},
 	diff: {insertions: commit.insertions, deletions: commit.deletions},
-	// Resolved from subject prefix or Epiq-Ref when the line is clicked.
+	// Resolved from subject prefix or OME-Ref when the line is clicked.
 	issue: null,
 	target: null,
 	action: null,
@@ -295,28 +295,28 @@ export const CRAWL_TIMING: KeyframeAnimationOptions = {
 // A row draws its clock and dot as pseudo-elements, to keep nodes per line
 // low; columns are in `ch`. The pane's classes (see lib/log-fields) hide them.
 export const LOG_TIME_CHARS = 5;
-export const LOG_DOT_COLOR_PROPERTY = '--epiq-log-dot';
-export const LOG_ACTOR_CLASS = 'epiq-log-actor';
+export const LOG_DOT_COLOR_PROPERTY = '--ome-log-dot';
+export const LOG_ACTOR_CLASS = 'ome-log-actor';
 // The provider's mark in front of an agent's name — see lib/agent-identity.
-export const LOG_DIFF_CLASS = 'epiq-log-diff';
-export const LOG_REF_CLASS = 'epiq-log-ref';
+export const LOG_DIFF_CLASS = 'ome-log-diff';
+export const LOG_REF_CLASS = 'ome-log-ref';
 // The name column is as wide as the widest name in its day, capped. A diff
 // stat is not a column: it only pushes its own row's label.
-export const LOG_ACTOR_WIDTH_PROPERTY = '--epiq-log-actor-width';
+export const LOG_ACTOR_WIDTH_PROPERTY = '--ome-log-actor-width';
 
 // Split, the pane is a lane per actor (see lib/log-lanes): each row carries
 // its lane number, and the rules turn it into an indent and width.
-export const LOG_SPLIT_CLASS = 'epiq-log--split';
-export const LOG_LANES_CLASS = 'epiq-log-lanes';
-export const LOG_LANE_HEAD_CLASS = 'epiq-log-lane-head';
-export const LOG_LANE_COUNT_PROPERTY = '--epiq-log-lanes';
-export const LOG_LANE_PROPERTY = '--epiq-log-lane';
-export const LOG_LANE_WIDTH_PROPERTY = '--epiq-log-lane-width';
+export const LOG_SPLIT_CLASS = 'ome-log--split';
+export const LOG_LANES_CLASS = 'ome-log-lanes';
+export const LOG_LANE_HEAD_CLASS = 'ome-log-lane-head';
+export const LOG_LANE_COUNT_PROPERTY = '--ome-log-lanes';
+export const LOG_LANE_PROPERTY = '--ome-log-lane';
+export const LOG_LANE_WIDTH_PROPERTY = '--ome-log-lane-width';
 // The lane a line nobody signed is given: it spans them all.
-export const LOG_LANE_ALL_CLASS = 'epiq-log-line--every-lane';
+export const LOG_LANE_ALL_CLASS = 'ome-log-line--every-lane';
 export const MAX_ACTOR_CHARS = 18;
-const TIME_BLOCK_PROPERTY = '--epiq-log-time-block';
-const LEAD_PROPERTY = '--epiq-log-lead';
+const TIME_BLOCK_PROPERTY = '--ome-log-time-block';
+const LEAD_PROPERTY = '--ome-log-lead';
 const LOG_LEAD_PX = 14;
 
 // Shared with the arrow, which hangs at the end of a line.
@@ -325,11 +325,11 @@ export const LOG_PANE_PADDING_X = 12;
 // The rows that lead somewhere; the selector comes from `log-destination`.
 const linkedRow = (suffix = ''): string =>
 	LOG_ROW_SELECTOR.split(',')
-		.map(attribute => `.epiq-log-line${attribute}${suffix}`)
+		.map(attribute => `.ome-log-line${attribute}${suffix}`)
 		.join(',');
 
 // One decorative arrow for the panel, moved onto the hovered row.
-export const LOG_ARROW_CLASS = 'epiq-log-arrow';
+export const LOG_ARROW_CLASS = 'ome-log-arrow';
 
 // The accent, thinned to a ground.
 const LOG_FOLLOWED_WASH = GUI_THEME.accentWash;
@@ -337,11 +337,11 @@ const LOG_FOLLOWED_WASH = GUI_THEME.accentWash;
 // Mounted with the panel, so it carries its own look rather than depending on
 // a player being up to define it.
 export const EVENT_LOG_STYLES = `
-.epiq-log-pane {
+.ome-log-pane {
 	${TIME_BLOCK_PROPERTY}: ${LOG_TIME_CHARS}ch;
 	${LEAD_PROPERTY}: ${LOG_LEAD_PX}px;
 }
-.epiq-log-line {
+.ome-log-line {
 	position: relative;
 	height: ${LOG_ROW_HEIGHT}px;
 	line-height: ${LOG_ROW_HEIGHT}px;
@@ -354,9 +354,9 @@ export const EVENT_LOG_STYLES = `
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	animation: epiqLogLine 260ms ease-out;
+	animation: omeLogLine 260ms ease-out;
 }
-.epiq-log-line::before {
+.ome-log-line::before {
 	content: attr(data-time);
 	position: absolute;
 	left: 0;
@@ -365,7 +365,7 @@ export const EVENT_LOG_STYLES = `
 	color: ${GUI_THEME.faint};
 	font-variant-numeric: tabular-nums;
 }
-.epiq-log-line::after {
+.ome-log-line::after {
 	content: '';
 	position: absolute;
 	left: calc(var(${TIME_BLOCK_PROPERTY}) + 4px);
@@ -395,22 +395,22 @@ export const EVENT_LOG_STYLES = `
 	margin-right: ${LOG_COLUMN_GAP_PX}px;
 	vertical-align: top;
 }
-.epiq-log--no-time {
+.ome-log--no-time {
 	${TIME_BLOCK_PROPERTY}: 0px;
 }
-.epiq-log--no-actor {
+.ome-log--no-actor {
 	${LOG_ACTOR_WIDTH_PROPERTY}: 0px;
 }
-.epiq-log--no-time .epiq-log-line::before,
-.epiq-log--no-kind .epiq-log-line::after,
-.epiq-log--no-actor .${LOG_ACTOR_CLASS},
-.epiq-log--no-diff .${LOG_DIFF_CLASS} {
+.ome-log--no-time .ome-log-line::before,
+.ome-log--no-kind .ome-log-line::after,
+.ome-log--no-actor .${LOG_ACTOR_CLASS},
+.ome-log--no-diff .${LOG_DIFF_CLASS} {
 	display: none;
 }
-.epiq-log--no-kind {
+.ome-log--no-kind {
 	${LEAD_PROPERTY}: 1ch;
 }
-.epiq-log--no-time.epiq-log--no-kind {
+.ome-log--no-time.ome-log--no-kind {
 	${LEAD_PROPERTY}: 0px;
 }
 /* The line the board is standing on while following: the one whose arrival
@@ -423,7 +423,7 @@ export const EVENT_LOG_STYLES = `
    The accent at a tenth, in the same translucent idiom as the hover ground it
    has to sit under without fighting: hover says where the pointer is, this says
    where the board is, and a row can be both. */
-.epiq-log-line--followed {
+.ome-log-line--followed {
 	color: ${GUI_THEME.primary};
 	background: ${LOG_FOLLOWED_WASH};
 }
@@ -434,7 +434,7 @@ ${linkedRow()} {
 /* Every row takes the ground under the pointer, not only the ones that lead
    somewhere: the highlight says which line the reader is on, which is a
    question every line answers. */
-.epiq-log-line:hover {
+.ome-log-line:hover {
 	color: ${GUI_THEME.primary};
 	background: ${GUI_THEME.hover};
 }
@@ -442,7 +442,7 @@ ${linkedRow()} {
    standing here. Spelled out because the hover rule above outranks the wash on
    specificity and would otherwise replace it outright — the reader would lose
    the mark by pointing at the row it is on. */
-.epiq-log-line--followed:hover {
+.ome-log-line--followed:hover {
 	color: ${GUI_THEME.primary};
 	background: linear-gradient(${GUI_THEME.hover}, ${GUI_THEME.hover}),
 		${LOG_FOLLOWED_WASH};
@@ -472,12 +472,12 @@ ${linkedRow()} {
 	pointer-events: none;
 	transition: opacity 120ms ease;
 }
-@keyframes epiqLogLine {
+@keyframes omeLogLine {
 	from { opacity: 0; }
 	to { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-	.epiq-log-line { animation: none; }
+	.ome-log-line { animation: none; }
 	.${LOG_ARROW_CLASS} { transition: none; }
 }
 .${LOG_SPLIT_CLASS} {
@@ -490,7 +490,7 @@ ${linkedRow()} {
 /* The indent is the lanes to its left, the width is those plus its own: a
    long label is cut off at its lane's edge rather than running across the
    next actor's column. */
-.${LOG_SPLIT_CLASS} .epiq-log-line {
+.${LOG_SPLIT_CLASS} .ome-log-line {
 	box-sizing: border-box;
 	padding-left: calc(
 		var(${TIME_BLOCK_PROPERTY}) + var(${LEAD_PROPERTY}) +

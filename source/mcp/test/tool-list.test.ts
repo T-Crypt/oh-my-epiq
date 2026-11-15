@@ -3,12 +3,12 @@ import {Client} from '@modelcontextprotocol/sdk/client/index.js';
 import {InMemoryTransport} from '@modelcontextprotocol/sdk/inMemory.js';
 import {succeeded} from '../../lib/model/result-types.js';
 
-vi.mock('../epiq-api.js', async importOriginal => ({
-	...(await importOriginal<typeof import('../epiq-api.js')>()),
+vi.mock('../ome-api.js', async importOriginal => ({
+	...(await importOriginal<typeof import('../ome-api.js')>()),
 	listIssues: vi.fn(async () => succeeded('Listed issues', [])),
 }));
 
-const {listIssues} = await import('../epiq-api.js');
+const {listIssues} = await import('../ome-api.js');
 const {createMcpServer} = await import('../server.js');
 
 describe('MCP tool list', () => {
@@ -37,7 +37,7 @@ describe('MCP tool list', () => {
 		expect(tools.length).toBeGreaterThan(40);
 		expect(tools.filter(tool => '$schema' in tool.inputSchema)).toEqual([]);
 		expect(
-			tools.find(tool => tool.name === 'epiq_issue_create')?.inputSchema,
+			tools.find(tool => tool.name === 'ome_issue_create')?.inputSchema,
 		).toMatchObject({
 			type: 'object',
 			required: ['title', 'parentId'],
@@ -46,9 +46,9 @@ describe('MCP tool list', () => {
 	});
 
 	it('lists issues brief unless asked for the full ticket', async () => {
-		await client.callTool({name: 'epiq_issue_list', arguments: {}});
+		await client.callTool({name: 'ome_issue_list', arguments: {}});
 		await client.callTool({
-			name: 'epiq_issue_list',
+			name: 'ome_issue_list',
 			arguments: {brief: false},
 		});
 

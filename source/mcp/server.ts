@@ -53,7 +53,7 @@ import {
 	editSwimlaneDescription,
 	editGoalDescription,
 	setSwimlaneRule,
-	getEpiqState,
+	getOMEState,
 	getIssue,
 	listBoards,
 	listIssues,
@@ -68,17 +68,17 @@ import {
 	listRepos,
 	disconnectRepo,
 	syncThenFetchRepos,
-} from './epiq-api.js';
+} from './ome-api.js';
 import {
 	linkContributorEmail,
 	listContributorEmails,
 	suggestOwnEmails,
 	unlinkContributorEmail,
 } from './api/emails.js';
-import {initProjectTool} from './epiq-init.js';
-import {getIssueStats} from './epiq-issue-stats.js';
-import {installSkill} from './epiq-skill.js';
-import {runExclusive} from './epiq-time-travel.js';
+import {initProjectTool} from './ome-init.js';
+import {getIssueStats} from './ome-issue-stats.js';
+import {installSkill} from './ome-skill.js';
+import {runExclusive} from './ome-time-travel.js';
 
 // Compact, and `isError` stands in for the status field.
 export const resultJson = <T>(result: Result<T>) => ({
@@ -107,7 +107,7 @@ const withFullIds = async <I extends ToolInput>(
 
 // Tools run one at a time: each is a boot-read-persist over the shared state
 // across awaits, and the SDK doesn't serialize. `runExclusive` isn't re-entrant,
-// so nothing under epiq-api may take it.
+// so nothing under ome-api may take it.
 const exclusiveTool =
 	<I extends ToolInput, R>(fn: (input: I) => Promise<Result<R>>) =>
 	(input: I) =>
@@ -150,7 +150,7 @@ const trimToolList = (server: McpServer) => {
 export const createMcpServer = () => {
 	const server = new McpServer(
 		{
-			name: 'epiq',
+			name: 'ome',
 			version: '0.2.30',
 		},
 		{instructions: MCP_INSTRUCTIONS},
@@ -158,22 +158,22 @@ export const createMcpServer = () => {
 	trimToolList(server);
 
 	server.registerTool(
-		'epiq_state_get',
+		'ome_state_get',
 		{
 			description:
-				'Get the full current Epiq state, including nodes and event log',
+				'Get the full current OME state, including nodes and event log',
 			inputSchema: z.object({
 				repoRoot: z.string().optional(),
 			}),
 		},
-		exclusiveTool(getEpiqState),
+		exclusiveTool(getOMEState),
 	);
 
 	server.registerTool(
-		'epiq_issue_list',
+		'ome_issue_list',
 		{
 			description:
-				'List Epiq issues: id, title, swimlane title and id, goal, tag and assignee names. Narrow with boardId, swimlaneId, tag, assignee or query (matched against title and description). brief: false adds descriptions and the rest; read one ticket with epiq_issue_get instead.',
+				'List OME issues: id, title, swimlane title and id, goal, tag and assignee names. Narrow with boardId, swimlaneId, tag, assignee or query (matched against title and description). brief: false adds descriptions and the rest; read one ticket with ome_issue_get instead.',
 			inputSchema: z.object({
 				repoRoot: z.string().optional(),
 				includeClosed: z.boolean().optional(),
@@ -190,10 +190,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_issue_get',
+		'ome_issue_get',
 		{
 			description:
-				'Get one Epiq issue by ref or id, with its comments in log order: the latest three whole, earlier ones by their first three lines (olderComments says so); allComments returns every one whole. When you know which issue you want, prefer it to listing the board or epiq_state_get.',
+				'Get one OME issue by ref or id, with its comments in log order: the latest three whole, earlier ones by their first three lines (olderComments says so); allComments returns every one whole. When you know which issue you want, prefer it to listing the board or ome_state_get.',
 			inputSchema: z.object({
 				idOrRef: z.string().min(1),
 				allComments: z.boolean().optional(),
@@ -204,7 +204,7 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_issue_stats',
+		'ome_issue_stats',
 		{
 			description:
 				'Code stats for one issue, from the commits whose subject carries its ref: how big the change is, how it is spread, and how much rewrote its own work. Reads git only, so it is safe while other work is in flight. No such commits reads as zero size, which is not the same as no work: a commit only links if its subject opens with the ref.',
@@ -218,9 +218,9 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_board_list',
+		'ome_board_list',
 		{
-			description: 'List Epiq boards',
+			description: 'List OME boards',
 			inputSchema: z.object({
 				repoRoot: z.string().optional(),
 			}),
@@ -229,10 +229,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_board_create',
+		'ome_board_create',
 		{
 			description:
-				'Create an Epiq board. It comes out without swimlanes; add them with epiq_swimlane_create. Refused while time travelling.',
+				'Create an OME board. It comes out without swimlanes; add them with ome_swimlane_create. Refused while time travelling.',
 			inputSchema: z.object({
 				repoRoot: z.string().optional(),
 				title: z.string().min(1).max(MAX_TITLE_LENGTH),
@@ -242,9 +242,9 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_swimlane_list',
+		'ome_swimlane_list',
 		{
-			description: 'List Epiq swimlanes',
+			description: 'List OME swimlanes',
 			inputSchema: z.object({
 				repoRoot: z.string().optional(),
 				boardId: z.string().optional(),
@@ -254,9 +254,9 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_swimlane_create',
+		'ome_swimlane_create',
 		{
-			description: 'Create an Epiq swimlane on a board',
+			description: 'Create an OME swimlane on a board',
 			inputSchema: z.object({
 				repoRoot: z.string().optional(),
 				boardId: z.string().min(1),
@@ -267,9 +267,9 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_swimlane_title_edit',
+		'ome_swimlane_title_edit',
 		{
-			description: 'Edit an Epiq swimlane title',
+			description: 'Edit an OME swimlane title',
 			inputSchema: z.object({
 				repoRoot: z.string().optional(),
 				swimlaneId: z.string().min(1),
@@ -280,9 +280,9 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_board_title_edit',
+		'ome_board_title_edit',
 		{
-			description: 'Edit an Epiq board title. Refused while time travelling.',
+			description: 'Edit an OME board title. Refused while time travelling.',
 			inputSchema: z.object({
 				repoRoot: z.string().optional(),
 				boardId: z.string().min(1),
@@ -293,7 +293,7 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_swimlane_description_edit',
+		'ome_swimlane_description_edit',
 		{
 			description:
 				"Edit a swimlane's markdown description: the conventions for work in that lane. Empty clears it.",
@@ -307,7 +307,7 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_swimlane_rule_set',
+		'ome_swimlane_rule_set',
 		{
 			description:
 				'Turn a swimlane rule on or off. The one rule is `done`: an open ticket in a lane with it counts as done for its goal. A lane named Done always counts.',
@@ -322,7 +322,7 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_board_description_edit',
+		'ome_board_description_edit',
 		{
 			description:
 				"Edit a board's markdown description: the conventions for work on that board. Empty clears it. Refused while time travelling.",
@@ -336,9 +336,9 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_swimlane_move',
+		'ome_swimlane_move',
 		{
-			description: 'Move/reorder an Epiq swimlane, optionally to another board',
+			description: 'Move/reorder an OME swimlane, optionally to another board',
 			inputSchema: z.object({
 				repoRoot: z.string().optional(),
 				swimlaneId: z.string().min(1),
@@ -363,10 +363,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_swimlane_delete',
+		'ome_swimlane_delete',
 		{
 			description:
-				'Delete (archive) an Epiq swimlane. This also archives every issue contained in it.',
+				'Delete (archive) an OME swimlane. This also archives every issue contained in it.',
 			inputSchema: z.object({
 				repoRoot: z.string().optional(),
 				swimlaneId: z.string().min(1),
@@ -376,10 +376,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_issue_create',
+		'ome_issue_create',
 		{
 			description:
-				'Create an Epiq issue in a swimlane: parentId is the swimlane id (epiq_swimlane_list), never a board id. Optionally set description, tags, and assignees atomically in the same call instead of separate follow-up edits.',
+				'Create an OME issue in a swimlane: parentId is the swimlane id (ome_swimlane_list), never a board id. Optionally set description, tags, and assignees atomically in the same call instead of separate follow-up edits.',
 			inputSchema: z.object({
 				title: z.string().min(1).max(MAX_TITLE_LENGTH),
 				parentId: z.string().min(1),
@@ -399,9 +399,9 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_issue_description_edit',
+		'ome_issue_description_edit',
 		{
-			description: 'Edit the markdown description of an Epiq issue',
+			description: 'Edit the markdown description of an OME issue',
 			inputSchema: z.object({
 				issueId: z.string().min(1),
 				description: z.string().max(MAX_DESCRIPTION_LENGTH),
@@ -412,9 +412,9 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_issue_title_edit',
+		'ome_issue_title_edit',
 		{
-			description: 'Edit the title of an Epiq issue',
+			description: 'Edit the title of an OME issue',
 			inputSchema: z.object({
 				issueId: z.string().min(1),
 				title: z.string().min(1).max(MAX_TITLE_LENGTH),
@@ -425,10 +425,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_issue_tag_add',
+		'ome_issue_tag_add',
 		{
 			description:
-				'Add a tag to an Epiq issue, or to many at once with issueIds, creating the tag if it does not exist',
+				'Add a tag to an OME issue, or to many at once with issueIds, creating the tag if it does not exist',
 			inputSchema: z.object({
 				issueId: z.string().min(1).optional(),
 				issueIds: z.array(z.string().min(1)).min(1).max(200).optional(),
@@ -440,10 +440,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_issue_goal_set',
+		'ome_issue_goal_set',
 		{
 			description:
-				"Put an Epiq issue in a goal (a group of tickets serving one outcome, on any board), by the goal's name or id, creating the goal if there is none of that name; null takes it out. One goal per ticket. epiq_goal_list lists every goal with its progress.",
+				"Put an OME issue in a goal (a group of tickets serving one outcome, on any board), by the goal's name or id, creating the goal if there is none of that name; null takes it out. One goal per ticket. ome_goal_list lists every goal with its progress.",
 			inputSchema: z.object({
 				issueId: z.string().min(1),
 				goal: z.string().min(1).nullable(),
@@ -454,10 +454,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_goal_list',
+		'ome_goal_list',
 		{
 			description:
-				'List the goals in the project: each a group of tickets serving one outcome, with done/total (done is closed, or in a done lane: see epiq_swimlane_rule_set), closed once all its tickets are, and the boards its tickets are on. Open goals first. Put a ticket in one with epiq_issue_goal_set; epiq_goal_stats gives its code stats.',
+				'List the goals in the project: each a group of tickets serving one outcome, with done/total (done is closed, or in a done lane: see ome_swimlane_rule_set), closed once all its tickets are, and the boards its tickets are on. Open goals first. Put a ticket in one with ome_issue_goal_set; ome_goal_stats gives its code stats.',
 			inputSchema: z.object({
 				repoRoot: z.string().optional(),
 			}),
@@ -466,10 +466,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_goal_stats',
+		'ome_goal_stats',
 		{
 			description:
-				'Code stats for a goal, by its name or id: epiq_issue_stats over every commit of every ticket in it, each commit counted once. Its `ref` field holds the goal id, not a ticket ref.',
+				'Code stats for a goal, by its name or id: ome_issue_stats over every commit of every ticket in it, each commit counted once. Its `ref` field holds the goal id, not a ticket ref.',
 			inputSchema: z.object({
 				goal: z.string().min(1),
 				repoRoot: z.string().optional(),
@@ -479,10 +479,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_goal_create',
+		'ome_goal_create',
 		{
 			description:
-				'Create a goal with no tickets yet. To create one and put a ticket in it at once, use epiq_issue_goal_set with the new name.',
+				'Create a goal with no tickets yet. To create one and put a ticket in it at once, use ome_issue_goal_set with the new name.',
 			inputSchema: z.object({
 				name: z.string().min(1),
 				repoRoot: z.string().optional(),
@@ -492,10 +492,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_goal_rename',
+		'ome_goal_rename',
 		{
 			description:
-				'Rename a goal; its colour and tickets stay. Ids are in epiq_goal_list.',
+				'Rename a goal; its colour and tickets stay. Ids are in ome_goal_list.',
 			inputSchema: z.object({
 				goalId: z.string().min(1),
 				name: z.string().min(1),
@@ -506,10 +506,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_goal_description_edit',
+		'ome_goal_description_edit',
 		{
 			description:
-				"Edit a goal's markdown description: what it is for and when it is done. Empty clears it. epiq_goal_list returns it.",
+				"Edit a goal's markdown description: what it is for and when it is done. Empty clears it. ome_goal_list returns it.",
 			inputSchema: z.object({
 				goal: z.string().min(1),
 				description: z.string().max(descriptionLimitOf('goal')),
@@ -520,10 +520,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_goal_remove',
+		'ome_goal_remove',
 		{
 			description:
-				'Remove a goal; its tickets stay where they are, in no goal. Ids are in epiq_goal_list.',
+				'Remove a goal; its tickets stay where they are, in no goal. Ids are in ome_goal_list.',
 			inputSchema: z.object({
 				goalId: z.string().min(1),
 				repoRoot: z.string().optional(),
@@ -533,9 +533,9 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_issue_tag_remove',
+		'ome_issue_tag_remove',
 		{
-			description: 'Remove a tag from an Epiq issue',
+			description: 'Remove a tag from an OME issue',
 			inputSchema: z.object({
 				issueId: z.string().min(1),
 				tagId: z.string().min(1),
@@ -546,10 +546,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_contributor_list',
+		'ome_contributor_list',
 		{
 			description:
-				'List people who can be assigned: everyone who has authored an event (optionally scoped to one board) unioned with the contributor registry. Use these ids with epiq_issue_assignee_add rather than assigning by name.',
+				'List people who can be assigned: everyone who has authored an event (optionally scoped to one board) unioned with the contributor registry. Use these ids with ome_issue_assignee_add rather than assigning by name.',
 			inputSchema: z.object({
 				boardId: z.string().min(1).optional(),
 				repoRoot: z.string().optional(),
@@ -559,7 +559,7 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_contributor_remove',
+		'ome_contributor_remove',
 		{
 			description:
 				'Remove an external contributor from the assignee suggestion lists. Their id and every reference to it survive, so existing assignments stay intact and the event log is untouched. Refused for anyone who has authored events, since their name is in the log regardless.',
@@ -572,7 +572,7 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_tag_remove',
+		'ome_tag_remove',
 		{
 			description:
 				'Delete a tag from the whole workspace. It disappears from every ticket, picker and filter, but its id and history stay in the event log, and the name is free for a new tag.',
@@ -585,10 +585,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_tag_restore',
+		'ome_tag_restore',
 		{
 			description:
-				'Put back a tag deleted with epiq_tag_remove, on every ticket that still carried it.',
+				'Put back a tag deleted with ome_tag_remove, on every ticket that still carried it.',
 			inputSchema: z.object({
 				tagId: z.string().min(1),
 				repoRoot: z.string().optional(),
@@ -598,10 +598,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_contributor_restore',
+		'ome_contributor_restore',
 		{
 			description:
-				'Put a contributor removed with epiq_contributor_remove back into the suggestion lists, under the name they were created with.',
+				'Put a contributor removed with ome_contributor_remove back into the suggestion lists, under the name they were created with.',
 			inputSchema: z.object({
 				contributorId: z.string().min(1),
 				repoRoot: z.string().optional(),
@@ -611,10 +611,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_issue_assignee_add',
+		'ome_issue_assignee_add',
 		{
 			description:
-				'Assign a contributor to an Epiq issue: self: true for yourself, else preferably assigneeId (epiq_contributor_list; fails if unknown). assigneeName matches an existing contributor by name; with createUnlinked it adds someone new as an external assignee.',
+				'Assign a contributor to an OME issue: self: true for yourself, else preferably assigneeId (ome_contributor_list; fails if unknown). assigneeName matches an existing contributor by name; with createUnlinked it adds someone new as an external assignee.',
 			inputSchema: z.object({
 				issueId: z.string().min(1),
 				assigneeId: z.string().min(1).optional(),
@@ -632,9 +632,9 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_issue_assignee_remove',
+		'ome_issue_assignee_remove',
 		{
-			description: 'Remove an assignee from an Epiq issue',
+			description: 'Remove an assignee from an OME issue',
 			inputSchema: z.object({
 				issueId: z.string().min(1),
 				assigneeId: z.string().min(1),
@@ -645,9 +645,9 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_issue_comment_add',
+		'ome_issue_comment_add',
 		{
-			description: 'Add a comment to an Epiq issue',
+			description: 'Add a comment to an OME issue',
 			inputSchema: z.object({
 				issueId: z.string().min(1),
 				body: z.string().min(1).max(MAX_COMMENT_LENGTH),
@@ -658,10 +658,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_issue_attachment_add',
+		'ome_issue_attachment_add',
 		{
 			description:
-				'Attach an image file to an Epiq issue. Returns `markdown` — paste it into a comment or description body to render the image inline.',
+				'Attach an image file to an OME issue. Returns `markdown` — paste it into a comment or description body to render the image inline.',
 			inputSchema: z.object({
 				issueId: z.string().min(1),
 				filePath: z.string().min(1),
@@ -673,9 +673,9 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_issue_comment_delete',
+		'ome_issue_comment_delete',
 		{
-			description: 'Delete a comment from an Epiq issue',
+			description: 'Delete a comment from an OME issue',
 			inputSchema: z.object({
 				commentId: z.string().min(1),
 				repoRoot: z.string().optional(),
@@ -685,10 +685,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_issue_comment_edit',
+		'ome_issue_comment_edit',
 		{
 			description:
-				'Replace the body of one of your own comments on an Epiq issue',
+				'Replace the body of one of your own comments on an OME issue',
 			inputSchema: z.object({
 				commentId: z.string().min(1),
 				body: z.string().min(1).max(MAX_COMMENT_LENGTH),
@@ -699,10 +699,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_issue_reopen',
+		'ome_issue_reopen',
 		{
 			description:
-				'Reopen a closed Epiq issue, restoring it to its previous swimlane',
+				'Reopen a closed OME issue, restoring it to its previous swimlane',
 			inputSchema: z.object({
 				issueId: z.string().min(1),
 				repoRoot: z.string().optional(),
@@ -712,10 +712,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_issue_close',
+		'ome_issue_close',
 		{
 			description:
-				'Close an Epiq issue, or many at once with issueIds — one call, an outcome per ticket',
+				'Close an OME issue, or many at once with issueIds — one call, an outcome per ticket',
 			inputSchema: z.object({
 				issueId: z.string().min(1).optional(),
 				issueIds: z.array(z.string().min(1)).min(1).max(200).optional(),
@@ -726,10 +726,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_issue_move',
+		'ome_issue_move',
 		{
 			description:
-				'Move an Epiq issue to another swimlane (parentId is the swimlane id), or many at once with issueIds — one call, an outcome per ticket',
+				'Move an OME issue to another swimlane (parentId is the swimlane id), or many at once with issueIds — one call, an outcome per ticket',
 			inputSchema: z.object({
 				issueId: z.string().min(1).optional(),
 				issueIds: z.array(z.string().min(1)).min(1).max(200).optional(),
@@ -755,10 +755,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_actor_assume',
+		'ome_actor_assume',
 		{
 			description:
-				'Take a board identity for this session, so your writes are attributed to you, not the user: the name you announced: the model provider, a slash, then a short human first name, e.g. "claude/peter". Takes effect on the next write. A name the server was launched with wins; re-assuming is harmless. Reuse an existing agent identity (epiq_contributor_list) before inventing one: a name is permanent once it has authored anything.',
+				'Take a board identity for this session, so your writes are attributed to you, not the user: the name you announced: the model provider, a slash, then a short human first name, e.g. "claude/peter". Takes effect on the next write. A name the server was launched with wins; re-assuming is harmless. Reuse an existing agent identity (ome_contributor_list) before inventing one: a name is permanent once it has authored anything.',
 			inputSchema: z.object({
 				name: z.string().min(1).max(80),
 				repoRoot: z.string().optional(),
@@ -768,10 +768,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_contributor_email_link',
+		'ome_contributor_email_link',
 		{
 			description:
-				"Bind a git author address to a contributor, so their commits and board activity read as one person. Defaults to you; pass contributorId for a colleague who does not use epiq. The repository's configured git address links itself on your first write, so this is for older addresses and other people. An address two contributors claim resolves to neither.",
+				"Bind a git author address to a contributor, so their commits and board activity read as one person. Defaults to you; pass contributorId for a colleague who does not use ome. The repository's configured git address links itself on your first write, so this is for older addresses and other people. An address two contributors claim resolves to neither.",
 			inputSchema: z.object({
 				email: z.string().min(1).max(254),
 				contributorId: z.string().min(1).optional(),
@@ -782,7 +782,7 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_contributor_email_unlink',
+		'ome_contributor_email_unlink',
 		{
 			description:
 				'Retract a link between a git address and a contributor; only its writer or the contributor it names may. The address stops resolving; the event stays in the log.',
@@ -796,7 +796,7 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_contributor_email_suggest',
+		'ome_contributor_email_suggest',
 		{
 			description:
 				"Unclaimed addresses in this repository's history that look like yours; until linked, their commits show a raw git name. Show the list and link only what the user confirms: each link is permanent and replicates to every clone.",
@@ -806,7 +806,7 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_contributor_email_list',
+		'ome_contributor_email_list',
 		{
 			description:
 				'Every git address bound to a contributor, and who holds it. One with several claimants is flagged contested and resolves to none.',
@@ -816,10 +816,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_project_init',
+		'ome_project_init',
 		{
 			description:
-				'Set up a new Epiq board in the git repository at repoRoot (default: the current directory), which must have no uncommitted changes. The first time on a machine, ask the user for userName (how they appear on the board: theirs, never your agent identity), preferredEditor (e.g. "vim" or "code --wait") and autoSync (whether the TUI and GUI sync on their own); without them it fails naming what is missing, keeping what was given. Answers the machine already has stay. Commits the state branch and .epiq/project.json and tries to push both; a failed push is a warning.',
+				'Set up a new OME board in the git repository at repoRoot (default: the current directory), which must have no uncommitted changes. The first time on a machine, ask the user for userName (how they appear on the board: theirs, never your agent identity), preferredEditor (e.g. "vim" or "code --wait") and autoSync (whether the TUI and GUI sync on their own); without them it fails naming what is missing, keeping what was given. Answers the machine already has stay. Commits the state branch and .ome/project.json and tries to push both; a failed push is a warning.',
 			inputSchema: z.object({
 				repoRoot: z.string().optional(),
 				userName: z.string().min(1).max(80).optional(),
@@ -831,10 +831,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_skill_install',
+		'ome_skill_install',
 		{
 			description:
-				'Write the Epiq workflow skill to .claude/skills/epiq/SKILL.md in the repository, so agents there follow the board rules. In a new project, run it after epiq_project_init, which refuses the uncommitted file; on an existing board, any time. A differing file is overwritten only with force: true.',
+				'Write the OME workflow skill to .claude/skills/ome/SKILL.md in the repository, so agents there follow the board rules. In a new project, run it after ome_project_init, which refuses the uncommitted file; on an existing board, any time. A differing file is overwritten only with force: true.',
 			inputSchema: z.object({
 				repoRoot: z.string().optional(),
 				force: z.boolean().optional(),
@@ -844,10 +844,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_sync',
+		'ome_sync',
 		{
 			description:
-				'Pull and push Epiq state with the git remote, then fetch the repos connected with epiq_repo_connect. Other tools never sync: call this to see or publish remote changes.',
+				'Pull and push OME state with the git remote, then fetch the repos connected with ome_repo_connect. Other tools never sync: call this to see or publish remote changes.',
 			inputSchema: z.object({
 				repoRoot: z.string().optional(),
 			}),
@@ -861,7 +861,7 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_repo_list',
+		'ome_repo_list',
 		{
 			description:
 				"List the repos connected to the board, whose commits count as its own: each one's clone status, size on disk, last fetch error and whether it is past the board's limit (and so not fetched), plus their total on this machine.",
@@ -873,10 +873,10 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_repo_connect',
+		'ome_repo_connect',
 		{
 			description:
-				"Connect another repo to the board by URL (https://, ssh://, git:// or user@host:path; never a local path), so its commits prefixed with a ticket's ref link to it; or change a connected repo's options, which applies at once. Board-wide: every contributor's epiq downloads it on their next sync. The first call clones to staging and returns a preview (size, host, default branch, latest commit, commits naming this board's tickets — none suggests the wrong repo), writing nothing; show it to the user, and only once they agree call again with confirm: true and the same options. branches: default or all. since: how much history to clone, board (default), all, or YYYY-MM-DD. label: its name on the board, the URL's basename unless set; empty resets it. Uses your git credentials: ssh-agent or a credential helper must already work.",
+				"Connect another repo to the board by URL (https://, ssh://, git:// or user@host:path; never a local path), so its commits prefixed with a ticket's ref link to it; or change a connected repo's options, which applies at once. Board-wide: every contributor's ome downloads it on their next sync. The first call clones to staging and returns a preview (size, host, default branch, latest commit, commits naming this board's tickets — none suggests the wrong repo), writing nothing; show it to the user, and only once they agree call again with confirm: true and the same options. branches: default or all. since: how much history to clone, board (default), all, or YYYY-MM-DD. label: its name on the board, the URL's basename unless set; empty resets it. Uses your git credentials: ssh-agent or a credential helper must already work.",
 			inputSchema: z.object({
 				repoRoot: z.string().optional(),
 				url: z.string().min(1).max(MAX_URL_LENGTH),
@@ -890,7 +890,7 @@ export const createMcpServer = () => {
 	);
 
 	server.registerTool(
-		'epiq_repo_disconnect',
+		'ome_repo_disconnect',
 		{
 			description:
 				"Disconnect a repo by its label (when no other repo shares it), id or URL, and delete this machine's clone of it.",

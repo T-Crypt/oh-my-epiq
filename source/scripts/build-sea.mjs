@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Builds a Node.js Single Executable Application (SEA) for the epiq CLI. SEA
+// Builds a Node.js Single Executable Application (SEA) for the ome CLI. SEA
 // needs CJS, so the ESM bundle is loaded from a CJS bootstrap via a data: URL.
 
 import {execSync, spawn} from 'node:child_process';
@@ -52,14 +52,14 @@ let inner = readFileSync(resolve(root, 'dist/sea-inner.js'), 'utf8');
 
 const requireShim = [
 	'import { createRequire as __cjsCreateRequire } from "node:module";',
-	'const require = __cjsCreateRequire(process.env.__EPIQ_SEA_URL__ || "file:///");',
+	'const require = __cjsCreateRequire(process.env.__OME_SEA_URL__ || "file:///");',
 	'',
 ].join('\n');
 inner = requireShim + inner;
 
 // A placeholder keeps the two replacements apart. The bootstrap always sets
-// __EPIQ_SEA_URL__.
-const PH = '__EPIQ_IMPORT_META_URL__';
+// __OME_SEA_URL__.
+const PH = '__OME_IMPORT_META_URL__';
 inner = inner.replace(/\bimport\.meta\.url\b/g, PH);
 // Any other import.meta becomes a stand-in, parenthesised so it never parses as
 // a block. Its `resolve` finds nothing: the binary bundles every package.
@@ -68,11 +68,11 @@ inner = inner.replace(
 	`({url:${PH},resolve(s){throw new Error('Cannot resolve '+s)}})`,
 );
 // Expand the placeholder to the actual runtime expression.
-inner = inner.replace(new RegExp(PH, 'g'), 'process.env.__EPIQ_SEA_URL__');
+inner = inner.replace(new RegExp(PH, 'g'), 'process.env.__OME_SEA_URL__');
 
 writeFileSync(resolve(root, 'dist/sea-inner.js'), inner);
 
-// 3. Wrap the ESM bundle in a CJS bootstrap that sets __EPIQ_SEA_URL__.
+// 3. Wrap the ESM bundle in a CJS bootstrap that sets __OME_SEA_URL__.
 console.log('\n[3/7] Creating CJS bootstrap...');
 const esmCode = readFileSync(resolve(root, 'dist/sea-inner.js'), 'utf8');
 const b64 = Buffer.from(esmCode).toString('base64');
@@ -85,7 +85,7 @@ const cjsWrapper = `'use strict';
 ${stackTrace}
 Error.prepareStackTrace = prepareStackTrace;
 const {pathToFileURL} = require('node:url');
-process.env.__EPIQ_SEA_URL__ = pathToFileURL(process.execPath).href;
+process.env.__OME_SEA_URL__ = pathToFileURL(process.execPath).href;
 (async () => {
   await import('data:application/javascript;base64,${b64}');
 })().catch(err => { console.error(err); process.exit(1); });
@@ -119,11 +119,11 @@ run(`node --experimental-sea-config "${generatedConfigPath}"`);
 // 6. Assemble the binary
 console.log('\n[6/7] Assembling binary...');
 const exeSuffix = platform === 'win32' ? '.exe' : '';
-const outBin = resolve(root, `dist/epiq${exeSuffix}`);
-// Defaults to the running Node; EPIQ_SEA_NODE cross-builds, as the blob uses
+const outBin = resolve(root, `dist/ome${exeSuffix}`);
+// Defaults to the running Node; OME_SEA_NODE cross-builds, as the blob uses
 // no snapshot or code cache.
-const baseNode = process.env.EPIQ_SEA_NODE
-	? resolve(process.env.EPIQ_SEA_NODE)
+const baseNode = process.env.OME_SEA_NODE
+	? resolve(process.env.OME_SEA_NODE)
 	: process.execPath;
 const isCrossBuild = baseNode !== process.execPath;
 console.log(`Base Node: ${baseNode}${isCrossBuild ? ' (cross-build)' : ''}`);
@@ -149,10 +149,10 @@ if (platform === 'darwin') {
 	run(`codesign --sign - ${outBin}`);
 }
 
-// `epiq gui` opens a browser on startup. Shadowing the opener on PATH keeps
+// `ome gui` opens a browser on startup. Shadowing the opener on PATH keeps
 // the verification below from throwing a window at whoever is building.
 function browserShimDir() {
-	const dir = mkdtempSync(join(tmpdir(), 'epiq-sea-no-open-'));
+	const dir = mkdtempSync(join(tmpdir(), 'ome-sea-no-open-'));
 
 	for (const name of ['open', 'xdg-open']) {
 		const shim = join(dir, name);
@@ -166,17 +166,17 @@ function browserShimDir() {
 // Boots the binary's server and pulls the client through it: the only check
 // of the SEA asset branch of `serveStatic`.
 async function verifyGuiAssets(binary) {
-	const cwd = mkdtempSync(join(tmpdir(), 'epiq-sea-gui-'));
+	const cwd = mkdtempSync(join(tmpdir(), 'ome-sea-gui-'));
 	const shimDir = browserShimDir();
-	// Or the check writes into the builder's own epiq state.
-	const globalDir = mkdtempSync(join(tmpdir(), 'epiq-sea-global-'));
+	// Or the check writes into the builder's own ome state.
+	const globalDir = mkdtempSync(join(tmpdir(), 'ome-sea-global-'));
 
 	const child = spawn(binary, ['gui'], {
 		cwd,
 		env: {
 			...process.env,
 			PATH: `${shimDir}${delimiter}${process.env.PATH ?? ''}`,
-			EPIQ_GLOBAL_DIR: globalDir,
+			OME_GLOBAL_DIR: globalDir,
 		},
 		stdio: ['ignore', 'pipe', 'pipe'],
 	});
@@ -203,7 +203,7 @@ async function verifyGuiAssets(binary) {
 	};
 
 	try {
-		// It reports itself as epiq.localhost; only the port is portable, since
+		// It reports itself as ome.localhost; only the port is portable, since
 		// that name is not guaranteed to resolve on a build machine.
 		const servedPort = /http:\/\/\S*?:(\d+)/;
 		const deadline = Date.now() + 60_000;

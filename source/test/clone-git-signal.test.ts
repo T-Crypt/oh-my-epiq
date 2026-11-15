@@ -33,7 +33,7 @@ describe('git started for a clone', () => {
 					: 'with a helper that ignores SIGTERM'
 			}, and the process still exits`, async () => {
 				const dir = fs.mkdtempSync(
-					path.join(os.tmpdir(), 'epiq-clone-signal-'),
+					path.join(os.tmpdir(), 'ome-clone-signal-'),
 				);
 				let connected!: () => void;
 				let closed!: () => void;

@@ -205,14 +205,14 @@ export const dotExitScale = (key: string, elapsedMs: number): number =>
 	);
 
 export const dotAppearAnimation = (key: string): string =>
-	`epiqScrubberTwinkle ${DOT_APPEAR_MS}ms ease-out ${dotDelayMs(
+	`omeScrubberTwinkle ${DOT_APPEAR_MS}ms ease-out ${dotDelayMs(
 		key,
 	)}ms backwards`;
 
 // Forward keyframes filled `both`: full scale through the delay, zero after, so no
 // dot pops back before unmount. Under `reverse`, Chrome blinks every dot out at once.
 export const dotExitAnimation = (key: string): string =>
-	`epiqScrubberRetract ${DOT_APPEAR_MS}ms ease-in ${
+	`omeScrubberRetract ${DOT_APPEAR_MS}ms ease-in ${
 		DOT_APPEAR_SCATTER_MS - dotDelayMs(key)
 	}ms both`;
 
@@ -235,7 +235,7 @@ export const barGrowAnimation = (
 	const delay =
 		span > 0 ? ((index - firstIndex) / span) * BAR_GROW_SWEEP_MS : 0;
 
-	return `epiqScrubberGrow ${BAR_GROW_MS}ms ease-out ${delay.toFixed(
+	return `omeScrubberGrow ${BAR_GROW_MS}ms ease-out ${delay.toFixed(
 		0,
 	)}ms backwards`;
 };
@@ -244,11 +244,11 @@ export const barGrowAnimation = (
 export const BAR_ENTRANCE_TOTAL_MS = BAR_GROW_MS + BAR_GROW_SWEEP_MS;
 
 // On the series wrapper only: bars and dots remount on a scope change and would flash.
-export const FADE_IN_ANIMATION = 'epiqScrubberFadeIn 320ms ease-out';
+export const FADE_IN_ANIMATION = 'omeScrubberFadeIn 320ms ease-out';
 
 // Pager arrows show on hover or keyboard focus; `:focus-visible`, since a click leaves focus too.
-export const PAGE_ARROW_CLASS = 'epiq-scrubber-page';
-export const PAGED_TRACK_CLASS = 'epiq-scrubber-paged';
+export const PAGE_ARROW_CLASS = 'ome-scrubber-page';
+export const PAGED_TRACK_CLASS = 'ome-scrubber-paged';
 
 // Stylesheets, the exception to inline styles: :hover, :focus-visible and
 // @keyframes have no React style-object form.
@@ -278,50 +278,50 @@ export const SCRUBBER_KEYFRAMES = `
 	   so an SVG circle scales about itself rather than the viewport's origin.
 
 	   A reader who has asked for less motion gets one ring, at rest. */
-	@keyframes epiqLiveRipple {
+	@keyframes omeLiveRipple {
 		from { scale: 0.3; opacity: 0.9; }
 		to { scale: 1.3; opacity: 0; }
 	}
 
-	.epiq-live-ripple {
+	.ome-live-ripple {
 		transform-box: fill-box;
 		transform-origin: center;
-		animation: epiqLiveRipple 2s ease-out infinite;
+		animation: omeLiveRipple 2s ease-out infinite;
 	}
 
-	.epiq-live-ripple--trailing {
+	.ome-live-ripple--trailing {
 		animation-delay: 1s;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.epiq-live-ripple {
+		.ome-live-ripple {
 			animation: none;
 			opacity: 0.55;
 			scale: 1;
 		}
-		.epiq-live-ripple--trailing { display: none; }
+		.ome-live-ripple--trailing { display: none; }
 	}
 
 	/* Must animate the standalone 'scale' property, not 'transform': the dots
 	   carry a 'transform: translate(...)' to centre themselves, and animating
 	   'transform' would replace it and fling them off position. */
-	@keyframes epiqScrubberTwinkle {
+	@keyframes omeScrubberTwinkle {
 		from { scale: 0; }
 		to { scale: 1; }
 	}
 
 	/* Not the twinkle reversed — see dotExitAnimation for why. */
-	@keyframes epiqScrubberRetract {
+	@keyframes omeScrubberRetract {
 		from { scale: 1; }
 		to { scale: 0; }
 	}
 
-	@keyframes epiqScrubberGrow {
+	@keyframes omeScrubberGrow {
 		from { transform: scaleY(0); }
 		to { transform: scaleY(1); }
 	}
 
-	@keyframes epiqScrubberFadeIn {
+	@keyframes omeScrubberFadeIn {
 		/* Starts faint rather than transparent: from zero the whole chart reads
 		   as blinking on a mere data refresh. */
 		from { opacity: 0.2; }

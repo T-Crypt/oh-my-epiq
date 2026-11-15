@@ -43,7 +43,7 @@ import {
 	fetchRepos,
 	listRepos,
 	disconnectRepo,
-} from '../../../mcp/epiq-api.js';
+} from '../../../mcp/ome-api.js';
 import {
 	REPO_RENAMED,
 	REPO_UNCHANGED,
@@ -62,8 +62,8 @@ import {
 	getTimeTravelStatus,
 	returnToLive,
 	runExclusive,
-} from '../../../mcp/epiq-time-travel.js';
-import {getIssueStats} from '../../../mcp/epiq-issue-stats.js';
+} from '../../../mcp/ome-time-travel.js';
+import {getIssueStats} from '../../../mcp/ome-issue-stats.js';
 import {getRefDiffTimeline} from '../../../mcp/api/ref-diff-stats.js';
 import {getSwimlaneStats} from '../../../mcp/api/swimlane-stats.js';
 import {getGoalCommits, getGoalStats} from '../../../mcp/api/goal-code.js';
@@ -101,7 +101,7 @@ import {GuiMessage} from './websocket.model.js';
 import {isForeignOrigin} from './origin-guard.js';
 import {parseGuiMessage} from './websocket.schema.js';
 import {getUpdateInfo} from '../../../lib/version/version-check.js';
-import {EPIQ_VERSION} from '../../../version.js';
+import {OME_VERSION} from '../../../version.js';
 import {issueDetail, issuePreview, slimStateResult} from './slim-state.js';
 
 /** The ceiling on one frame: far above the longest description, far below `ws`'s 100 MiB default. */
@@ -361,7 +361,7 @@ export const setupWebsocket = (
 				if (type === 'version:get') {
 					return sendSocket(socket, {
 						type: 'version',
-						payload: await getUpdateInfo(EPIQ_VERSION),
+						payload: await getUpdateInfo(OME_VERSION),
 					});
 				}
 

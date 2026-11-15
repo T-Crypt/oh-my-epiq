@@ -4,7 +4,7 @@ import {execGitAllowFail} from './git-utils.js';
 import {failed, Result, succeeded} from '../lib/model/result-types.js';
 import {isPendingFileName} from '../lib/event/pending-log.js';
 import {isVanished} from '../lib/event/log-signature.js';
-import {EPIQ_DIR_NAME, EVENTS_DIR_NAME} from '../lib/storage/paths.js';
+import {OME_DIR_NAME, EVENTS_DIR_NAME} from '../lib/storage/paths.js';
 
 /**
  * The event log is append-only: a working copy may gain lines, never lose or
@@ -16,7 +16,7 @@ const linesIn = (content: string): string[] =>
 
 /** Non-empty event logs in a directory about to be deleted wholesale. */
 export const findStrandedEventLogs = (root: string): Result<string[]> => {
-	const dir = path.join(root, EPIQ_DIR_NAME, EVENTS_DIR_NAME);
+	const dir = path.join(root, OME_DIR_NAME, EVENTS_DIR_NAME);
 
 	try {
 		if (!fs.existsSync(dir)) return succeeded('No events directory', []);
@@ -43,7 +43,7 @@ export const findStrandedEventLogs = (root: string): Result<string[]> => {
 export type EventLogSnapshot = ReadonlyMap<string, string[]>;
 
 const eventsDirIn = (root: string): string =>
-	path.join(root, EPIQ_DIR_NAME, EVENTS_DIR_NAME);
+	path.join(root, OME_DIR_NAME, EVENTS_DIR_NAME);
 
 /**
  * Every event log line on disk, per file. `restoreDroppedEventLines` puts back any

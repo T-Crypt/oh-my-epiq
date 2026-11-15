@@ -29,7 +29,7 @@ import {bodyRefs, invalidateCommitTimelineCache} from './commit-timeline.js';
 
 export type RepoPreview = {
 	repo: CommitRepo;
-	/** Where every contributor's epiq will download it from. */
+	/** Where every contributor's ome will download it from. */
 	host: string;
 	defaultBranch: string | null;
 	latest: {subject: string; author: string; date: string} | null;
@@ -37,7 +37,7 @@ export type RepoPreview = {
 	commits: number;
 	/** How many of those name a ticket on this board: none is a warning. */
 	ticketCommits: number;
-	/** The staged clone's size: what each contributor's epiq will download. */
+	/** The staged clone's size: what each contributor's ome will download. */
 	bytes: number;
 	contributors: number;
 	/** What this board's other clones already take on this machine. */

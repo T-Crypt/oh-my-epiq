@@ -7,7 +7,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {WebSocket} from 'ws';
 
 // Every imported entry point must exist on the mock or the import fails.
-vi.mock('../mcp/epiq-api.js', () => ({
+vi.mock('../mcp/ome-api.js', () => ({
 	addIssueAssignee: vi.fn(),
 	getBoardContributors: vi.fn(),
 	tombstoneContributor: vi.fn(),
@@ -35,7 +35,7 @@ vi.mock('../mcp/epiq-api.js', () => ({
 	sync: vi.fn(),
 }));
 
-vi.mock('../mcp/epiq-time-travel.js', () => ({
+vi.mock('../mcp/ome-time-travel.js', () => ({
 	checkoutStateAt: vi.fn(),
 	getEventTimeline: vi.fn(),
 	getTimeTravelStatus: vi.fn(() => ({mode: 'live', asOfTime: null})),
@@ -51,7 +51,7 @@ vi.mock('../lib/commits/commits.js', () => ({
 	openCommitDiffInEditor: vi.fn(),
 }));
 
-import {getGuiState} from '../mcp/epiq-api.js';
+import {getGuiState} from '../mcp/ome-api.js';
 import {recordRecentProject} from '../lib/config/recent-projects.js';
 import {failed, succeeded} from '../lib/model/result-types.js';
 import {NO_PROJECT_MESSAGE} from '../lib/storage/paths.js';
@@ -71,19 +71,19 @@ type Received = {
 const tempDirs: string[] = [];
 
 const makeTempDir = (): string => {
-	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-ws-open-'));
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-ws-open-'));
 	tempDirs.push(dir);
 	return dir;
 };
 
 const makeProject = (projectId: string): string => {
 	const root = path.join(makeTempDir(), projectId);
-	fs.mkdirSync(path.join(root, '.epiq'), {recursive: true});
+	fs.mkdirSync(path.join(root, '.ome'), {recursive: true});
 	fs.writeFileSync(
-		path.join(root, '.epiq', 'project.json'),
+		path.join(root, '.ome', 'project.json'),
 		JSON.stringify({
 			projectId,
-			stateBranch: '__epiq_state__',
+			stateBranch: '__ome_state__',
 			createdAt: new Date().toISOString(),
 		}),
 	);
@@ -121,8 +121,8 @@ describe('websocket project:open', () => {
 			error: vi.fn(),
 		};
 
-		originalGlobalDir = process.env['EPIQ_GLOBAL_DIR'];
-		process.env['EPIQ_GLOBAL_DIR'] = path.join(makeTempDir(), '.epiq-global');
+		originalGlobalDir = process.env['OME_GLOBAL_DIR'];
+		process.env['OME_GLOBAL_DIR'] = path.join(makeTempDir(), '.ome-global');
 
 		bareRoot = makeTempDir();
 		projectRoot = makeProject('01WSOPEN000000000000000001');
@@ -164,8 +164,8 @@ describe('websocket project:open', () => {
 		client.close();
 		await new Promise<void>(resolve => server.close(() => resolve()));
 
-		if (originalGlobalDir === undefined) delete process.env['EPIQ_GLOBAL_DIR'];
-		else process.env['EPIQ_GLOBAL_DIR'] = originalGlobalDir;
+		if (originalGlobalDir === undefined) delete process.env['OME_GLOBAL_DIR'];
+		else process.env['OME_GLOBAL_DIR'] = originalGlobalDir;
 
 		for (const dir of tempDirs.splice(0)) {
 			fs.rmSync(dir, {recursive: true, force: true});

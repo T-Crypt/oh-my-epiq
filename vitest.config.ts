@@ -3,7 +3,7 @@ import {configDefaults, defineConfig} from 'vitest/config';
 export default defineConfig({
 	test: {
 		// Fail a test that aims git at the checkout instead of a temp dir, and
-		// one that resolves the real Epiq global dir (the live state worktree).
+		// one that resolves the real OME global dir (the live state worktree).
 		setupFiles: [
 			'source/test/setup/no-git-outside-tmp.ts',
 			'source/test/setup/global-dir-in-tmp.ts',

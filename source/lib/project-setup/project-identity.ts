@@ -6,11 +6,11 @@ import {ORIGIN} from '../../git/git-constants.js';
 import {execGit} from '../../git/git-utils.js';
 import {failed, isFail, Result, succeeded} from '../model/result-types.js';
 import {getProjectFilePath} from '../storage/paths.js';
-import {EpiqProject, readProjectFile} from './project-setup.js';
+import {OMEProject, readProjectFile} from './project-setup.js';
 
-// The same path as in a checkout, so `git show <state branch>:.epiq/project.json`
+// The same path as in a checkout, so `git show <state branch>:.ome/project.json`
 // answers the question a person would ask.
-export const STATE_IDENTITY_PATH = '.epiq/project.json';
+export const STATE_IDENTITY_PATH = '.ome/project.json';
 
 export const getStateIdentityPath = (stateBranchRoot: string): string =>
 	path.join(stateBranchRoot, STATE_IDENTITY_PATH);
@@ -18,7 +18,7 @@ export const getStateIdentityPath = (stateBranchRoot: string): string =>
 /** The identity the state branch carries, or null for a branch stamped by nothing yet. */
 export const readStateIdentity = (
 	stateBranchRoot: string,
-): Result<EpiqProject | null> => {
+): Result<OMEProject | null> => {
 	if (!fs.existsSync(getStateIdentityPath(stateBranchRoot))) {
 		return succeeded('State branch carries no identity yet', null);
 	}
@@ -31,7 +31,7 @@ export const readStateIdentity = (
 
 export const writeStateIdentity = (
 	stateBranchRoot: string,
-	project: EpiqProject,
+	project: OMEProject,
 ): Result<void> => {
 	try {
 		const target = getStateIdentityPath(stateBranchRoot);
@@ -54,8 +54,8 @@ export const describeIdentityMismatch = ({
 	branch,
 	stateBranch,
 }: {
-	checkout: EpiqProject;
-	branch: EpiqProject;
+	checkout: OMEProject;
+	branch: OMEProject;
 	stateBranch: string;
 }): string =>
 	[
@@ -77,14 +77,14 @@ export const describeIdentityMismatch = ({
 const showProjectFile = async (
 	repoRoot: string,
 	spec: string,
-): Promise<Result<EpiqProject | null>> => {
+): Promise<Result<OMEProject | null>> => {
 	const shown = await execGit({cwd: repoRoot, args: ['show', spec]});
 	if (isFail(shown)) return succeeded(`Nothing at ${spec}`, null);
 
 	try {
 		return succeeded(
 			`Read ${spec}`,
-			JSON.parse(shown.value.stdout) as EpiqProject,
+			JSON.parse(shown.value.stdout) as OMEProject,
 		);
 	} catch (error) {
 		return failed(
@@ -105,7 +105,7 @@ export const readCommittedStateIdentity = async ({
 }: {
 	repoRoot: string;
 	stateBranch: string;
-}): Promise<Result<EpiqProject | null>> => {
+}): Promise<Result<OMEProject | null>> => {
 	for (const ref of [stateBranch, `${ORIGIN}/${stateBranch}`]) {
 		const shown = await showProjectFile(
 			repoRoot,
@@ -130,7 +130,7 @@ export const findStagedIdentityDrift = async ({
 	repoRoot: string;
 	stateBranch: string;
 	stateBranchRoot: string | null;
-}): Promise<Result<{checkout: EpiqProject; branch: EpiqProject} | null>> => {
+}): Promise<Result<{checkout: OMEProject; branch: OMEProject} | null>> => {
 	const staged = await showProjectFile(repoRoot, `:${STATE_IDENTITY_PATH}`);
 	if (isFail(staged)) return staged;
 	if (staged.value === null) return succeeded('No project file staged', null);

@@ -70,17 +70,17 @@ beforeEach(() => {
 	board = makeTempDir();
 	projectId = path.basename(board);
 	git(board, ['init', '-q', '-b', 'main']);
-	fs.mkdirSync(path.join(board, '.epiq'));
+	fs.mkdirSync(path.join(board, '.ome'));
 	fs.writeFileSync(
-		path.join(board, '.epiq', 'project.json'),
+		path.join(board, '.ome', 'project.json'),
 		JSON.stringify({
 			projectId,
-			stateBranch: 'epiq/state',
+			stateBranch: 'ome/state',
 			createdAt: '2020-01-01T00:00:00.000Z',
 		}),
 	);
 	commit(board, 'init', '2019-01-01T00:00:00Z');
-	git(board, ['branch', 'epiq/state']);
+	git(board, ['branch', 'ome/state']);
 
 	upstream = makeTempDir();
 	git(upstream, ['init', '-q', '-b', 'main']);

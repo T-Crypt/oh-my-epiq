@@ -5,7 +5,7 @@ import {expect, test} from './fixtures.js';
 const WATCH = `
 	window.__grow = 0;
 	document.addEventListener('animationstart', e => {
-		if (e.animationName === 'epiqScrubberGrow') window.__grow += 1;
+		if (e.animationName === 'omeScrubberGrow') window.__grow += 1;
 	}, true);
 	new MutationObserver(records => {
 		for (const record of records) {

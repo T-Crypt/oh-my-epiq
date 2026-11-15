@@ -37,7 +37,7 @@ import {
 	normalizeExistingPath,
 } from './git-utils.js';
 
-export const INITIAL_COMMIT_MESSAGE = '[epiq:init-repo]';
+export const INITIAL_COMMIT_MESSAGE = '[ome:init-repo]';
 
 /**
  * Creates the first commit in a repo that has none, on `:init`. Fails closed
@@ -135,7 +135,7 @@ export const createStateBranch = async ({
 	logger.info(`Creating ${stateBranchName}`);
 
 	const commitResult = await execGit({
-		args: ['commit-tree', EMPTY_TREE_SHA, '-m', '[epiq:init-state-branch]'],
+		args: ['commit-tree', EMPTY_TREE_SHA, '-m', '[ome:init-state-branch]'],
 		cwd: repoRoot,
 	});
 
@@ -305,7 +305,7 @@ const createStateBranchWorktree = async ({
 					'',
 					'Deleting it would destroy them, and with no .git here there is no',
 					'committed copy to recover from. Move the directory aside and',
-					'salvage the logs before letting epiq recreate the worktree.',
+					'salvage the logs before letting ome recreate the worktree.',
 				].join('\n'),
 			);
 		}
@@ -439,7 +439,7 @@ const placeStateBranchWorktree = async ({
 					'a deleted worktree from.',
 					'',
 					`This worktree is expected at ${expected}, so something else is`,
-					'using a different EPIQ_GLOBAL_DIR against the same repository.',
+					'using a different OME_GLOBAL_DIR against the same repository.',
 					'Sync from that location first, or point both at the same one.',
 				].join('\n'),
 			);

@@ -14,12 +14,12 @@ export const initCommand = async () => {
 	// Clear cmd input
 	replaceCmdInput('');
 
-	// resolve user ids from ~/.epiq-global/config.json
+	// resolve user ids from ~/.ome-global/config.json
 	const setupStatus = getUserSetupStatus();
 	if (!setupStatus.isSetupDone || !setupStatus.userName) {
 		return failAt(
 			5,
-			'Missing Epiq user configuration (userId / userName). Run setup first.',
+			'Missing OME user configuration (userId / userName). Run setup first.',
 		);
 	}
 
@@ -27,7 +27,7 @@ export const initCommand = async () => {
 	const userName = settings.userName;
 	const userId = settings.userId;
 	if (!userId || !userName) {
-		return failAt(5, 'Missing Epiq user id');
+		return failAt(5, 'Missing OME user id');
 	}
 
 	const initResult = await initProject({

@@ -17,9 +17,9 @@ import {
 	deleteIssueComment,
 	getAttachmentBlob,
 	getGuiState,
-} from '../../mcp/epiq-api.js';
-import {getTimeTravelStatus, runExclusive} from '../../mcp/epiq-time-travel.js';
-import {EPIQ_VERSION} from '../../version.js';
+} from '../../mcp/ome-api.js';
+import {getTimeTravelStatus, runExclusive} from '../../mcp/ome-time-travel.js';
+import {OME_VERSION} from '../../version.js';
 import {
 	canonicalRepoRoot,
 	GuiInstance,
@@ -317,12 +317,12 @@ export const startGuiServer = async (input: {
 			});
 		}
 
-		// Answered before reading the board, so a probe from another epiq is cheap.
+		// Answered before reading the board, so a probe from another ome is cheap.
 		if (req.method === 'GET' && url.pathname === INSTANCE_PATH) {
 			return sendJson(res, 200, {
 				app: INSTANCE_APP,
 				repoRoot: canonicalRepoRoot(project.repoRoot),
-				version: EPIQ_VERSION,
+				version: OME_VERSION,
 				pid: process.pid,
 			} satisfies GuiInstance);
 		}
@@ -579,7 +579,7 @@ export const startGuiServer = async (input: {
 	}
 
 	return succeeded('Started GUI server', {
-		url: `http://epiq.localhost:${address.port}${
+		url: `http://ome.localhost:${address.port}${
 			input.boardId ? `/board/${input.boardId}` : ''
 		}`,
 		server,

@@ -20,14 +20,14 @@ vi.mock('../lib/storage/paths.js', () => ({
 		Promise.resolve({
 			status: 'success',
 			message: 'Resolved persist root',
-			value: '/repo/.epiq',
+			value: '/repo/.ome',
 		}),
 	),
-	getGlobalConfigDir: vi.fn(() => '/home/test/.epiq-global'),
+	getGlobalConfigDir: vi.fn(() => '/home/test/.ome-global'),
 	// The assignee lookup reads the events directory listing for the names a
 	// pre-ZFZFW9D log file name carries. Pointed at nothing, so these tests
 	// exercise the registry alone.
-	getEventsDirPath: vi.fn(() => '/repo/.epiq/events-does-not-exist'),
+	getEventsDirPath: vi.fn(() => '/repo/.ome/events-does-not-exist'),
 }));
 
 // Only the ancestor walk is stubbed; the repo itself reads the real state
@@ -183,7 +183,7 @@ describe('TagTicket command', () => {
 					},
 				},
 			],
-			'/repo/.epiq',
+			'/repo/.ome',
 		);
 	});
 
@@ -222,7 +222,7 @@ describe('TagTicket command', () => {
 					},
 				},
 			],
-			'/repo/.epiq',
+			'/repo/.ome',
 		);
 	});
 
@@ -261,7 +261,7 @@ describe('TagTicket command', () => {
 					},
 				},
 			],
-			'/repo/.epiq',
+			'/repo/.ome',
 		);
 	});
 
@@ -381,7 +381,7 @@ describe('AssignUserToTicket command', () => {
 					},
 				},
 			],
-			'/repo/.epiq',
+			'/repo/.ome',
 		);
 	});
 
@@ -430,7 +430,7 @@ describe('AssignUserToTicket command', () => {
 					},
 				},
 			],
-			'/repo/.epiq',
+			'/repo/.ome',
 		);
 	});
 
@@ -473,7 +473,7 @@ describe('AssignUserToTicket command', () => {
 					},
 				},
 			],
-			'/repo/.epiq',
+			'/repo/.ome',
 		);
 	});
 
@@ -616,7 +616,7 @@ describe('UnassignUserFromTicket command', () => {
 					payload: {id: 'ticket-1', assignee: 'user-123'},
 				},
 			],
-			'/repo/.epiq',
+			'/repo/.ome',
 		);
 	});
 
@@ -676,7 +676,7 @@ describe('UnassignUserFromTicket command', () => {
 					payload: {id: 'ticket-1', assignee: 'user-123'},
 				}),
 			],
-			'/repo/.epiq',
+			'/repo/.ome',
 		);
 	});
 
@@ -701,7 +701,7 @@ describe('UnassignUserFromTicket command', () => {
 
 		expect(mockedMaterializeAndPersistAll).toHaveBeenCalledWith(
 			[expect.objectContaining({payload: {id: 'ticket-1', assignee: '0001'}})],
-			'/repo/.epiq',
+			'/repo/.ome',
 		);
 	});
 
@@ -726,20 +726,20 @@ describe('UnassignUserFromTicket command', () => {
 
 describe('Config command, username modifier', () => {
 	const configCommand = commands.find(x => x.intent === CmdIntent.Config)!;
-	const original = process.env['EPIQ_USER_NAME'];
+	const original = process.env['OME_USER_NAME'];
 
 	afterEach(() => {
 		if (original === undefined) {
-			delete process.env['EPIQ_USER_NAME'];
+			delete process.env['OME_USER_NAME'];
 		} else {
-			process.env['EPIQ_USER_NAME'] = original;
+			process.env['OME_USER_NAME'] = original;
 		}
 	});
 
 	// Settings state holds the environment actor, so writing it back would
 	// overwrite the machine's configured user with whichever agent is running.
 	it('refuses to rewrite the configured user while an environment actor is named', async () => {
-		process.env['EPIQ_USER_NAME'] = 'claude';
+		process.env['OME_USER_NAME'] = 'claude';
 
 		const result = await configCommand.action(
 			{} as never,
@@ -750,6 +750,6 @@ describe('Config command, username modifier', () => {
 		);
 
 		expect(result.status).toBe('fail');
-		expect(result.message).toContain('EPIQ_USER_NAME');
+		expect(result.message).toContain('OME_USER_NAME');
 	});
 });

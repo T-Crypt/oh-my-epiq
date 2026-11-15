@@ -22,7 +22,7 @@ const serve = (handoffPath: string) => {
 		env: {
 			...process.env,
 			IS_LOCAL: 'true',
-			EPIQ_GUI_E2E_HANDOFF: handoffPath,
+			OME_GUI_E2E_HANDOFF: handoffPath,
 		},
 	});
 

@@ -1,6 +1,6 @@
-# Working on epiq
+# Working on ome
 
-Epiq is a git-backed issue board: a TUI, a browser GUI and an MCP server over one event log kept on a git branch. These are the rules and commands for changing it, for any agent or person.
+OME is a git-backed issue board: a TUI, a browser GUI and an MCP server over one event log kept on a git branch. These are the rules and commands for changing it, for any agent or person.
 
 ## Commands
 
@@ -26,7 +26,7 @@ Epiq is a git-backed issue board: a TUI, a browser GUI and an MCP server over on
 - **GUI tests share one seeded repo per worker.** Name what a test writes uniquely per call, and seed events as the board's own user, or they leak into other tests.
 - **Never locate a GUI control by its `title`:** the tooltip layer strips it on hover. Use test ids.
 - **One React console warning fails the GUI suite**, usually a style shorthand overridden by a longhand.
-- **The suites connect repos from local paths**, which a real board refuses: the test setup sets `EPIQ_ALLOW_LOCAL_REPOS=1`.
+- **The suites connect repos from local paths**, which a real board refuses: the test setup sets `OME_ALLOW_LOCAL_REPOS=1`.
 
 ## The event log is a CRDT
 
@@ -112,14 +112,14 @@ Five places; a missed one fails quietly:
 - `gui/api/lib/websocket.schema.ts` — the shape; an unlisted message is refused
 - `gui/client/lib/gui-mutations.ts` — if it mutates, so the client holds broadcasts until its reply lands
 - `gui/api/lib/websocket.ts` — the handler, which calls `mcp/api` and nothing else
-- `mcp/epiq-api.ts` — the export, for a new function
+- `mcp/ome-api.ts` — the export, for a new function
 
 ## Workflow
 
 - **A worktree before the first edit**, under `.claude/worktrees/<ref>-<slug>`. The repository root stays on `main`, and `main` never goes in a worktree.
 - **Every change goes through a pull request.** Never commit or merge to `main` locally.
-- **Link commits to tickets as the [epiq skill](.claude/skills/epiq/SKILL.md) says**, through squashes too. A commit subject says what is now true, in one line.
-- **Work the board through the epiq MCP tools**, and keep it current: a ticket moves to Ongoing when work starts; a merged ticket moves to Done and stays open until the release closes it; a follow-up folded into a ticket takes it back to Ongoing.
+- **Link commits to tickets as the [ome skill](.claude/skills/ome/SKILL.md) says**, through squashes too. A commit subject says what is now true, in one line.
+- **Work the board through the ome MCP tools**, and keep it current: a ticket moves to Ongoing when work starts; a merged ticket moves to Done and stays open until the release closes it; a follow-up folded into a ticket takes it back to Ongoing.
 - **Review findings get their own tickets**, tagged `from-review`, naming the PR.
 - **A bug fix comes with a test** that fails without the fix.
 - **Comments are rare and short: a headline or a one-line hint, two lines at most.** Names, types and small functions carry the rest. Keep only what would stop a reader breaking the code (an ordering that matters, a platform quirk). Never narrate history.

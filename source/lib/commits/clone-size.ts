@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import {readEpiqConfig} from '../config/user-config.js';
+import {readOMEConfig} from '../config/user-config.js';
 import {isFail} from '../model/result-types.js';
 
 // How much disk a connected repo's clone may take on this machine. Set here, in
@@ -18,7 +18,7 @@ export const isRepoCloneMaxMb = (value: number): boolean =>
 
 /** The cap in MB, its default where the config sets none or nonsense. */
 export const readRepoCloneMaxMb = (): number => {
-	const config = readEpiqConfig();
+	const config = readOMEConfig();
 	const set = isFail(config) ? undefined : config.value.repoCloneMaxMb;
 
 	return set !== undefined && isRepoCloneMaxMb(set)

@@ -20,7 +20,7 @@ import {isFail, isSuccess} from '../lib/model/result-types.js';
 const tempDirs: string[] = [];
 
 const makeTempDir = (): string => {
-	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-git-utils-'));
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-git-utils-'));
 	tempDirs.push(dir);
 	return dir;
 };

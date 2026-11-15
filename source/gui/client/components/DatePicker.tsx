@@ -58,8 +58,8 @@ const WEEKDAYS = [
 
 // Pseudo-classes, which inline styles cannot reach. Scoped to the popover.
 const GRID_STYLES = `
-	.epiq-date table { border-collapse: collapse; }
-	.epiq-date th {
+	.ome-date table { border-collapse: collapse; }
+	.ome-date th {
 		width: ${CELL}px;
 		padding: 0 0 4px;
 		font-size: 9px;
@@ -68,8 +68,8 @@ const GRID_STYLES = `
 		text-transform: uppercase;
 		color: ${GUI_THEME.dim};
 	}
-	.epiq-date td { padding: 1px; }
-	.epiq-date td button {
+	.ome-date td { padding: 1px; }
+	.ome-date td button {
 		width: ${CELL}px;
 		height: ${CELL - 4}px;
 		border: 1px solid transparent;
@@ -80,24 +80,24 @@ const GRID_STYLES = `
 		font-size: 11px;
 		cursor: pointer;
 	}
-	.epiq-date td button:hover { background: ${menuRowHoverBackground}; }
-	.epiq-date td button:focus-visible {
+	.ome-date td button:hover { background: ${menuRowHoverBackground}; }
+	.ome-date td button:focus-visible {
 		outline: none;
 		background: ${menuRowHoverBackground};
 		border-color: ${GUI_THEME.dim2};
 	}
-	.epiq-date td[data-today] button { color: ${GUI_THEME.accent}; }
-	.epiq-date td[data-selected] button {
+	.ome-date td[data-today] button { color: ${GUI_THEME.accent}; }
+	.ome-date td[data-selected] button {
 		border-color: ${GUI_THEME.accent};
 		color: ${GUI_THEME.accent};
 	}
-	.epiq-date td button:disabled {
+	.ome-date td button:disabled {
 		color: ${GUI_THEME.dim};
 		opacity: 0.35;
 		background: transparent;
 		cursor: default;
 	}
-	.epiq-date td[data-outside] { visibility: hidden; }
+	.ome-date td[data-outside] { visibility: hidden; }
 `;
 
 // One month's days, a roving focus walked by the arrows, Home and End, and
@@ -290,7 +290,7 @@ export const DatePicker = ({
 			role="dialog"
 			aria-label={label}
 			data-testid={`${testId}-calendar`}
-			className="epiq-date"
+			className="ome-date"
 			onKeyDown={onKeyDown}
 			style={{
 				...popoverStyle,

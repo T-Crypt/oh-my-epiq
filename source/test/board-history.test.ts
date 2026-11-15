@@ -14,7 +14,7 @@ import {
 	listSwimlanes,
 	moveIssue,
 	moveSwimlane,
-} from '../mcp/epiq-api.js';
+} from '../mcp/ome-api.js';
 import {boardsEverOnOf} from '../lib/utils/ticket-boards.js';
 import {deriveGuiState} from '../mcp/api/state.js';
 import {nodeRepo} from '../lib/repository/node-repo.js';

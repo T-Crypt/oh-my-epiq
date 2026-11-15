@@ -13,7 +13,7 @@ export const LogWindow = () => {
 	const {lines, board, open, reportPinned} = useLogMirror();
 
 	useEffect(() => {
-		document.title = 'epiq — event log';
+		document.title = 'ome — event log';
 	}, []);
 
 	return (

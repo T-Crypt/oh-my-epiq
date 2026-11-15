@@ -220,7 +220,7 @@ export const IssueCommits = ({
 			<Empty>
 				{empty ?? (
 					<>
-						No linked commits. Add Epiq-Ref:{' '}
+						No linked commits. Add OME-Ref:{' '}
 						<CopyRef refValue={issueRef ?? ''} /> to a commit body.
 					</>
 				)}

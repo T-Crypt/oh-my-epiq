@@ -8,7 +8,7 @@ import {isFail} from '../lib/model/result-types.js';
 import {makeTempDir} from './helpers/git-repo.js';
 
 const EVENT_FILE = '01ksayra4ghekjp888wfbwbrdd.jola.jsonl';
-const RELATIVE = `.epiq/events/${EVENT_FILE}`;
+const RELATIVE = `.ome/events/${EVENT_FILE}`;
 
 const line = (n: number) =>
 	JSON.stringify({
@@ -56,7 +56,7 @@ describe('the sync path refuses a truncated log', () => {
 
 	beforeEach(async () => {
 		root = makeTempDir();
-		fs.mkdirSync(path.join(root, '.epiq', 'events'), {recursive: true});
+		fs.mkdirSync(path.join(root, '.ome', 'events'), {recursive: true});
 
 		await execGit({args: ['init', '-q', '-b', 'main', '.'], cwd: root});
 		await execGit({args: ['config', 'user.name', 'Test'], cwd: root});
@@ -117,7 +117,7 @@ describe('the sync path refuses a truncated log', () => {
 
 	it('allows a first sync, where nothing is committed yet', async () => {
 		const fresh = makeTempDir();
-		fs.mkdirSync(path.join(fresh, '.epiq', 'events'), {recursive: true});
+		fs.mkdirSync(path.join(fresh, '.ome', 'events'), {recursive: true});
 		await execGit({args: ['init', '-q', '-b', 'main', '.'], cwd: fresh});
 		fs.writeFileSync(path.join(fresh, RELATIVE), line(1) + '\n');
 

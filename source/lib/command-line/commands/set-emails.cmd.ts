@@ -17,9 +17,9 @@ import {
 	patchSettingsState,
 } from '../../state/settings.state.js';
 import {getSafeState, patchState} from '../../state/state.js';
-import {readEpiqConfig, setConfig} from '../../config/user-config.js';
+import {readOMEConfig, setConfig} from '../../config/user-config.js';
 import {currentBoardId, hasClaimedAnEmail} from '../../config/setup-utils.js';
-import {resolveClosestEpiqProjectRoot} from '../../storage/paths.js';
+import {resolveClosestOMEProjectRoot} from '../../storage/paths.js';
 
 /** Records this board's refusal locally; it must not replicate like a link. */
 const declineEmailSetup = (): Result<null> => {
@@ -29,7 +29,7 @@ const declineEmailSetup = (): Result<null> => {
 	if (!boardId) return succeeded('Nothing here to decline', null);
 
 	// Read from disk, not the boot-time copy: another instance may have declined since.
-	const stored = readEpiqConfig();
+	const stored = readOMEConfig();
 	const onDisk = isFail(stored) ? [] : stored.value.declinedEmailBoards ?? [];
 
 	const declined = [...new Set([...onDisk, boardId])];
@@ -70,7 +70,7 @@ export const setEmailsCommand = async () => {
 	const stateResult = getSafeState();
 	if (isFail(stateResult)) return failed('Board is not loaded');
 
-	const repoRootResult = resolveClosestEpiqProjectRoot(process.cwd());
+	const repoRootResult = resolveClosestOMEProjectRoot(process.cwd());
 	if (isFail(repoRootResult)) return failed(repoRootResult.message);
 
 	const branchResult = getStateBranch(repoRootResult.value);

@@ -8,7 +8,7 @@ import {isFail, Result} from '../lib/model/result-types.js';
 // A remote that hides git's stderr, as GitHub does over ssh. The environment is
 // read at module load, so it is set before the import.
 
-const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-quiet-'));
+const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-quiet-'));
 const quietSsh = path.join(scratch, 'quiet-ssh.sh');
 const drop = path.join(scratch, 'drop');
 fs.writeFileSync(
@@ -62,12 +62,12 @@ const git = (cwd: string, args: string[], date: string) =>
 /** A board made in 2020, and a remote whose commits predate it but for `recent`. */
 const setUp = (projectId: string, recent: string[] = []) => {
 	const board = fs.mkdtempSync(path.join(scratch, 'board-'));
-	fs.mkdirSync(path.join(board, '.epiq'));
+	fs.mkdirSync(path.join(board, '.ome'));
 	fs.writeFileSync(
-		path.join(board, '.epiq', 'project.json'),
+		path.join(board, '.ome', 'project.json'),
 		JSON.stringify({
 			projectId,
-			stateBranch: 'epiq/state',
+			stateBranch: 'ome/state',
 			createdAt: '2020-01-01T00:00:00.000Z',
 		}),
 	);
@@ -115,7 +115,7 @@ describe('a remote that hides why it refused a window', () => {
 		value(await fetchCommitRepos({repoRoot: board}));
 		const marker = path.join(
 			getRepoClonePath('quiet-widen', repoIdOf(url)),
-			'epiq-test-marker',
+			'ome-test-marker',
 		);
 		fs.writeFileSync(marker, '');
 

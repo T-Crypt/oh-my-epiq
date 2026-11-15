@@ -21,7 +21,7 @@ useTempHome();
 
 const user = {userId: '01HZZZZZZZZZZZZZZZZZZZZZZZ', userName: 'Jo'};
 
-// A clone with a bare remote and one commit, and no epiq project yet.
+// A clone with a bare remote and one commit, and no ome project yet.
 const setupPlainRepo = async () => {
 	const remoteRoot = makeTempDir();
 	const repoRoot = makeTempDir();
@@ -72,7 +72,7 @@ describe('initProject', () => {
 		).toBe(true);
 
 		expect(await gitStdout(repoRoot, ['log', '-1', '--format=%s'])).toBe(
-			'[epiq:init-project]',
+			'[ome:init-project]',
 		);
 		expect(
 			await gitStdout(result.value.stateBranchRoot, [
@@ -80,7 +80,7 @@ describe('initProject', () => {
 				'-1',
 				'--format=%s',
 			]),
-		).toBe('[epiq:init]');
+		).toBe('[ome:init]');
 
 		const remoteBranches = await gitStdout(remoteRoot, [
 			'branch',
@@ -125,7 +125,7 @@ describe('initProject', () => {
 		const second = await initProject({cwd: repoRoot, user});
 
 		expect(isFail(second)).toBe(true);
-		expect(second.message).toBe('[4] Epiq project already initialized');
+		expect(second.message).toBe('[4] OME project already initialized');
 	});
 
 	it('initializes without a remote, reporting the failed pushes as warnings', async () => {
@@ -146,7 +146,7 @@ describe('initProject', () => {
 		expect(result.value.warnings).toHaveLength(2);
 		expect(result.value.warnings[0]).toMatch(/^\[init:14\]/);
 		expect(result.value.warnings[1]).toMatch(/^\[init:15\]/);
-		expect(fs.existsSync(path.join(repoRoot, '.epiq', 'project.json'))).toBe(
+		expect(fs.existsSync(path.join(repoRoot, '.ome', 'project.json'))).toBe(
 			true,
 		);
 	});

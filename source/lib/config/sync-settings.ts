@@ -10,9 +10,9 @@ import {
 import {failed, isFail, Result, succeeded} from '../model/result-types.js';
 import {patchSettingsState} from '../state/settings.state.js';
 import {
-	EpiqConfig,
+	OMEConfig,
 	loadSettingsFromConfig,
-	readEpiqConfig,
+	readOMEConfig,
 	setConfig,
 } from './user-config.js';
 
@@ -41,7 +41,7 @@ export const autoSyncBlockedReason = (identity: {
  * Why auto sync would not run here, as the loops decide it. A failed resolution
  * is itself a blocker; the raw config only names the missing field.
  */
-const blockedReasonFor = (config: EpiqConfig): string | null => {
+const blockedReasonFor = (config: OMEConfig): string | null => {
 	const resolved = loadSettingsFromConfig();
 
 	if (isFail(resolved)) {
@@ -57,7 +57,7 @@ const blockedReasonFor = (config: EpiqConfig): string | null => {
 };
 
 export const readAutoSyncSettings = (): Result<AutoSyncSettings> => {
-	const config = readEpiqConfig();
+	const config = readOMEConfig();
 	if (isFail(config)) return failed(config.message);
 
 	return succeeded('Read auto sync settings', {

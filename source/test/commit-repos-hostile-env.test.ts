@@ -10,7 +10,7 @@ import {isFail, Result} from '../lib/model/result-types.js';
 // before git-utils captures the environment at import, which is why nothing
 // above may import anything that reaches it.
 
-const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-hostile-env-'));
+const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-hostile-env-'));
 const hookMarker = path.join(scratch, 'hook-ran');
 const extMarker = path.join(scratch, 'ext-ran');
 const hooksDir = path.join(scratch, 'hooks');
@@ -74,19 +74,19 @@ const makeBoard = () => {
 	const board = fs.mkdtempSync(path.join(scratch, 'board-'));
 	// Its own id: boards that shared one would share a log, and its repos.
 	git(board, ['init', '-q', '-b', 'main']);
-	fs.mkdirSync(path.join(board, '.epiq'));
+	fs.mkdirSync(path.join(board, '.ome'));
 	fs.writeFileSync(
-		path.join(board, '.epiq', 'project.json'),
+		path.join(board, '.ome', 'project.json'),
 		JSON.stringify({
 			projectId: path.basename(board),
-			stateBranch: 'epiq/state',
+			stateBranch: 'ome/state',
 			createdAt: '2020-01-01T00:00:00.000Z',
 		}),
 	);
 	fs.writeFileSync(path.join(board, 'a'), 'a');
 	git(board, ['add', '-A']);
 	git(board, ['commit', '-q', '-m', 'init']);
-	git(board, ['branch', 'epiq/state']);
+	git(board, ['branch', 'ome/state']);
 	return board;
 };
 

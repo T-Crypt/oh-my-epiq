@@ -23,11 +23,11 @@ import {CommitBody} from './CommitBody';
 import {FullscreenToggleButton} from './FullscreenToggleButton';
 import {PanelDockMenu} from './PanelDockMenu';
 import {AsideDock} from '../lib/aside-dock';
-import {EPIQ_DIFF_THEME} from '../lib/diff-theme';
+import {OME_DIFF_THEME} from '../lib/diff-theme';
 import {useDiffWorkersUsable} from '../lib/diffs-worker-pool';
 
 // The app is dark only, so one theme (see lib/diff-theme).
-const PIERRE_THEME = EPIQ_DIFF_THEME;
+const PIERRE_THEME = OME_DIFF_THEME;
 
 // The box a file's diff sits in. Shared with whatever stands in for the diff
 // while it is collapsed, so a file looks the same shut as open.

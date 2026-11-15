@@ -1,8 +1,8 @@
 import {expect, test} from './fixtures.js';
 
-// Outside an epiq project the state request fails and nothing further arrives,
+// Outside an ome project the state request fails and nothing further arrives,
 // so the GUI has to say there is nothing to load rather than report waiting.
-test('says the folder is not an epiq project instead of loading forever', async ({
+test('says the folder is not an ome project instead of loading forever', async ({
 	page,
 	bareAppUrl,
 	bareRepoRoot,

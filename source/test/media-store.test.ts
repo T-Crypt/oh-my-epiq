@@ -121,7 +121,7 @@ describe('writeAttachmentBlob / resolveAttachmentBlob', () => {
 	let root: string;
 
 	beforeEach(() => {
-		root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-media-'));
+		root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-media-'));
 	});
 
 	afterEach(() => {

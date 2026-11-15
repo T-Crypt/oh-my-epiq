@@ -10,7 +10,7 @@ import {
 	linkContributorEmail,
 	listContributorEmails,
 	suggestOwnEmails,
-} from '../mcp/epiq-api.js';
+} from '../mcp/ome-api.js';
 import {setupRepo, useTempHome} from './helpers/git-repo.js';
 
 // Three read tools nothing exercised. They share the prologue every other tool

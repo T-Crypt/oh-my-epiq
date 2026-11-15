@@ -16,7 +16,7 @@ import {
 	readAutoSyncSettings,
 	writeAutoSyncSettings,
 } from '../lib/config/sync-settings.js';
-import {getEpiqConfigPath, setConfig} from '../lib/config/user-config.js';
+import {getOMEConfigPath, setConfig} from '../lib/config/user-config.js';
 import {isFail, isSuccess} from '../lib/model/result-types.js';
 import {patchSettingsState} from '../lib/state/settings.state.js';
 
@@ -24,12 +24,12 @@ let originalGlobalDir: string | undefined;
 let tempDir = '';
 
 const configOnDisk = () =>
-	JSON.parse(fs.readFileSync(getEpiqConfigPath(), 'utf8'));
+	JSON.parse(fs.readFileSync(getOMEConfigPath(), 'utf8'));
 
 beforeEach(() => {
-	originalGlobalDir = process.env['EPIQ_GLOBAL_DIR'];
-	tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-sync-settings-'));
-	process.env['EPIQ_GLOBAL_DIR'] = path.join(tempDir, '.epiq-global');
+	originalGlobalDir = process.env['OME_GLOBAL_DIR'];
+	tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-sync-settings-'));
+	process.env['OME_GLOBAL_DIR'] = path.join(tempDir, '.ome-global');
 
 	// A complete identity, so nothing is blocked unless a test blocks it.
 	setConfig({
@@ -42,8 +42,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-	if (originalGlobalDir === undefined) delete process.env['EPIQ_GLOBAL_DIR'];
-	else process.env['EPIQ_GLOBAL_DIR'] = originalGlobalDir;
+	if (originalGlobalDir === undefined) delete process.env['OME_GLOBAL_DIR'];
+	else process.env['OME_GLOBAL_DIR'] = originalGlobalDir;
 
 	fs.rmSync(tempDir, {recursive: true, force: true});
 });
@@ -63,10 +63,10 @@ describe('readAutoSyncSettings', () => {
 	// An unresolvable actor (an id with no name) blocks auto sync, whatever the
 	// raw config holds.
 	it('is blocked when the actor will not resolve, however complete the file looks', () => {
-		const originalId = process.env['EPIQ_USER_ID'];
-		const originalName = process.env['EPIQ_USER_NAME'];
-		process.env['EPIQ_USER_ID'] = 'from-the-environment';
-		delete process.env['EPIQ_USER_NAME'];
+		const originalId = process.env['OME_USER_ID'];
+		const originalName = process.env['OME_USER_NAME'];
+		process.env['OME_USER_ID'] = 'from-the-environment';
+		delete process.env['OME_USER_NAME'];
 
 		try {
 			const result = readAutoSyncSettings();
@@ -74,10 +74,10 @@ describe('readAutoSyncSettings', () => {
 
 			expect(result.value.blockedReason).not.toBeNull();
 		} finally {
-			if (originalId === undefined) delete process.env['EPIQ_USER_ID'];
-			else process.env['EPIQ_USER_ID'] = originalId;
+			if (originalId === undefined) delete process.env['OME_USER_ID'];
+			else process.env['OME_USER_ID'] = originalId;
 			if (originalName !== undefined) {
-				process.env['EPIQ_USER_NAME'] = originalName;
+				process.env['OME_USER_NAME'] = originalName;
 			}
 		}
 	});

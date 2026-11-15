@@ -24,8 +24,8 @@ describe('answersBoardOnScreen', () => {
 
 describe('boardSocketUrl', () => {
 	it('opens a secure socket from a page served over https', () => {
-		expect(boardSocketUrl({protocol: 'https:', host: 'epiq.example.com'})).toBe(
-			'wss://epiq.example.com/ws',
+		expect(boardSocketUrl({protocol: 'https:', host: 'ome.example.com'})).toBe(
+			'wss://ome.example.com/ws',
 		);
 	});
 

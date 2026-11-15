@@ -17,12 +17,12 @@ import {AutoSyncController} from './AutoSyncController.js';
 import {EventLogWatchController} from './EventLogWatchController.js';
 import {useSettingsState} from '../state/settings.state.js';
 
-type EpiqAppProps = {
+type OmeAppProps = {
 	height: number;
 	width: number;
 };
 
-export default function EpiqApp({width, height}: EpiqAppProps) {
+export default function OmeApp({width, height}: OmeAppProps) {
 	const state = useAppState();
 	const {autoSync, viewMode} = useSettingsState();
 

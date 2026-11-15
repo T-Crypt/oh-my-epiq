@@ -8,8 +8,8 @@ import {toPendingFileName} from '../lib/event/pending-log.js';
 import {isFail} from '../lib/model/result-types.js';
 import {makeTempDir} from './helpers/git-repo.js';
 
-const BRANCH = 'epiq/state';
-const LOG = '.epiq/events/01h0000000000000000000000a.alice.jsonl';
+const BRANCH = 'ome/state';
+const LOG = '.ome/events/01h0000000000000000000000a.alice.jsonl';
 
 /**
  * Relocating the state worktree must not `--force` remove it: it always holds
@@ -65,7 +65,7 @@ describe('relocating the state worktree must not discard unsynced events', () =>
 		expect(isFail(result)).toBe(true);
 		if (!isFail(result)) return;
 		expect(result.message).toContain('not committed yet');
-		expect(result.message).toContain('EPIQ_GLOBAL_DIR');
+		expect(result.message).toContain('OME_GLOBAL_DIR');
 
 		expect(fs.existsSync(logPath())).toBe(true);
 		expect(fs.readFileSync(logPath(), 'utf8')).toContain('UNSYNCED EVENT');
@@ -125,7 +125,7 @@ describe('relocating the state worktree must not discard unsynced events', () =>
 
 		// A directory where the worktree should be, holding logs but no `.git`.
 		const stranded = path.join(makeTempDir(), 'worktrees', 'project');
-		fs.mkdirSync(path.join(stranded, '.epiq', 'events'), {recursive: true});
+		fs.mkdirSync(path.join(stranded, '.ome', 'events'), {recursive: true});
 		fs.writeFileSync(path.join(stranded, LOG), 'STRANDED EVENT\n');
 
 		const result = await ensureStateBranchWorktree({

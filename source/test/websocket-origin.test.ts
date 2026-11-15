@@ -57,7 +57,7 @@ describe('websocket handshake origin', () => {
 	});
 
 	it('accepts the page this server serves', async () => {
-		await expect(connect(`http://epiq.localhost:${port}`)).resolves.toBe(
+		await expect(connect(`http://ome.localhost:${port}`)).resolves.toBe(
 			'open',
 		);
 		await expect(connect(`http://127.0.0.1:${port}`)).resolves.toBe('open');

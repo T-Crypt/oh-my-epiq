@@ -9,7 +9,7 @@ import {isFail, Result} from '../lib/model/result-types.js';
 // ssh to a wrapper that counts its calls and fails the one it is told to. The
 // environment is read when the module loads, so it is set before the import.
 
-const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-flaky-'));
+const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-flaky-'));
 const count = path.join(scratch, 'count');
 const failAt = path.join(scratch, 'fail-at');
 const flakySsh = path.join(scratch, 'flaky-ssh.sh');
@@ -62,12 +62,12 @@ const git = (cwd: string, args: string[]) =>
 describe('a fetch the network drops once', () => {
 	it('is tried again before the clone is started over', async () => {
 		const board = fs.mkdtempSync(path.join(scratch, 'board-'));
-		fs.mkdirSync(path.join(board, '.epiq'));
+		fs.mkdirSync(path.join(board, '.ome'));
 		fs.writeFileSync(
-			path.join(board, '.epiq', 'project.json'),
+			path.join(board, '.ome', 'project.json'),
 			JSON.stringify({
 				projectId: 'flaky-board',
-				stateBranch: 'epiq/state',
+				stateBranch: 'ome/state',
 				createdAt: '2020-01-01T00:00:00.000Z',
 			}),
 		);
@@ -80,7 +80,7 @@ describe('a fetch the network drops once', () => {
 		value(await fetchCommitRepos({repoRoot: board}));
 		const marker = path.join(
 			getRepoClonePath('flaky-board', repoIdOf(url)),
-			'epiq-test-marker',
+			'ome-test-marker',
 		);
 		fs.writeFileSync(marker, '');
 

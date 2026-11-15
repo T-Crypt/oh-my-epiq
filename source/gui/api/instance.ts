@@ -3,10 +3,10 @@ import path from 'node:path';
 
 // The port a GUI asks for first. Settable, since the websocket origin guard
 // needs it to match a forwarded port.
-export const PREFERRED_GUI_PORT = Number(process.env['EPIQ_GUI_PORT']) || 3710;
+export const PREFERRED_GUI_PORT = Number(process.env['OME_GUI_PORT']) || 3710;
 
 export const INSTANCE_PATH = '/api/instance';
-export const INSTANCE_APP = 'epiq';
+export const INSTANCE_APP = 'ome';
 
 export type GuiInstance = {
 	app: typeof INSTANCE_APP;
@@ -38,7 +38,7 @@ const isGuiInstance = (value: unknown): value is GuiInstance => {
 };
 
 /**
- * Who holds `port`, or null for any answer that isn't a usable epiq. Times
+ * Who holds `port`, or null for any answer that isn't a usable ome. Times
  * out, so a silent foreign server can't stall boot.
  */
 export const probeGuiInstance = async (

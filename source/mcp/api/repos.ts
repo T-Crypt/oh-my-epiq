@@ -142,7 +142,7 @@ export const syncThenFetchRepos = async <T extends object>(
 
 	if (reposResult === null) {
 		return succeeded(
-			`${syncResult.message} · still fetching other repos; epiq_repo_list shows how they stand`,
+			`${syncResult.message} · still fetching other repos; ome_repo_list shows how they stand`,
 			syncResult.value,
 		);
 	}

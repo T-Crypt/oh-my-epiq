@@ -2,7 +2,7 @@
 // freezes the page. `build-gui.mjs` builds the worker as a second entry point.
 
 import {useSyncExternalStore} from 'react';
-import {EPIQ_DIFF_THEME} from './diff-theme';
+import {OME_DIFF_THEME} from './diff-theme';
 
 // Served from the GUI root, beside main.js — see `serveStatic`.
 const WORKER_URL = '/diffs-worker.js';
@@ -56,5 +56,5 @@ export const DIFF_WORKER_POOL_OPTIONS = {
 
 // Registered on the main thread by `diff-theme` and shipped to each worker.
 export const DIFF_WORKER_HIGHLIGHTER_OPTIONS = {
-	theme: EPIQ_DIFF_THEME,
+	theme: OME_DIFF_THEME,
 };

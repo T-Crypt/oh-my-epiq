@@ -269,10 +269,10 @@ describe('shell metacharacters in paths (RKAZMMX)', () => {
 	// Repo filenames reach the editor command, so a name like `a$(id -u).ts`
 	// must never be evaluated.
 	it.each([
-		'/tmp/epiq/before/a$(id -u).ts',
-		'/tmp/epiq/before/a`id`.ts',
-		'/tmp/epiq/before/a; rm -rf ~/.ts',
-		'/tmp/epiq/before/a" && id && ".ts',
+		'/tmp/ome/before/a$(id -u).ts',
+		'/tmp/ome/before/a`id`.ts',
+		'/tmp/ome/before/a; rm -rf ~/.ts',
+		'/tmp/ome/before/a" && id && ".ts',
 	])('passes %s through as one literal argv entry', async hostilePath => {
 		const child = new FakeChild();
 		vi.mocked(spawn).mockReturnValue(child as never);

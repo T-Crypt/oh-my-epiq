@@ -40,14 +40,14 @@ describe('a repo change the server refuses', () => {
 			error: vi.fn(),
 		};
 
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-ws-repos-'));
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-ws-repos-'));
 		dirs.push(root);
-		fs.mkdirSync(path.join(root, '.epiq'));
+		fs.mkdirSync(path.join(root, '.ome'));
 		fs.writeFileSync(
-			path.join(root, '.epiq', 'project.json'),
+			path.join(root, '.ome', 'project.json'),
 			JSON.stringify({
 				projectId: 'ws-repos',
-				stateBranch: '__epiq_state__',
+				stateBranch: '__ome_state__',
 				createdAt: new Date().toISOString(),
 			}),
 		);

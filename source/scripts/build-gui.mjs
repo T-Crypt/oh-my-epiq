@@ -39,10 +39,10 @@ for (const name of ['inter.woff2', 'inter-OFL.txt']) {
 	);
 }
 
-// Production React unless EPIQ_GUI_DEV_BUILD=1, which `test:gui:warnings`
+// Production React unless OME_GUI_DEV_BUILD=1, which `test:gui:warnings`
 // uses to surface React's dev-only warnings.
 const nodeEnv =
-	process.env['EPIQ_GUI_DEV_BUILD'] === '1' ? 'development' : 'production';
+	process.env['OME_GUI_DEV_BUILD'] === '1' ? 'development' : 'production';
 
 // The API rather than the CLI: a define's value is JSON, so `"production"`
 // carries quotes that a Windows shell would eat before esbuild saw them.

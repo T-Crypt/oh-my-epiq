@@ -58,17 +58,17 @@ beforeEach(() => {
 
 	board = makeTempDir();
 	childProcess.execFileSync('git', ['init', '-q', '-b', 'main'], {cwd: board});
-	fs.mkdirSync(path.join(board, '.epiq'), {recursive: true});
+	fs.mkdirSync(path.join(board, '.ome'), {recursive: true});
 	fs.writeFileSync(
-		path.join(board, '.epiq', 'project.json'),
+		path.join(board, '.ome', 'project.json'),
 		JSON.stringify({
 			projectId: path.basename(board),
-			stateBranch: 'epiq/state',
+			stateBranch: 'ome/state',
 			createdAt: '2020-01-01T00:00:00.000Z',
 		}) + '\n',
 	);
 	commitFile(board, 'base.txt', 1, 'init', JAN - 1000);
-	childProcess.execFileSync('git', ['branch', 'epiq/state'], {cwd: board});
+	childProcess.execFileSync('git', ['branch', 'ome/state'], {cwd: board});
 
 	commitFile(board, 'early.txt', 3, 'B8PYTCM the early half', JAN);
 	commitFile(board, 'late.txt', 5, 'B8PYTCM the late half', FEB);

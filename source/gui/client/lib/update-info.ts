@@ -1,4 +1,4 @@
-// A newer epiq as the header draws it. Pure, so tests read it without a DOM.
+// A newer ome as the header draws it. Pure, so tests read it without a DOM.
 
 import type {UpdateInfo} from '../../../lib/version/version.model.js';
 

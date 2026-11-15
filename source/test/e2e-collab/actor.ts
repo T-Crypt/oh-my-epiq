@@ -1,10 +1,10 @@
 /**
  * One collaborator per process (state is a singleton), with its own clone and
- * `EPIQ_GLOBAL_DIR`. Never throws, so a refusal is told from a crash.
+ * `OME_GLOBAL_DIR`. Never throws, so a refusal is told from a crash.
  */
 import fs from 'node:fs';
 import {getStateBranchRoot} from '../../git/git-storage.js';
-import {syncEpiqWithRemote} from '../../git/sync.js';
+import {syncOMEWithRemote} from '../../git/sync.js';
 import {loadSettingsFromConfig} from '../../lib/config/user-config.js';
 import {createDefaultEvents} from '../../lib/board/board-boot.js';
 import {loadMergedEvents} from '../../lib/board/board-log.js';
@@ -18,7 +18,7 @@ import {
 	createIssue,
 	listIssues,
 	listSwimlanes,
-} from '../../mcp/epiq-api.js';
+} from '../../mcp/ome-api.js';
 import {
 	readConnectedRepos,
 	writeRepoEvent,
@@ -41,7 +41,7 @@ const actor = {userId: job.userId, userName: job.userName};
 
 // What `init` does, minus the TUI: first sync, then the default events.
 if (job.init) {
-	const bootstrap = await syncEpiqWithRemote({
+	const bootstrap = await syncOMEWithRemote({
 		cwd: job.repoRoot,
 		ownEventFileName: getPersistFileName(actor),
 	});
@@ -116,7 +116,7 @@ if (job.sync) {
 	// waiting to interrupt what comes next.
 	if (job.syncStartedPath) fs.writeFileSync(job.syncStartedPath, '');
 
-	const synced = await syncEpiqWithRemote({
+	const synced = await syncOMEWithRemote({
 		cwd: job.repoRoot,
 		ownEventFileName: getPersistFileName(actor),
 	});

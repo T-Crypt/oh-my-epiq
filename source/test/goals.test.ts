@@ -26,7 +26,7 @@ import {
 	editGoalDescription,
 	editSwimlaneDescription,
 	getIssue,
-} from '../mcp/epiq-api.js';
+} from '../mcp/ome-api.js';
 import {deriveGuiState} from '../mcp/api/state.js';
 import {nodeRepo} from '../lib/repository/node-repo.js';
 import {goalMark} from '../lib/utils/goal.utils.js';

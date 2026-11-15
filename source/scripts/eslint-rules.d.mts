@@ -1,3 +1,3 @@
 import type {ESLint} from 'eslint';
 
-export declare const epiqPlugin: ESLint.Plugin;
+export declare const omePlugin: ESLint.Plugin;

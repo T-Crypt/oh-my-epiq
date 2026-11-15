@@ -3,9 +3,9 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawn, type ChildProcess} from 'node:child_process';
 
-// Shadows the browser opener on PATH, so `epiq gui` opens no windows.
+// Shadows the browser opener on PATH, so `ome gui` opens no windows.
 const browserShimDir = (): string => {
-	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-gui-no-open-'));
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-gui-no-open-'));
 
 	for (const name of ['open', 'xdg-open']) {
 		const shim = path.join(dir, name);
@@ -43,7 +43,7 @@ export const serveDist = async (
 		PATH: `${shimDir}${path.delimiter}${parentEnv['PATH'] ?? ''}`,
 		// The seeded project's state lives here; the worker's own environment
 		// still points at the real one.
-		EPIQ_GLOBAL_DIR: globalDir,
+		OME_GLOBAL_DIR: globalDir,
 	};
 
 	const child: ChildProcess = spawn(process.execPath, [cliPath, 'gui'], {
@@ -66,7 +66,7 @@ export const serveDist = async (
 
 	const deadline = Date.now() + 60_000;
 
-	// It reports itself as epiq.localhost; only the port is portable, since a
+	// It reports itself as ome.localhost; only the port is portable, since a
 	// browser cannot be relied on to resolve that name.
 	while (!URL_LINE.test(output)) {
 		if (exited) {

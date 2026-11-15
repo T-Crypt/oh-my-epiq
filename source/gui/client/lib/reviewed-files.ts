@@ -1,7 +1,7 @@
 import {useState} from 'react';
 
 /** Which file diffs this browser has ticked as reviewed, keyed by commit and path. */
-const STORAGE_KEY = 'epiq.commits.reviewedFiles';
+const STORAGE_KEY = 'ome.commits.reviewedFiles';
 
 const reviewedKey = (sha: string, path: string): string => `${sha}:${path}`;
 

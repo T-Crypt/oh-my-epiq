@@ -1,4 +1,4 @@
-// A commit can name its ticket with an `Epiq-Ref:` line in its body rather
+// A commit can name its ticket with an `OME-Ref:` line in its body rather
 // than a ref leading its subject. Linked that way it is linked everywhere, and
 // its body says so.
 
@@ -6,7 +6,7 @@ import {expect, test} from './fixtures.js';
 import {addTicketForRef} from './ticket.js';
 import {commitPlainFile} from './linked-commit.js';
 
-test('a commit linked by an Epiq-Ref line is a linked commit, opens its ticket, and shows its body', async ({
+test('a commit linked by an OME-Ref line is a linked commit, opens its ticket, and shows its body', async ({
 	page,
 	appUrl,
 	pageErrors,
@@ -25,7 +25,7 @@ test('a commit linked by an Epiq-Ref line is a linked commit, opens its ticket, 
 		subject,
 		'one\n',
 		undefined,
-		['Why it was done.', `Epiq-Ref: ${ref}`],
+		['Why it was done.', `OME-Ref: ${ref}`],
 	);
 
 	await page.goto(boardUrl);
@@ -48,7 +48,7 @@ test('a commit linked by an Epiq-Ref line is a linked commit, opens its ticket, 
 	await page.locator('aside').getByTestId('commit-message').click();
 	const body = page.getByTestId('commit-body');
 	await expect(body).toContainText('Why it was done.');
-	await expect(body).toContainText(`Epiq-Ref: ${ref}`);
+	await expect(body).toContainText(`OME-Ref: ${ref}`);
 
 	expect(pageErrors).toEqual([]);
 });

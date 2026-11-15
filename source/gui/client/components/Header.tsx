@@ -7,7 +7,7 @@ import {IconGear} from './IconGear';
 import {CommandPaletteHint} from './CommandPaletteHint';
 import {Panel} from './Panel';
 import {User} from './User';
-import {EPIQ_VERSION} from '../../../version.js';
+import {OME_VERSION} from '../../../version.js';
 import {VersionBadge} from './VersionBadge';
 
 type HeaderProps = {
@@ -100,7 +100,7 @@ export const Header = ({
 							fontWeight: 700,
 						}}
 					>
-						:epiq
+						:ome
 					</div>
 
 					{board}
@@ -186,7 +186,7 @@ export const Header = ({
 						)}
 
 						<span style={{color: GUI_THEME.dim}}>|</span>
-						<VersionBadge current={EPIQ_VERSION} update={update} />
+						<VersionBadge current={OME_VERSION} update={update} />
 					</div>
 
 					{/* Settings opens from the viewer's avatar, or a gear with no identity set. */}

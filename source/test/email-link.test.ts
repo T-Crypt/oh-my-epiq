@@ -118,7 +118,7 @@ describe('linking', () => {
 		expect(ownerOf(links, 'old@job.com')).toBe(ALICE);
 	});
 
-	it('lets one person link another, so a teammate who never opens epiq still resolves', () => {
+	it('lets one person link another, so a teammate who never opens ome still resolves', () => {
 		const links = boot([
 			...base(),
 			by(ALICE, 'link.contributor.email', {

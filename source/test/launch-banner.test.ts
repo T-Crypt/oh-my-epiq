@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 import {launchBanner} from '../gui/launch-banner.js';
 
-const url = 'http://epiq.localhost:50972';
+const url = 'http://ome.localhost:50972';
 const home = os.homedir();
 
 const banner = (repoRoot: string, reused = false) =>
@@ -23,15 +23,15 @@ describe('the gui launch banner', () => {
 	});
 
 	it('names the url, the version and the project', () => {
-		const text = banner(path.join(home, 'dev', 'epiq'));
+		const text = banner(path.join(home, 'dev', 'ome'));
 
 		expect(text).toContain(`Local    ${url}`);
 		expect(text).toContain('v1.12.0');
-		expect(text).toContain(`Project  ~${path.sep}dev${path.sep}epiq`);
+		expect(text).toContain(`Project  ~${path.sep}dev${path.sep}ome`);
 	});
 
 	it('shortens only a path inside home, not one that merely starts with it', () => {
-		const sibling = home + 'x' + path.sep + 'epiq';
+		const sibling = home + 'x' + path.sep + 'ome';
 
 		expect(banner(sibling)).toContain(`Project  ${sibling}`);
 	});

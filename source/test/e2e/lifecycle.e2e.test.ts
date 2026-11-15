@@ -12,7 +12,7 @@ import {
 const testTimeout = 60_000;
 const EMPTY_CMD = commandLineIsIdle;
 
-// `epiq` only accepts editors from a fixed allow-list, but `$EDITOR` is one of
+// `ome` only accepts editors from a fixed allow-list, but `$EDITOR` is one of
 // them and is expanded through the shell at edit time. So we register `$EDITOR`
 // and point the env var at a deterministic, non-interactive stand-in that just
 // writes a fixed description and exits (see fake-editor.sh).

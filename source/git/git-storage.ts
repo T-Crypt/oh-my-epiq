@@ -4,7 +4,7 @@ import {readProjectId} from '../lib/project-setup/project-setup.js';
 import {failed, isFail, Result, succeeded} from '../lib/model/result-types.js';
 import {getGlobalConfigDir} from '../lib/storage/global-config-dir.js';
 import {
-	EPIQ_DIR_NAME,
+	OME_DIR_NAME,
 	EVENTS_DIR_NAME,
 	MEDIA_DIR_NAME,
 } from '../lib/storage/paths.js';
@@ -15,15 +15,15 @@ import {commitAndGetSha, execGit} from './git-utils.js';
 export const EMPTY_TREE_SHA = '4b825dc642cb6eb9a060e54bf8d69288fbee4904';
 
 export const getRelativeEventFilePath = (fileName: string): string =>
-	path.join(EPIQ_DIR_NAME, EVENTS_DIR_NAME, fileName);
+	path.join(OME_DIR_NAME, EVENTS_DIR_NAME, fileName);
 
 export const getRelativeMediaDirPath = (): string =>
-	path.join(EPIQ_DIR_NAME, MEDIA_DIR_NAME);
+	path.join(OME_DIR_NAME, MEDIA_DIR_NAME);
 
-export const getEpiqGlobal = getGlobalConfigDir;
+export const getOMEGlobal = getGlobalConfigDir;
 
 export const getWorktreesRoot = (): string =>
-	path.join(getEpiqGlobal(), 'worktrees');
+	path.join(getOMEGlobal(), 'worktrees');
 
 export const getStateBranchRoot = ({
 	repoRoot,
@@ -39,10 +39,10 @@ export const getStateBranchRoot = ({
 	);
 };
 
-const getEpiqRoot = (root: string): string => path.join(root, EPIQ_DIR_NAME);
+const getOMERoot = (root: string): string => path.join(root, OME_DIR_NAME);
 
 export const getEventsDir = (root: string): string =>
-	path.join(getEpiqRoot(root), EVENTS_DIR_NAME);
+	path.join(getOMERoot(root), EVENTS_DIR_NAME);
 
 export const getEventFilePath = ({
 	root,
@@ -62,7 +62,7 @@ export const ensureDir = (dirPath: string): Result<void> => {
 };
 
 export const ensureWorktreesDir = (): Result<boolean> => {
-	const home = getEpiqGlobal();
+	const home = getOMEGlobal();
 	const worktrees = getWorktreesRoot();
 	// Read before creating: callers use this to mean "bootstrap changed
 	// something", and a plain `true` makes every sync look like a first one.
@@ -70,7 +70,7 @@ export const ensureWorktreesDir = (): Result<boolean> => {
 
 	const homeResult = ensureDir(home);
 	if (isFail(homeResult)) {
-		return failed('Ensure epiq home failed.\n' + homeResult.message);
+		return failed('Ensure ome home failed.\n' + homeResult.message);
 	}
 
 	const worktreesResult = ensureDir(worktrees);
@@ -78,7 +78,7 @@ export const ensureWorktreesDir = (): Result<boolean> => {
 		return failed('Ensure worktrees dir failed.\n' + worktreesResult.message);
 	}
 
-	return succeeded('Ensured epiq storage', created);
+	return succeeded('Ensured ome storage', created);
 };
 
 export const removePath = (targetPath: string): void => {
@@ -101,7 +101,7 @@ export const listEventFiles = (root: string): Result<string[]> => {
 
 	return succeeded('Listed event files', files);
 };
-// Union merge is safe since line order is not load-bearing. Kept under `.epiq/`,
+// Union merge is safe since line order is not load-bearing. Kept under `.ome/`,
 // since `ensureStateBranchIsStorageOnly` removes anything else at the root.
 const EVENT_LOG_ATTRIBUTES = '*.jsonl merge=union\n';
 
@@ -109,10 +109,10 @@ const EVENT_LOG_ATTRIBUTES = '*.jsonl merge=union\n';
 const EVENT_LOG_IGNORES = '*~pending*.jsonl\n';
 
 export const getRelativeEventAttributesPath = (): string =>
-	path.join(EPIQ_DIR_NAME, EVENTS_DIR_NAME, '.gitattributes');
+	path.join(OME_DIR_NAME, EVENTS_DIR_NAME, '.gitattributes');
 
 export const getRelativeEventIgnorePath = (): string =>
-	path.join(EPIQ_DIR_NAME, EVENTS_DIR_NAME, '.gitignore');
+	path.join(OME_DIR_NAME, EVENTS_DIR_NAME, '.gitignore');
 
 const writeIfDifferent = (filePath: string, content: string): void => {
 	try {
@@ -146,7 +146,7 @@ export const ensureStateBranchLayout = (
 	return succeeded('Ensured state branch', undefined);
 };
 
-/** Makes sure the state branch only contains the .epiq folder. */
+/** Makes sure the state branch only contains the .ome folder. */
 export const ensureStateBranchIsStorageOnly = async (
 	stateBranchRoot: string,
 ): Promise<Result<boolean>> => {
@@ -164,7 +164,7 @@ export const ensureStateBranchIsStorageOnly = async (
 		.trim()
 		.split('\n')
 		.filter(Boolean);
-	const disallowedFiles = topLevelFiles.filter(file => file !== EPIQ_DIR_NAME);
+	const disallowedFiles = topLevelFiles.filter(file => file !== OME_DIR_NAME);
 
 	if (disallowedFiles.length === 0) {
 		return succeeded('State branch is storage-only', false);
@@ -182,7 +182,7 @@ export const ensureStateBranchIsStorageOnly = async (
 	// Only the removed paths: anything else staged would skip `assertLogOnlyGrew`.
 	const commitResult = await commitAndGetSha({
 		cwd: stateBranchRoot,
-		message: '[epiq:repair-storage-branch]',
+		message: '[ome:repair-storage-branch]',
 		pathspec: disallowedFiles,
 	});
 

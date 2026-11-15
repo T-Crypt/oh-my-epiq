@@ -205,7 +205,7 @@ describe(':config repoDisconnect names', () => {
 
 describe('a lock file for long work', () => {
 	it('is not broken at the sync lock’s age while its holder lives', () => {
-		const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-lock-'));
+		const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-lock-'));
 		const lockPath = path.join(dir, 'x.lock');
 		fs.writeFileSync(
 			lockPath,

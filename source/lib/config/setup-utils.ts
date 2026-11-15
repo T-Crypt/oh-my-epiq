@@ -7,7 +7,7 @@ import {
 import {getSettingsState} from '../state/settings.state.js';
 import {claimedEmailsOf} from '../state/email-claims.state.js';
 import {getOfferedEmails} from '../state/email-offers.state.js';
-import {resolveClosestEpiqProjectRoot} from '../storage/paths.js';
+import {resolveClosestOMEProjectRoot} from '../storage/paths.js';
 
 export const getUserSetupStatus = (): {
 	isSetupDone: boolean;
@@ -55,7 +55,7 @@ export const getUserSetupStatus = (): {
 
 /** The id of the board this process is looking at, or null outside one. */
 export const currentBoardId = (): string | null => {
-	const repoRootResult = resolveClosestEpiqProjectRoot(process.cwd());
+	const repoRootResult = resolveClosestOMEProjectRoot(process.cwd());
 	if (isFail(repoRootResult)) return null;
 
 	const projectIdResult = readProjectId(repoRootResult.value);
@@ -85,7 +85,7 @@ export const isEmailSetupDeclined = (): boolean => {
 	return (declinedEmailBoards ?? []).includes(boardId);
 };
 export const isRepositoryInitialized = () => {
-	const repoRootResult = resolveClosestEpiqProjectRoot(process.cwd());
+	const repoRootResult = resolveClosestOMEProjectRoot(process.cwd());
 	if (isFail(repoRootResult)) return false;
 
 	const projectFileResult = readProjectFile(repoRootResult.value);

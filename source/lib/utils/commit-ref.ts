@@ -9,8 +9,8 @@ import {NODE_REF_LENGTH, nodeRef} from './node-ref.js';
 const CROCKFORD = /^[0-9ABCDEFGHJKMNPQRSTVWXYZ]+$/;
 
 // A subject that never carries a ref: git writes the first three itself, and
-// epiq writes the last.
-const EXEMPT = [/^Merge /, /^Revert "/, /^fixup! /, /^squash! /, /^\[epiq:/];
+// ome writes the last.
+const EXEMPT = [/^Merge /, /^Revert "/, /^fixup! /, /^squash! /, /^\[ome:/];
 
 export type CommitRefVerdict = {ok: true} | {ok: false; reason: string};
 
@@ -83,7 +83,7 @@ export const commitTicketRef = (
 };
 
 // Every ticket a commit links to, where the board knows it: the one its
-// subject leads with, then those its Epiq-Ref lines name.
+// subject leads with, then those its OME-Ref lines name.
 export const commitTicketRefs = (
 	commit: {subject: string; refs?: readonly string[]},
 	knownRefs: ReadonlySet<string>,

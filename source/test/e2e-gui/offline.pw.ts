@@ -41,7 +41,7 @@ test('the board stands down while the socket is gone, and comes back', async ({
 	await expect(page.getByTestId('add-issue').first()).toBeEnabled();
 
 	// Every retry refused, with the schedule sped up fivefold.
-	await page.evaluate('window.__epiqReconnectScale = 0.2');
+	await page.evaluate('window.__omeReconnectScale = 0.2');
 	refuse = true;
 	cut!();
 

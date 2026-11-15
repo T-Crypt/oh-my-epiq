@@ -1,11 +1,11 @@
 import {Linter} from 'eslint';
 import {describe, expect, it} from 'vitest';
-import {epiqPlugin} from '../scripts/eslint-rules.mjs';
+import {omePlugin} from '../scripts/eslint-rules.mjs';
 
 const lint = (code: string) =>
 	new Linter().verify(code, {
-		plugins: {epiq: epiqPlugin},
-		rules: {'epiq/no-raw-control-characters': 'error'},
+		plugins: {ome: omePlugin},
+		rules: {'ome/no-raw-control-characters': 'error'},
 	});
 
 // Written as codePointAt-built strings rather than as literals: a raw control

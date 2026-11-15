@@ -16,7 +16,7 @@ import {
 import {IssueStats} from '../../lib/stats/issue-stats.model.js';
 import {findGoal, goalMembers} from '../../lib/utils/goal.utils.js';
 import {nodeRef} from '../../lib/utils/node-ref.js';
-import {getRefsStats} from '../epiq-issue-stats.js';
+import {getRefsStats} from '../ome-issue-stats.js';
 import {bootLocal, getStateResult} from './boot.js';
 import {withCommitAuthors} from './commit-authors.js';
 

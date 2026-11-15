@@ -40,7 +40,7 @@ const GIST_LENGTH = 400;
 // A cut that would hide less than this costs more than it saves.
 const MIN_HIDDEN = 200;
 const CUT_MARKER =
-	' … [cut: call epiq_issue_get with allComments: true to read the rest]';
+	' … [cut: call ome_issue_get with allComments: true to read the rest]';
 
 const gistOf = (body: string) => {
 	const gist = body

@@ -1,7 +1,7 @@
 import {useState} from 'react';
 
 /** The commands this browser reached for last, most recent first; capped. */
-const STORAGE_KEY = 'epiq.gui.recentCommands';
+const STORAGE_KEY = 'ome.gui.recentCommands';
 
 const CAP = 6;
 

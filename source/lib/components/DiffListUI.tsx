@@ -183,7 +183,7 @@ export function DiffListUI({ticket, width, height}: Props) {
 				<Text color={theme.primary}>No commits reference this ticket.</Text>
 				<Box paddingTop={1}>
 					<Text color={theme.primary}>Link one with an</Text>
-					<Text color={theme.accent}>{` Epiq-Ref: ${ref} `}</Text>
+					<Text color={theme.accent}>{` OME-Ref: ${ref} `}</Text>
 					<Text color={theme.primary}>line in its body,</Text>
 				</Box>
 				<Box>

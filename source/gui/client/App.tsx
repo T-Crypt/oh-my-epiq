@@ -186,11 +186,11 @@ const countOrNone = (count: number) => (count === 0 ? 'None' : String(count));
 const LOG_REFRESH_QUIET_MS = 400;
 
 // Stored beside the scrubber's view flags; the series live here because the log draws from them.
-const LOG_STORAGE_KEY = 'epiq.timeScrubber.showLog';
-const SHOW_ISSUES_STORAGE_KEY = 'epiq.timeScrubber.showIssues';
-const SHOW_COMMITS_STORAGE_KEY = 'epiq.timeScrubber.showCommits';
-const COMPACTED_DIFF_STORAGE_KEY = 'epiq.diffTab.compacted';
-const LINKED_COMMITS_STORAGE_KEY = 'epiq.timeScrubber.linkedCommitsOnly';
+const LOG_STORAGE_KEY = 'ome.timeScrubber.showLog';
+const SHOW_ISSUES_STORAGE_KEY = 'ome.timeScrubber.showIssues';
+const SHOW_COMMITS_STORAGE_KEY = 'ome.timeScrubber.showCommits';
+const COMPACTED_DIFF_STORAGE_KEY = 'ome.diffTab.compacted';
+const LINKED_COMMITS_STORAGE_KEY = 'ome.timeScrubber.linkedCommitsOnly';
 
 // What the chrome around the board wears while a movie plays. Faded rather than
 // unmounted: the page must not reflow around the picture being watched.

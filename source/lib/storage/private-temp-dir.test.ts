@@ -19,7 +19,7 @@ const modeOf = (dir: string) => fs.statSync(dir).mode & 0o777;
 
 describe('privateTempDir', () => {
 	beforeEach(() => {
-		root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-tmpdir-test-'));
+		root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-tmpdir-test-'));
 		vi.spyOn(os, 'tmpdir').mockReturnValue(root);
 	});
 
@@ -31,7 +31,7 @@ describe('privateTempDir', () => {
 	it('creates the directory it names', () => {
 		const dir = unwrap(privateTempDir('commit-diffs'));
 
-		expect(dir).toBe(path.join(root, 'epiq', 'commit-diffs'));
+		expect(dir).toBe(path.join(root, 'ome', 'commit-diffs'));
 		expect(fs.existsSync(dir)).toBe(true);
 	});
 
@@ -41,14 +41,14 @@ describe('privateTempDir', () => {
 		const dir = unwrap(privateTempDir('commit-diffs', 'abc123'));
 
 		expect(modeOf(dir)).toBe(0o700);
-		expect(modeOf(path.join(root, 'epiq', 'commit-diffs'))).toBe(0o700);
-		expect(modeOf(path.join(root, 'epiq'))).toBe(0o700);
+		expect(modeOf(path.join(root, 'ome', 'commit-diffs'))).toBe(0o700);
+		expect(modeOf(path.join(root, 'ome'))).toBe(0o700);
 	});
 
 	// `mkdirSync` leaves an existing directory's permissions alone, so an older
 	// build's 0755 would have survived every later run.
 	it('tightens a directory that was already there and loose', () => {
-		const existing = path.join(root, 'epiq', 'commit-diffs');
+		const existing = path.join(root, 'ome', 'commit-diffs');
 		fs.mkdirSync(existing, {recursive: true, mode: 0o755});
 		fs.chmodSync(existing, 0o755);
 		expect(modeOf(existing)).toBe(0o755);
@@ -63,8 +63,8 @@ describe('privateTempDir', () => {
 	it('refuses to write through a symlink', () => {
 		const elsewhere = path.join(root, 'elsewhere');
 		fs.mkdirSync(elsewhere);
-		fs.mkdirSync(path.join(root, 'epiq'), {recursive: true});
-		fs.symlinkSync(elsewhere, path.join(root, 'epiq', 'commit-diffs'));
+		fs.mkdirSync(path.join(root, 'ome'), {recursive: true});
+		fs.symlinkSync(elsewhere, path.join(root, 'ome', 'commit-diffs'));
 
 		const result = privateTempDir('commit-diffs');
 

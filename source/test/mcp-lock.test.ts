@@ -1,7 +1,7 @@
 import {describe, expect, it, vi} from 'vitest';
 
 // Every entry point server.ts imports must exist on the mock.
-vi.mock('../mcp/epiq-api.js', () => ({
+vi.mock('../mcp/ome-api.js', () => ({
 	addIssueAssignee: vi.fn(),
 	addIssueAttachment: vi.fn(),
 	getBoardContributors: vi.fn(),
@@ -33,7 +33,7 @@ vi.mock('../mcp/epiq-api.js', () => ({
 	editBoardDescription: vi.fn(),
 	editSwimlaneDescription: vi.fn(),
 	editGoalDescription: vi.fn(),
-	getEpiqState: vi.fn(),
+	getOMEState: vi.fn(),
 	getIssue: vi.fn(),
 	listBoards: vi.fn(),
 	listIssues: vi.fn(),
@@ -49,7 +49,7 @@ vi.mock('../mcp/epiq-api.js', () => ({
 import {Client} from '@modelcontextprotocol/sdk/client/index.js';
 import {InMemoryTransport} from '@modelcontextprotocol/sdk/inMemory.js';
 import {succeeded} from '../lib/model/result-types.js';
-import {closeIssue, createIssue} from '../mcp/epiq-api.js';
+import {closeIssue, createIssue} from '../mcp/ome-api.js';
 import {createMcpServer} from '../mcp/server.js';
 
 // The MCP SDK doesn't serialize requests, so interleaved boot-read-persist calls
@@ -81,11 +81,11 @@ describe('MCP tool serialization', () => {
 
 		await Promise.all([
 			client.callTool({
-				name: 'epiq_issue_create',
+				name: 'ome_issue_create',
 				arguments: {title: 'race', parentId: 'lane-1'},
 			}),
 			client.callTool({
-				name: 'epiq_issue_close',
+				name: 'ome_issue_close',
 				arguments: {issueId: 'issue-1'},
 			}),
 		]);

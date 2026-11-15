@@ -116,7 +116,7 @@ export const commands: CommandLineActionEntry[] = [
 	},
 	{
 		intent: CmdIntent.Init,
-		description: 'Initialize Epiq in the current git repository',
+		description: 'Initialize OME in the current git repository',
 		mode: Mode.COMMAND_LINE,
 		action: initCommand,
 		// After `commandConfirmed`, which clears the line: a prefill written
@@ -125,7 +125,7 @@ export const commands: CommandLineActionEntry[] = [
 	},
 	{
 		intent: CmdIntent.OpenProject,
-		description: 'Open a recently used epiq project, by number or path',
+		description: 'Open a recently used ome project, by number or path',
 		mode: Mode.COMMAND_LINE,
 		action: openProjectCommand,
 		onSuccess: () => patchState({mode: Mode.DEFAULT}),
@@ -210,7 +210,7 @@ export const commands: CommandLineActionEntry[] = [
 	},
 	{
 		intent: CmdIntent.Sync,
-		description: 'Pull, commit, and push Epiq state',
+		description: 'Pull, commit, and push OME state',
 		mode: Mode.COMMAND_LINE,
 		action: syncCommand,
 	},

@@ -47,6 +47,6 @@ const noRawControlCharacters = {
 	},
 };
 
-export const epiqPlugin = {
+export const omePlugin = {
 	rules: {'no-raw-control-characters': noRawControlCharacters},
 };

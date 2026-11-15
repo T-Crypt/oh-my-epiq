@@ -26,7 +26,7 @@ export type CommitEntry = {
 	authorIdentity?: CommitAuthor;
 	subject: string;
 	/**
-	 * Refs from `Epiq-Ref:` body lines. They keep refs out of subjects and
+	 * Refs from `OME-Ref:` body lines. They keep refs out of subjects and
 	 * survive a squash merge.
 	 */
 	refs?: string[];
@@ -80,7 +80,7 @@ const separatorsFor = () => {
 
 // Any line of the body, not just git's trailer block, so squash bodies work.
 // One line may list several refs.
-const REF_TRAILER = /^[ \t]*Epiq-Ref:[ \t]*(.*)$/gim;
+const REF_TRAILER = /^[ \t]*OME-Ref:[ \t]*(.*)$/gim;
 // A ref is the tail of a ULID: Crockford base32, which has no I, L, O or U.
 const REF_TOKEN = new RegExp(`^[0-9A-HJKMNP-TV-Z]{${NODE_REF_LENGTH}}$`, 'i');
 
@@ -525,7 +525,7 @@ export const leadingRef = (subject: string): string | null => {
 	return LEAD_REF.test(token) ? token : null;
 };
 
-/** Whether a commit names any ticket, by its subject's lead or an Epiq-Ref line. */
+/** Whether a commit names any ticket, by its subject's lead or an OME-Ref line. */
 export const namesATicket = (commit: CommitEntry): boolean =>
 	leadingRef(commit.subject) !== null || (commit.refs?.length ?? 0) > 0;
 
@@ -659,7 +659,7 @@ export const getCommitTimeline = async (
 	);
 };
 
-// A commit carrying the ref in its subject or an Epiq-Ref line. `precedingSha`:
+// A commit carrying the ref in its subject or an OME-Ref line. `precedingSha`:
 // the next log entry, when it shares a ticket.
 export type RefCommitEntry = CommitEntry & {precedingSha: string | null};
 

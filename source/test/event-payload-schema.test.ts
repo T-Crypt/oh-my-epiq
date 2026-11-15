@@ -1,5 +1,5 @@
 /**
- * The payload check must reject junk but accept what a newer epiq wrote, or it
+ * The payload check must reject junk but accept what a newer ome wrote, or it
  * quarantines applicable events on every clone, permanently.
  */
 import {describe, expect, it} from 'vitest';
@@ -59,7 +59,7 @@ describe('parseEventPayload', () => {
 		expect(
 			accepts('add.issue', {
 				id: ID,
-				name: 'from a newer epiq',
+				name: 'from a newer ome',
 				parent: ID,
 				rank: RANK,
 				estimate: 5,

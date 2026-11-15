@@ -34,7 +34,7 @@ describe('a lock naming this process that it does not hold', () => {
 	// Put back by a breaker that judged it live just as it was let go: nobody
 	// else would ever take it, so this process must.
 	it('is taken back by this process', () => {
-		const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-lock-orphan-'));
+		const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-lock-orphan-'));
 		const lockPath = path.join(dir, 'x.lock');
 		fs.writeFileSync(
 			lockPath,
@@ -58,7 +58,7 @@ describe('a lock naming this process that it does not hold', () => {
 	});
 
 	it('is refused while this process does hold it', () => {
-		const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-lock-held-'));
+		const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-lock-held-'));
 		const lockPath = path.join(dir, 'x.lock');
 
 		try {
@@ -78,7 +78,7 @@ describe('one lock file, many processes', () => {
 	// A lock let go between another's failed link and its read must not read
 	// as stale: breaking it would remove the next holder's lock.
 	it('is held by one of them at a time', async () => {
-		const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-lock-race-'));
+		const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-lock-race-'));
 		const lockPath = path.join(dir, 'x.lock');
 		const insidePath = path.join(dir, 'inside');
 

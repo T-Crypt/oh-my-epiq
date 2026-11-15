@@ -1,4 +1,4 @@
-// The header's version. Quiet text while this is the latest epiq; once a newer
+// The header's version. Quiet text while this is the latest ome; once a newer
 // one is out, the same text with an accent arrow, opening what changed and how
 // to update. Releases come often, so it says no more than that.
 
@@ -48,7 +48,7 @@ export const VersionBadge = ({
 				aria-expanded={open}
 				aria-haspopup="dialog"
 				onClick={() => setOpen(!open)}
-				title={`epiq ${update.latest} is out`}
+				title={`ome ${update.latest} is out`}
 				style={{
 					fontSize: 11,
 					fontFamily: MONO_FONT,
@@ -91,7 +91,7 @@ const UpdatePopover = ({
 	<div
 		ref={ref}
 		role="dialog"
-		aria-label={`epiq ${update.latest}`}
+		aria-label={`ome ${update.latest}`}
 		data-testid="version-popover"
 		style={{
 			...popoverStyle,
@@ -154,7 +154,7 @@ const UpdatePopover = ({
 				<span style={{color: GUI_THEME.accent, display: 'inline-flex'}}>
 					<IconArrowUpRight size={11} />
 				</span>
-				Epiq {update.latest} is available
+				OME {update.latest} is available
 			</div>
 			{update.releases.map((release, i) => (
 				<section

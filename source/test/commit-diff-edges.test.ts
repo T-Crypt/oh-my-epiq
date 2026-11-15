@@ -14,7 +14,7 @@ import {connectRepoEvent} from './helpers/repo-events.js';
 
 const tempDirs: string[] = [];
 const makeTempDir = () => {
-	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-diff-edges-'));
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-diff-edges-'));
 	tempDirs.push(dir);
 	return dir;
 };
@@ -54,12 +54,12 @@ const commit = (cwd: string, file: string, message: string, date?: string) => {
 const makeBoard = () => {
 	const board = makeTempDir();
 	git(board, ['init', '-q', '-b', 'main']);
-	fs.mkdirSync(path.join(board, '.epiq'));
+	fs.mkdirSync(path.join(board, '.ome'));
 	fs.writeFileSync(
-		path.join(board, '.epiq', 'project.json'),
+		path.join(board, '.ome', 'project.json'),
 		JSON.stringify({
 			projectId: path.basename(board),
-			stateBranch: 'epiq/state',
+			stateBranch: 'ome/state',
 			createdAt: '2020-01-01T00:00:00.000Z',
 		}),
 	);

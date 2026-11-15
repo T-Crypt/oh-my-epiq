@@ -1,5 +1,5 @@
 /**
- * Keeps tests off the real `~/.epiq-global`, which holds live event logs:
+ * Keeps tests off the real `~/.ome-global`, which holds live event logs:
  * defaulted to tmp up front, asserted per test.
  */
 import fs from 'node:fs';
@@ -38,24 +38,24 @@ export const assertGlobalDirThrowaway = (dir: string): void => {
 	}
 
 	throw new Error(
-		`Refusing to run tests with the Epiq global dir outside a throwaway directory.\n` +
+		`Refusing to run tests with the OME global dir outside a throwaway directory.\n` +
 			`  resolved: ${resolved}\n` +
 			`It holds the real state-branch worktree, so tests writing there ` +
-			`publish events into production boards. Point EPIQ_GLOBAL_DIR under ` +
+			`publish events into production boards. Point OME_GLOBAL_DIR under ` +
 			`${tempRoot}.`,
 	);
 };
 
 // Made here, so removed here once the file's tests are done: clones and locks
 // would otherwise pile up under the OS tmpdir run after run.
-const made = process.env['EPIQ_GLOBAL_DIR']
+const made = process.env['OME_GLOBAL_DIR']
 	? null
-	: fs.mkdtempSync(path.join(tempRoot, 'epiq-global-'));
+	: fs.mkdtempSync(path.join(tempRoot, 'ome-global-'));
 if (made) {
-	process.env['EPIQ_GLOBAL_DIR'] = made;
+	process.env['OME_GLOBAL_DIR'] = made;
 	afterAll(() => {
 		fs.rmSync(made, {recursive: true, force: true});
-		delete process.env['EPIQ_GLOBAL_DIR'];
+		delete process.env['OME_GLOBAL_DIR'];
 	});
 }
 

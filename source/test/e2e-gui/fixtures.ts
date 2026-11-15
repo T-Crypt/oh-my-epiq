@@ -10,7 +10,7 @@ export const test = base.extend<{
 	repoRoot: string;
 	// Where the server keeps the seeded project's state and its clones.
 	globalDir: string;
-	// A GUI served over a directory with no epiq project.
+	// A GUI served over a directory with no ome project.
 	bareAppUrl: string;
 	bareRepoRoot: string;
 	// Anything the page logged that indicates a crash. A blank screen is React

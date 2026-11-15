@@ -9,7 +9,7 @@ import {isFail} from '../lib/model/result-types.js';
 const tempDirs: string[] = [];
 
 const makeTempDir = (): string => {
-	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-git-commands-'));
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-git-commands-'));
 	tempDirs.push(dir);
 	return dir;
 };
@@ -33,7 +33,7 @@ const initRepo = async (repoRoot: string): Promise<void> => {
 	await configureIdentity(repoRoot);
 };
 
-// Stands in for a host repo's own hook (lint, tests, whatever) — epiq's
+// Stands in for a host repo's own hook (lint, tests, whatever) — ome's
 // bookkeeping commits and pushes are not the user's changes and must not be
 // subject to it. Always rejects, so a passing test proves it never ran.
 const writeRejectingHook = (
@@ -65,7 +65,7 @@ describe('git.commit', () => {
 
 		const commitResult = await git.commit({
 			cwd: repoRoot,
-			message: '[epiq:test]',
+			message: '[ome:test]',
 			pathspec: ['a.txt'],
 		});
 

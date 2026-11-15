@@ -25,7 +25,7 @@ import {
 	fetchRepos,
 	listBoards,
 	listSwimlanes,
-} from '../mcp/epiq-api.js';
+} from '../mcp/ome-api.js';
 import {
 	commitFile,
 	makeTempDir,
@@ -128,9 +128,9 @@ describe('connecting a repo', () => {
 		expect(done.claimedBytes).toBe(done.repos[0]!.bytes);
 	});
 
-	it('counts a commit naming a ticket only in an Epiq-Ref line', async () => {
+	it('counts a commit naming a ticket only in an OME-Ref line', async () => {
 		const {repoRoot, ref} = await board();
-		const url = await makeUpstream(['unrelated', `fix\n\nEpiq-Ref: ${ref}`]);
+		const url = await makeUpstream(['unrelated', `fix\n\nOME-Ref: ${ref}`]);
 
 		const preview = value(await connectRepo({repoRoot, url}));
 		expect(preview.preview?.ticketCommits).toBe(1);
@@ -258,7 +258,7 @@ describe('a repo event the log refused', () => {
 	const refusingWrites = async <T>(repoRoot: string, fn: () => Promise<T>) => {
 		const dir = path.join(
 			value(getStateBranchRoot({repoRoot})),
-			'.epiq',
+			'.ome',
 			'events',
 		);
 		const files = fs.readdirSync(dir).map(name => path.join(dir, name));
@@ -436,7 +436,7 @@ describe('disconnecting a repo', () => {
 		value(await fetchRepos({repoRoot}));
 
 		// No project file: nothing can be read, so nothing may be swept.
-		const project = path.join(repoRoot, '.epiq', 'project.json');
+		const project = path.join(repoRoot, '.ome', 'project.json');
 		const saved = fs.readFileSync(project, 'utf8');
 		const clone = clonePathOf(repoRoot, url);
 		fs.writeFileSync(project, '<<<<<<< ours\n');

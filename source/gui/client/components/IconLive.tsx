@@ -1,5 +1,5 @@
 // The live mark: a dot with rings leaving it. Unlit, a ring round a hollow dot
-// at the same size; lit, it ripples via the shared `epiqLiveRipple` keyframes.
+// at the same size; lit, it ripples via the shared `omeLiveRipple` keyframes.
 export const IconLive = ({
 	size = 14,
 	lit = false,
@@ -20,12 +20,12 @@ export const IconLive = ({
 	>
 		{lit ? (
 			<>
-				<circle cx="12" cy="12" r="9" className="epiq-live-ripple" />
+				<circle cx="12" cy="12" r="9" className="ome-live-ripple" />
 				<circle
 					cx="12"
 					cy="12"
 					r="9"
-					className="epiq-live-ripple epiq-live-ripple--trailing"
+					className="ome-live-ripple ome-live-ripple--trailing"
 				/>
 			</>
 		) : (

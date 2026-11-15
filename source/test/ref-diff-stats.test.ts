@@ -25,7 +25,7 @@ const collectRefDiffStats = (commits: CommitEntry[]) =>
 	diffStatsAt(collectRefDiffTimeline(commits), null);
 
 describe('collectRefDiffTimeline', () => {
-	it('counts a commit that names its ref only in an Epiq-Ref line', () => {
+	it('counts a commit that names its ref only in an OME-Ref line', () => {
 		const stats = collectRefDiffStats([
 			commit('pin the image tag', 10, 2, ['B8PYTCM']),
 		]);

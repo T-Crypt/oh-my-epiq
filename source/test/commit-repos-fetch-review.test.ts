@@ -50,11 +50,11 @@ let projectId: string;
 
 const writeProject = (root: string, extra: Record<string, unknown> = {}) =>
 	fs.writeFileSync(
-		path.join(root, '.epiq', 'project.json'),
+		path.join(root, '.ome', 'project.json'),
 		JSON.stringify(
 			{
 				projectId,
-				stateBranch: 'epiq/state',
+				stateBranch: 'ome/state',
 				createdAt: '2020-01-01T00:00:00.000Z',
 				...extra,
 			},
@@ -86,10 +86,10 @@ beforeEach(() => {
 	board = makeTempDir();
 	projectId = path.basename(board);
 	git(board, ['init', '-q', '-b', 'main']);
-	fs.mkdirSync(path.join(board, '.epiq'));
+	fs.mkdirSync(path.join(board, '.ome'));
 	writeProject(board);
 	commit(board, 'init');
-	git(board, ['branch', 'epiq/state']);
+	git(board, ['branch', 'ome/state']);
 
 	upstream = makeTempDir();
 	git(upstream, ['init', '-q', '-b', 'main']);
@@ -228,7 +228,7 @@ describe('another process on the same clone', () => {
 		connectRepoEvent(board, url);
 		value(await fetchCommitRepos({repoRoot: board}));
 
-		const marker = path.join(clonePath, 'epiq-test-marker');
+		const marker = path.join(clonePath, 'ome-test-marker');
 		fs.writeFileSync(marker, '');
 		const config = path.join(clonePath, 'config');
 		fs.chmodSync(config, 0o000);

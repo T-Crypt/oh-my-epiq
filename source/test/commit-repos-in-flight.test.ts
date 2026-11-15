@@ -8,7 +8,7 @@ import {isFail, Result} from '../lib/model/result-types.js';
 // A remove during a fetch marks the clone; the holder's exit deletes it. The ssh
 // wrapper's environment is read at module load, so it is set before the import.
 
-const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-in-flight-'));
+const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-in-flight-'));
 const slowSsh = path.join(scratch, 'slow-ssh.sh');
 fs.writeFileSync(
 	slowSsh,
@@ -56,12 +56,12 @@ describe('a remove that lands while the clone is inside git', () => {
 	it('is honoured by the fetch that held it, on its way out', async () => {
 		const board = fs.mkdtempSync(path.join(scratch, 'board-'));
 		git(board, ['init', '-q', '-b', 'main']);
-		fs.mkdirSync(path.join(board, '.epiq'));
+		fs.mkdirSync(path.join(board, '.ome'));
 		fs.writeFileSync(
-			path.join(board, '.epiq', 'project.json'),
+			path.join(board, '.ome', 'project.json'),
 			JSON.stringify({
 				projectId: PROJECT_ID,
-				stateBranch: 'epiq/state',
+				stateBranch: 'ome/state',
 				createdAt: '2020-01-01T00:00:00.000Z',
 			}),
 		);

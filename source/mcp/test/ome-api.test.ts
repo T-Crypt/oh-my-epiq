@@ -49,7 +49,7 @@ vi.mock('../../git/git-utils.js', () => ({
 }));
 
 vi.mock('../../git/git-constants.js', () => ({
-	getStateBranch: vi.fn(() => succeeded('Resolved state branch', 'epiq-state')),
+	getStateBranch: vi.fn(() => succeeded('Resolved state branch', 'ome-state')),
 	ORIGIN: 'origin',
 }));
 
@@ -58,7 +58,7 @@ vi.mock('../../git/sync-and-reload-state.js', () => ({
 }));
 
 vi.mock('../../git/sync.js', () => ({
-	syncEpiqWithRemote: vi.fn(() =>
+	syncOMEWithRemote: vi.fn(() =>
 		succeeded('Synced', {
 			repoRoot: '/repo',
 			stateBranchRoot: '/state',
@@ -77,8 +77,8 @@ vi.mock('../../lib/storage/paths.js', async importOriginal => {
 
 	return {
 		...actual,
-		resolveClosestEpiqProjectRoot: vi.fn((dir: string) =>
-			succeeded('Resolved closest epiq project root', dir),
+		resolveClosestOMEProjectRoot: vi.fn((dir: string) =>
+			succeeded('Resolved closest ome project root', dir),
 		),
 	};
 });
@@ -428,7 +428,7 @@ vi.mock('../../lib/repository/node-repo.js', () => ({
 	},
 }));
 
-vi.mock('../epiq-time-travel.js', () => ({
+vi.mock('../ome-time-travel.js', () => ({
 	getTimeTravelStatus: vi.fn(() => ({mode: 'live', asOfTime: null})),
 }));
 
@@ -459,16 +459,16 @@ vi.mock('../../lib/board/common-events.js', () => ({
 	),
 }));
 
-let tools: typeof import('../epiq-api.js');
+let tools: typeof import('../ome-api.js');
 let persistModule: typeof import('../../lib/board/board-log.js');
-let timeTravelModule: typeof import('../epiq-time-travel.js');
+let timeTravelModule: typeof import('../ome-time-travel.js');
 let gitUtilsModule: typeof import('../../git/git-utils.js');
 let nodeRepoModule: typeof import('../../lib/repository/node-repo.js');
 
 beforeAll(async () => {
-	tools = await import('../epiq-api.js');
+	tools = await import('../ome-api.js');
 	persistModule = await import('../../lib/board/board-log.js');
-	timeTravelModule = await import('../epiq-time-travel.js');
+	timeTravelModule = await import('../ome-time-travel.js');
 	gitUtilsModule = await import('../../git/git-utils.js');
 	nodeRepoModule = await import('../../lib/repository/node-repo.js');
 });
@@ -509,7 +509,7 @@ describe('mcp tools', () => {
 		await tools.listBoards({repoRoot: '/repo'});
 		await tools.listSwimlanes({repoRoot: '/repo'});
 		await tools.listIssues({repoRoot: '/repo', includeClosed: false});
-		await tools.getEpiqState({repoRoot: '/repo'});
+		await tools.getOMEState({repoRoot: '/repo'});
 
 		const pullCalls = vi
 			.mocked(gitUtilsModule.execGit)
@@ -643,7 +643,7 @@ describe('mcp tools', () => {
 		// A comment the cut would barely shorten stays whole, without a marker.
 		it('carries earlier comments by their first three lines, and marks a cut', async () => {
 			const cut =
-				' … [cut: call epiq_issue_get with allComments: true to read the rest]';
+				' … [cut: call ome_issue_get with allComments: true to read the rest]';
 			const long = `Decided: no approval step\nWhy: one\nHow: two\n${'x'.repeat(
 				3000,
 			)}`;
@@ -1599,8 +1599,8 @@ describe('mcp tools', () => {
 		}
 	});
 
-	it('gets full Epiq state', async () => {
-		const result = await tools.getEpiqState({repoRoot: '/repo'});
+	it('gets full OME state', async () => {
+		const result = await tools.getOMEState({repoRoot: '/repo'});
 
 		expect(isFail(result)).toBe(false);
 		if (!isFail(result)) {

@@ -4,7 +4,7 @@ import path from 'node:path';
 import {actorSegmentOf} from '../../lib/event/pending-log.js';
 
 const eventsDir = (stateBranchRoot: string): string =>
-	path.join(stateBranchRoot, '.epiq', 'events');
+	path.join(stateBranchRoot, '.ome', 'events');
 
 // A file gone since listing is a sync rebasing underneath, not a failure; ids are
 // read again once actors settle.

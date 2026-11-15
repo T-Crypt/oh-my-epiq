@@ -158,7 +158,7 @@ export const ATTACHMENT_EXTENSIONS = ['png', 'jpg', 'gif', 'webp'] as const;
 
 export type AttachmentExt = (typeof ATTACHMENT_EXTENSIONS)[number];
 
-/** Attachment metadata; the bytes live as a blob at `.epiq/media/<hash>.<ext>`. */
+/** Attachment metadata; the bytes live as a blob at `.ome/media/<hash>.<ext>`. */
 export type AttachmentState = {
 	id: string;
 	issue: string;

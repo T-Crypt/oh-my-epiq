@@ -31,7 +31,7 @@ const gitIn =
 
 /** A repo with `init` and, given a ref, a commit naming it. */
 const makeUpstream = (ref?: string, subject?: string): string => {
-	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-gui-upstream-'));
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-gui-upstream-'));
 	const git = gitIn(dir);
 
 	git('init', '-q', '-b', 'main');
@@ -137,7 +137,7 @@ test('a repo is previewed, connected on the confirm, and brings its commits to t
 	const upstream = makeUpstream(ref, subject);
 	const url = `file://${upstream}`;
 	const ticketUrl = page.url();
-	const projectFile = path.join(repoRoot, '.epiq', 'project.json');
+	const projectFile = path.join(repoRoot, '.ome', 'project.json');
 	const projectBefore = fs.readFileSync(projectFile, 'utf8');
 	const board = {repoRoot, globalDir};
 
@@ -425,7 +425,7 @@ test("a repo that cannot be cloned says git's reason, and a bad URL is refused u
 		// and nothing connected.
 		const missing = `file://${path.join(
 			os.tmpdir(),
-			`epiq-gui-missing-${Date.now()}`,
+			`ome-gui-missing-${Date.now()}`,
 		)}`;
 		await modal.getByTestId('repo-url').fill(missing);
 		await modal.getByTestId('connect-repo').click();

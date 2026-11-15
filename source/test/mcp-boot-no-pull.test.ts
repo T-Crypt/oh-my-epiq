@@ -2,7 +2,7 @@ import {readFileSync, readdirSync} from 'node:fs';
 import path from 'node:path';
 import {describe, expect, it} from 'vitest';
 
-// MCP tools answer from local state; only `epiq_sync` and autosync reach the
+// MCP tools answer from local state; only `ome_sync` and autosync reach the
 // network. Scanned, so a tool added later is covered too.
 
 // The whole tree, not just `mcp/api`: `boot` is exported.

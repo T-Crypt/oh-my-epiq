@@ -90,7 +90,7 @@ export const useCardDensityView = (): CardDensityView =>
 export const useToggleCardDensity = (): (() => void) =>
 	useContext(CardDensityContext).toggleDensity;
 
-const KEY = 'epiq.board.cardDensity';
+const KEY = 'ome.board.cardDensity';
 
 type Stored = {density: CardDensity; titleLines: 1 | 2};
 

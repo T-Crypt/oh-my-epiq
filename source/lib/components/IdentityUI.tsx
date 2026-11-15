@@ -11,7 +11,7 @@ import {
 import {setOfferedEmails} from '../state/email-offers.state.js';
 import {getSettingsState} from '../state/settings.state.js';
 import {getSafeState} from '../state/state.js';
-import {resolveClosestEpiqProjectRoot} from '../storage/paths.js';
+import {resolveClosestOMEProjectRoot} from '../storage/paths.js';
 import {theme} from '../theme/themes.js';
 
 // Who the board thinks you are, and which git addresses carry your commits;
@@ -52,7 +52,7 @@ export const IdentityUI: React.FC<{width: number; height: number}> = ({
 
 		const load = async () => {
 			const stateResult = getSafeState();
-			const repoRootResult = resolveClosestEpiqProjectRoot(process.cwd());
+			const repoRootResult = resolveClosestOMEProjectRoot(process.cwd());
 
 			if (isFail(stateResult) || isFail(repoRootResult) || !userId) return;
 

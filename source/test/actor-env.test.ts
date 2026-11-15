@@ -197,7 +197,7 @@ describe('applyActorNameArgument', () => {
 
 describe('loadSettingsFromConfig', () => {
 	const originals = {
-		globalDir: process.env['EPIQ_GLOBAL_DIR'],
+		globalDir: process.env['OME_GLOBAL_DIR'],
 		name: process.env[ACTOR_NAME_ENV],
 		id: process.env[ACTOR_ID_ENV],
 	};
@@ -211,20 +211,20 @@ describe('loadSettingsFromConfig', () => {
 	};
 
 	afterEach(() => {
-		restore('EPIQ_GLOBAL_DIR', originals.globalDir);
+		restore('OME_GLOBAL_DIR', originals.globalDir);
 		restore(ACTOR_NAME_ENV, originals.name);
 		restore(ACTOR_ID_ENV, originals.id);
 	});
 
 	const withConfiguredHome = (): void => {
-		const home = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-config-'));
+		const home = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-config-'));
 
 		fs.writeFileSync(
 			path.join(home, 'config.json'),
 			JSON.stringify({logLevel: 'info', ...CONFIGURED}),
 		);
 
-		process.env['EPIQ_GLOBAL_DIR'] = home;
+		process.env['OME_GLOBAL_DIR'] = home;
 	};
 
 	it('reads the configured user when the environment names nobody', () => {
@@ -265,7 +265,7 @@ describe('loadSettingsFromConfig', () => {
 		const actor = resolveActorId();
 		if (isFail(actor)) throw new Error(actor.message);
 
-		const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-events-'));
+		const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-events-'));
 		const written = persist({
 			rootDir,
 			event: {
@@ -284,7 +284,7 @@ describe('loadSettingsFromConfig', () => {
 		flushPendingLogs(rootDir, getPersistFileName(actor.value));
 		flushPendingLogs(rootDir, getPersistFileName(actor.value));
 
-		expect(fs.readdirSync(path.join(rootDir, '.epiq', 'events'))).toEqual([
+		expect(fs.readdirSync(path.join(rootDir, '.ome', 'events'))).toEqual([
 			getPersistFileName(actor.value),
 		]);
 		// The id is the whole file name: attribution rides on it alone, and the

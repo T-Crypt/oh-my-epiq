@@ -249,7 +249,7 @@ export type AppEventMap = {
 	};
 
 	/**
-	 * References a blob at `.epiq/media/<hash>.<ext>`, committed with the event.
+	 * References a blob at `.ome/media/<hash>.<ext>`, committed with the event.
 	 * Blobs are never deleted, so time travel can render them.
 	 */
 	'add.issue.attachment': {
@@ -362,7 +362,7 @@ export type AppEventMap = {
 
 export type EventAction = keyof AppEventMap;
 
-/** Every action this build understands; others (from a newer epiq) are skipped on load. */
+/** Every action this build understands; others (from a newer ome) are skipped on load. */
 export const EVENT_ACTIONS = [
 	'init.workspace',
 	'add.workspace',

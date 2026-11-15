@@ -1,7 +1,7 @@
 import {GUI_THEME, PROSE} from '../lib/gui-theme';
 
 // A commit's message below its subject, line for line as its author wrote
-// it: an Epiq-Ref line is how a commit says which tickets it is for.
+// it: an OME-Ref line is how a commit says which tickets it is for.
 export const CommitBody = ({
 	body,
 	color = GUI_THEME.secondary,

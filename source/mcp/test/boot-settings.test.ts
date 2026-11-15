@@ -29,7 +29,7 @@ vi.mock('../../git/git-utils.js', () => ({
 }));
 
 vi.mock('../../git/git-constants.js', () => ({
-	getStateBranch: vi.fn(() => succeeded('Resolved state branch', 'epiq-state')),
+	getStateBranch: vi.fn(() => succeeded('Resolved state branch', 'ome-state')),
 	ORIGIN: 'origin',
 }));
 
@@ -40,10 +40,10 @@ vi.mock('../../lib/storage/paths.js', async importOriginal => {
 
 	return {
 		...actual,
-		resolveClosestEpiqProjectRoot: vi.fn((dir: string) =>
-			succeeded('Resolved closest epiq project root', dir),
+		resolveClosestOMEProjectRoot: vi.fn((dir: string) =>
+			succeeded('Resolved closest ome project root', dir),
 		),
-		getEpiqDirPath: vi.fn(() => '/state/.epiq'),
+		getOMEDirPath: vi.fn(() => '/state/.ome'),
 	};
 });
 
@@ -82,7 +82,7 @@ vi.mock('../../lib/state/state.js', async importOriginal => {
 	return {...actual, isStateInitialized: vi.fn(() => true)};
 });
 
-vi.mock('../epiq-time-travel.js', () => ({
+vi.mock('../ome-time-travel.js', () => ({
 	getTimeTravelStatus: vi.fn(() => ({mode: 'live', asOfTime: null})),
 }));
 

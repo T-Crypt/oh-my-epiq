@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {beforeAll, describe, expect, it} from 'vitest';
 import {isFail} from '../../lib/model/result-types.js';
-import {listIssues} from '../../mcp/epiq-api.js';
+import {listIssues} from '../../mcp/ome-api.js';
 import {commonSteps} from './e2e-common-steps.js';
 import {
 	ARROW_DOWN,
@@ -28,7 +28,7 @@ const run = async (tui: Tui, cmd: string, echo: string) => {
 const git = (cwd: string, args: string) =>
 	execSync(`git ${args}`, {cwd, stdio: 'ignore'});
 
-// A commit links by its subject's ref or an Epiq-Ref body line; one with neither
+// A commit links by its subject's ref or an OME-Ref body line; one with neither
 // must stay out of the list.
 const commit = (cwd: string, subject: string, file: string, body?: string) => {
 	fs.writeFileSync(path.join(cwd, file), `export const a = '${file}';\n`);
@@ -78,7 +78,7 @@ describe('TUI diff e2e', () => {
 				commit(tui.cwd, `${ref} the first thing`, 'one.ts');
 				commit(tui.cwd, 'ZZZZZZZ another ticket entirely', 'two.ts');
 				commit(tui.cwd, `${ref} the second thing`, 'three.ts');
-				commit(tui.cwd, 'the third thing', 'four.ts', `Epiq-Ref: ${ref}`);
+				commit(tui.cwd, 'the third thing', 'four.ts', `OME-Ref: ${ref}`);
 
 				// Into the ticket, then down to the Diff row, confirming each press.
 				tui.input(ENTER);
@@ -97,7 +97,7 @@ describe('TUI diff e2e', () => {
 				tui.input(ENTER);
 
 				// Every subject, so the assertion cannot pass on a half-drawn list.
-				// The third is linked only by the Epiq-Ref line in its body.
+				// The third is linked only by the OME-Ref line in its body.
 				const listed = await tui.waitFor(
 					frame =>
 						frame.includes('the first thing') &&
@@ -327,7 +327,7 @@ describe('TUI diff e2e', () => {
 				// The removed line is not in the new revision, so it is not quoted.
 				expect(comment).not.toContain('const drop = 2;');
 				// The marker itself is rendered, never shown as raw JSON.
-				expect(comment).not.toContain('epiq-diff-comment');
+				expect(comment).not.toContain('ome-diff-comment');
 			} finally {
 				await tui.destroy();
 			}
@@ -460,7 +460,7 @@ describe('TUI diff e2e', () => {
 						frame.includes('prefix on its subject.'),
 					10_000,
 				);
-				expect(empty).toContain(`Epiq-Ref: ${ref}`);
+				expect(empty).toContain(`OME-Ref: ${ref}`);
 				expect(empty).toContain('line in its body,');
 			} finally {
 				await tui.destroy();

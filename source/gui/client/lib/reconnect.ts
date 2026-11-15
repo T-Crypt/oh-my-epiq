@@ -11,12 +11,12 @@ export const MAX_RECONNECT_ATTEMPTS = 5;
 // nothing else sets this, and the shape of the schedule is unchanged.
 declare global {
 	interface Window {
-		__epiqReconnectScale?: number;
+		__omeReconnectScale?: number;
 	}
 }
 
 const scale = (): number =>
-	typeof window === 'undefined' ? 1 : window.__epiqReconnectScale ?? 1;
+	typeof window === 'undefined' ? 1 : window.__omeReconnectScale ?? 1;
 
 /** How long to wait before attempt `attempt`, or null once they are spent. */
 export const reconnectDelayMs = (attempt: number): number | null =>

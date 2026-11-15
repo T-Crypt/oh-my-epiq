@@ -41,7 +41,7 @@ const base = [
 let root = '';
 
 const write = (lines: unknown[]) => {
-	const dir = path.join(root, '.epiq', 'events');
+	const dir = path.join(root, '.ome', 'events');
 	fs.mkdirSync(dir, {recursive: true});
 	fs.writeFileSync(
 		path.join(dir, '01H0000000000000000000000F.alice.jsonl'),
@@ -63,7 +63,7 @@ const loadAndBoot = () => {
 };
 
 beforeEach(() => {
-	root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-unreadable-'));
+	root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-unreadable-'));
 
 	const rankResult = bigIntToHex(1n);
 	if (isFail(rankResult)) throw new Error(rankResult.message);

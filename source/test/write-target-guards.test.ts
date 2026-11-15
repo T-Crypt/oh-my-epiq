@@ -18,7 +18,7 @@ import {
 	moveIssue,
 	moveSwimlane,
 	reopenIssue,
-} from '../mcp/epiq-api.js';
+} from '../mcp/ome-api.js';
 import {setupRepo, useTempHome} from './helpers/git-repo.js';
 
 // Every write names its target or its parent by id. The door checks the id is

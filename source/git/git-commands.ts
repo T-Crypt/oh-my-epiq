@@ -22,7 +22,7 @@ export const git = {
 		}),
 
 	// `pathspec` keeps the user's own staged work out of the commit.
-	// `--no-verify`: these are epiq's bookkeeping commits, where the repo's hooks would fail.
+	// `--no-verify`: these are ome's bookkeeping commits, where the repo's hooks would fail.
 	commit: ({
 		cwd,
 		message,

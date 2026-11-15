@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 import {isFail, Result} from '../../lib/model/result-types.js';
-import {listBoards, listSwimlanes} from '../../mcp/epiq-api.js';
+import {listBoards, listSwimlanes} from '../../mcp/ome-api.js';
 import {commonSteps} from './e2e-common-steps.js';
 import {
 	ARROW_DOWN,
@@ -21,7 +21,7 @@ type Tui = ReturnType<typeof setupTui>;
 
 // Its own HOME, as edit-scope has, so the editor setting below cannot reach
 // another file's sessions through the shared config.
-const E2E_HOME = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-e2e-home-'));
+const E2E_HOME = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-e2e-home-'));
 
 // Writes a fixed text and exits, so `edit description` needs no human.
 const fakeEditor = path.resolve(
@@ -33,9 +33,9 @@ const WRITTEN = 'Implemented during the e2e flow';
 const ENV = {
 	HOME: E2E_HOME,
 	EDITOR: fakeEditor,
-	GIT_AUTHOR_NAME: 'Epiq E2E',
+	GIT_AUTHOR_NAME: 'OME E2E',
 	GIT_AUTHOR_EMAIL: 'e2e@example.com',
-	GIT_COMMITTER_NAME: 'Epiq E2E',
+	GIT_COMMITTER_NAME: 'OME E2E',
 	GIT_COMMITTER_EMAIL: 'e2e@example.com',
 };
 

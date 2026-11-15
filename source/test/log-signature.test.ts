@@ -15,7 +15,7 @@ import {
 // A real directory: what this watches is the log's own files, and a mocked
 // filesystem would prove nothing about a teammate's arriving in one.
 let root = '';
-const eventsDir = () => path.join(root, '.epiq', 'events');
+const eventsDir = () => path.join(root, '.ome', 'events');
 const fileFor = (actor: string) => `${actor}.person.jsonl`;
 
 const write = (actor: string, text: string) =>
@@ -27,7 +27,7 @@ const append = (actor: string, text: string) =>
 describe('what this process has accounted for', () => {
 	beforeEach(() => {
 		clearAccountedSignature();
-		root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-sig-'));
+		root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-sig-'));
 		fs.mkdirSync(eventsDir(), {recursive: true});
 	});
 

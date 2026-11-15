@@ -22,7 +22,7 @@ const {repoIdOf} = await import('../lib/board/board-repos.js');
 
 const tempDirs: string[] = [];
 const makeTempDir = () => {
-	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-safe-bare-'));
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-safe-bare-'));
 	tempDirs.push(dir);
 	return dir;
 };
@@ -61,17 +61,17 @@ describe('a clone under safe.bareRepository=explicit', () => {
 	it('is still read, logged and diffed', async () => {
 		const board = makeTempDir();
 		git(board, ['init', '-q', '-b', 'main']);
-		fs.mkdirSync(path.join(board, '.epiq'));
+		fs.mkdirSync(path.join(board, '.ome'));
 		fs.writeFileSync(
-			path.join(board, '.epiq', 'project.json'),
+			path.join(board, '.ome', 'project.json'),
 			JSON.stringify({
 				projectId: 'safe-bare',
-				stateBranch: 'epiq/state',
+				stateBranch: 'ome/state',
 				createdAt: '2020-01-01T00:00:00.000Z',
 			}),
 		);
 		commit(board, 'init.txt', 'init');
-		git(board, ['branch', 'epiq/state']);
+		git(board, ['branch', 'ome/state']);
 
 		const upstream = makeTempDir();
 		git(upstream, ['init', '-q', '-b', 'main']);
@@ -99,12 +99,12 @@ describe('a clone under safe.bareRepository=explicit', () => {
 describe('a pre-flight under safe.bareRepository=explicit', () => {
 	it('stages a clone it can read', async () => {
 		const board = makeTempDir();
-		fs.mkdirSync(path.join(board, '.epiq'));
+		fs.mkdirSync(path.join(board, '.ome'));
 		fs.writeFileSync(
-			path.join(board, '.epiq', 'project.json'),
+			path.join(board, '.ome', 'project.json'),
 			JSON.stringify({
 				projectId: path.basename(board),
-				stateBranch: 'epiq/state',
+				stateBranch: 'ome/state',
 				createdAt: '2020-01-01T00:00:00.000Z',
 			}),
 		);

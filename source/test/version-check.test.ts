@@ -83,7 +83,7 @@ describe('getUpdateInfo over the network', () => {
 
 	beforeEach(() => {
 		delete process.env['IS_CI'];
-		delete process.env['EPIQ_NO_UPDATE_CHECK'];
+		delete process.env['OME_NO_UPDATE_CHECK'];
 		clearUpdateCache();
 	});
 

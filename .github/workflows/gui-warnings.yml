@@ -73,7 +73,7 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
           restore-keys: playwright-${{ runner.os }}-
 
-      # EPIQ_GUI_DEV_BUILD=1 builds React's development runtime; the suite is
+      # OME_GUI_DEV_BUILD=1 builds React's development runtime; the suite is
       # the same one the gate runs, and the script installs the browsers the way
       # `test:gui:ci` does. See `source/scripts/build-gui.mjs`.
       #

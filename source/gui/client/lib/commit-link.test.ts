@@ -259,7 +259,7 @@ describe('linkableIssues', () => {
 	});
 });
 
-describe('keptCommits, for a commit linked by an Epiq-Ref line', () => {
+describe('keptCommits, for a commit linked by an OME-Ref line', () => {
 	const trailer: GuiCommitEntry = {
 		...commit('e', 'fix the parser'),
 		refs: ['XYZ9876'],

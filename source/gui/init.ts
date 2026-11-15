@@ -8,7 +8,7 @@ import {
 	failed,
 } from '../lib/model/result-types.js';
 import {patchSettingsState} from '../lib/state/settings.state.js';
-import {EPIQ_VERSION} from '../version.js';
+import {OME_VERSION} from '../version.js';
 import {launchBanner} from './launch-banner.js';
 import {canOpenBrowser, openBrowser} from './open-browser.js';
 import {startGuiServer} from './api/api-server.js';
@@ -35,7 +35,7 @@ export const startGui = async (input: {
 	const settings = loadSettingsFromConfig();
 	if (isSuccess(settings)) patchSettingsState(settings.value);
 
-	// Reuse an epiq already serving this project on the usual port: a rival on
+	// Reuse an ome already serving this project on the usual port: a rival on
 	// another port is another origin, without the first one's browser storage.
 	const running = await probeGuiInstance(PREFERRED_GUI_PORT);
 
@@ -46,7 +46,7 @@ export const startGui = async (input: {
 			launchBanner({
 				url,
 				repoRoot: input.repoRoot,
-				version: EPIQ_VERSION,
+				version: OME_VERSION,
 				reused: true,
 			}),
 		);
@@ -69,7 +69,7 @@ export const startGui = async (input: {
 		launchBanner({
 			url,
 			repoRoot: input.repoRoot,
-			version: EPIQ_VERSION,
+			version: OME_VERSION,
 			reused: false,
 		}),
 	);

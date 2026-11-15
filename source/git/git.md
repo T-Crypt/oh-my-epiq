@@ -5,7 +5,7 @@ Basic structure of our sync flow:
    yes -> proceed
 
 2. Does local HEAD exist?
-   no -> initial sync path - if remote has history: fetch/pull remote branch - else: create/push initial local history if Epiq has changes
+   no -> initial sync path - if remote has history: fetch/pull remote branch - else: create/push initial local history if OME has changes
    yes -> proceed
 
 3. Is HEAD detached?

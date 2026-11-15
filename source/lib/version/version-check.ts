@@ -7,7 +7,7 @@ import type {
 
 export type {Release, ReleaseSection, UpdateInfo, VersionStatus};
 
-const NPM_LATEST_URL = 'https://registry.npmjs.org/epiq/latest';
+const NPM_LATEST_URL = 'https://registry.npmjs.org/ome/latest';
 const RELEASES_URL =
 	'https://api.github.com/repos/ljtn/epiq/releases?per_page=30';
 const INSTALL_SCRIPT_URL =
@@ -49,7 +49,7 @@ export const compareVersions = (a: string, b: string) => {
 
 const checksDisabled = () =>
 	process.env['IS_CI'] === 'true' ||
-	process.env['EPIQ_NO_UPDATE_CHECK'] === '1';
+	process.env['OME_NO_UPDATE_CHECK'] === '1';
 
 const fetchJson = async (url: string): Promise<unknown> => {
 	try {
@@ -211,7 +211,7 @@ export const releasesBetween = (
 
 export const UPDATE_COMMANDS = {
 	script: `curl -fsSL ${INSTALL_SCRIPT_URL} | sh`,
-	npm: 'npm install --global epiq@latest',
+	npm: 'npm install --global ome@latest',
 };
 
 /** Release notes are only fetched once there is something newer to describe. */

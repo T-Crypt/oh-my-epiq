@@ -48,9 +48,9 @@ const makeRepo = async (projectId: string): Promise<string> => {
 	await git(repoRoot, ['add', '-A']);
 	await git(repoRoot, ['commit', '-qm', 'init', '--no-verify']);
 
-	fs.mkdirSync(path.join(repoRoot, '.epiq'), {recursive: true});
+	fs.mkdirSync(path.join(repoRoot, '.ome'), {recursive: true});
 	fs.writeFileSync(
-		path.join(repoRoot, '.epiq', 'project.json'),
+		path.join(repoRoot, '.ome', 'project.json'),
 		JSON.stringify({
 			projectId,
 			stateBranch: DEFAULT_STATE_BRANCH,
@@ -143,13 +143,13 @@ beforeEach(() => {
 		error: vi.fn(),
 	};
 
-	originalGlobalDir = process.env['EPIQ_GLOBAL_DIR'];
-	process.env['EPIQ_GLOBAL_DIR'] = path.join(makeTempDir(), '.epiq-global');
+	originalGlobalDir = process.env['OME_GLOBAL_DIR'];
+	process.env['OME_GLOBAL_DIR'] = path.join(makeTempDir(), '.ome-global');
 });
 
 afterEach(() => {
-	if (originalGlobalDir === undefined) delete process.env['EPIQ_GLOBAL_DIR'];
-	else process.env['EPIQ_GLOBAL_DIR'] = originalGlobalDir;
+	if (originalGlobalDir === undefined) delete process.env['OME_GLOBAL_DIR'];
+	else process.env['OME_GLOBAL_DIR'] = originalGlobalDir;
 
 	process.chdir(originalCwd);
 	clearAccountedSignature();

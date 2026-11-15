@@ -8,9 +8,9 @@ import {succeeded} from '../lib/model/result-types.js';
 import {isFail, Result} from '../lib/model/result-types.js';
 
 // A commit's diff carries its body, so the GUI can say why a commit is linked
-// to a ticket whose ref is only in an Epiq-Ref line.
+// to a ticket whose ref is only in an OME-Ref line.
 
-const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-commit-body-'));
+const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-commit-body-'));
 
 afterAll(() => fs.rmSync(dir, {recursive: true, force: true}));
 
@@ -42,12 +42,12 @@ const value = <T>(result: Result<T>): T => {
 };
 
 git('init', '-q', '-b', 'main');
-fs.mkdirSync(path.join(dir, '.epiq'));
+fs.mkdirSync(path.join(dir, '.ome'));
 fs.writeFileSync(
-	path.join(dir, '.epiq', 'project.json'),
+	path.join(dir, '.ome', 'project.json'),
 	JSON.stringify({
 		projectId: path.basename(dir),
-		stateBranch: 'epiq/state',
+		stateBranch: 'ome/state',
 		createdAt: '2020-01-01T00:00:00.000Z',
 	}),
 );
@@ -57,13 +57,13 @@ describe('a commit diff', () => {
 		const sha = commit(
 			'fix the parser',
 			'It dropped the last token.\nTwo lines.',
-			'Epiq-Ref: ABC1234',
+			'OME-Ref: ABC1234',
 		);
 
 		const diff = value(await getCommitDiff({repoRoot: dir, sha}));
 
 		expect(diff.body).toBe(
-			'It dropped the last token.\nTwo lines.\n\nEpiq-Ref: ABC1234',
+			'It dropped the last token.\nTwo lines.\n\nOME-Ref: ABC1234',
 		);
 	});
 
@@ -86,7 +86,7 @@ describe('a commit diff', () => {
 
 describe('a list of commits', () => {
 	it('gets each one its body, in one read', async () => {
-		const withBody = commit('a', 'Why a.\n\nEpiq-Ref: ABC1234');
+		const withBody = commit('a', 'Why a.\n\nOME-Ref: ABC1234');
 		const without = commit('b');
 
 		const listed = value(
@@ -96,7 +96,7 @@ describe('a list of commits', () => {
 			),
 		);
 
-		expect(listed[0]!.body).toBe('Why a.\n\nEpiq-Ref: ABC1234');
+		expect(listed[0]!.body).toBe('Why a.\n\nOME-Ref: ABC1234');
 		expect(listed[1]!.body).toBeUndefined();
 	});
 

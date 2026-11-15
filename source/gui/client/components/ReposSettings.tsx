@@ -365,7 +365,7 @@ const Fact = ({
 );
 
 // What a staged clone turned out to be, and what connecting it costs: every
-// contributor's epiq downloads it, so that is said before the button.
+// contributor's ome downloads it, so that is said before the button.
 const PreviewCard = ({
 	preview,
 	limit,
@@ -526,7 +526,7 @@ export const ReposSettings = ({
 		<div ref={root} data-testid="repos-section">
 			<div style={{...META, marginTop: 0, padding: '12px 0 2px'}}>
 				Connected repos show linked commits in tickets and show up in the
-				timeline. Epiq keeps a copy in a local clone, read only.
+				timeline. OME keeps a copy in a local clone, read only.
 			</div>
 
 			{/* The board's own repo, first and locked: read from the checkout. */}

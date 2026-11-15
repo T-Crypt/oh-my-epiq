@@ -354,7 +354,7 @@ export const cloneStatusPath = (clonePath: string) => `${clonePath}.json`;
 /** A state branch as a clone's own project.json may name it: a plain ref name. */
 export const STATE_BRANCH_NAME = /^(?!-)[A-Za-z0-9._/-]{1,100}$/;
 
-/** The state branch named by the clone's project.json, if it is an epiq board. */
+/** The state branch named by the clone's project.json, if it is an ome board. */
 export const readCloneStateBranch = (clonePath: string): string | null => {
 	try {
 		const raw = JSON.parse(

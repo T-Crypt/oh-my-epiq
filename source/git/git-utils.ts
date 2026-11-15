@@ -26,7 +26,7 @@ const TIMED_OUT = 'Git command timed out';
 export const isGitTimeout = (message: string): boolean =>
 	message.includes(TIMED_OUT);
 
-/** A local call on a worktree holding only `.epiq/` answers in milliseconds. */
+/** A local call on a worktree holding only `.ome/` answers in milliseconds. */
 const GIT_TIMEOUT_MS = 10_000;
 
 /**
@@ -144,13 +144,13 @@ const stableOutputFor = (args: string[]): string[] =>
 	PARSED_SUBCOMMANDS.has(subcommandOf(args) ?? '') ? STABLE_OUTPUT : [];
 
 /**
- * Config for epiq's clones of other repos, whose contents are untrusted:
+ * Config for ome's clones of other repos, whose contents are untrusted:
  * `attr.tree` stops their `.gitattributes` reaching the user's textconv.
  */
 export const cloneGitConfig = (): string[] =>
 	[
-		'attr.tree=refs/epiq/no-attributes',
-		// A directory epiq owns, never created: a fixed path like
+		'attr.tree=refs/ome/no-attributes',
+		// A directory ome owns, never created: a fixed path like
 		// `/dev/null/x` is one anybody can create on Windows.
 		`core.hooksPath=${path.join(getGlobalConfigDir(), 'repos', '.no-hooks')}`,
 		'protocol.ext.allow=never',
@@ -187,7 +187,7 @@ const realpathOr = (target: string): string => {
 };
 
 /**
- * Whether `cwd` is one of epiq's clones, judged by location, never contents.
+ * Whether `cwd` is one of ome's clones, judged by location, never contents.
  * Checked as written and as resolved (`/tmp` is `/private/tmp` on macOS).
  */
 export const isCloneDir = (cwd: string): boolean => {

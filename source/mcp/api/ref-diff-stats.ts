@@ -1,5 +1,5 @@
 // Every ticket's code footprint in one answer, bucketed by the ref each subject
-// opens with or an Epiq-Ref line names. Only those commits are diffed.
+// opens with or an OME-Ref line names. Only those commits are diffed.
 
 import {isFail, Result, succeeded} from '../../lib/model/result-types.js';
 import {RefDiffTimeline} from '../../lib/stats/ref-diff-stats.model.js';

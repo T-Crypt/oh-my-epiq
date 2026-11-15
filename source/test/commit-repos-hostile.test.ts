@@ -69,13 +69,13 @@ const commit = (
 let PROJECT_ID: string;
 
 const writeProject = (root: string, extra: Record<string, unknown> = {}) => {
-	fs.mkdirSync(path.join(root, '.epiq'), {recursive: true});
+	fs.mkdirSync(path.join(root, '.ome'), {recursive: true});
 	fs.writeFileSync(
-		path.join(root, '.epiq', 'project.json'),
+		path.join(root, '.ome', 'project.json'),
 		JSON.stringify(
 			{
 				projectId: PROJECT_ID,
-				stateBranch: 'epiq/state',
+				stateBranch: 'ome/state',
 				createdAt: '2020-01-01T00:00:00.000Z',
 				...extra,
 			},
@@ -97,7 +97,7 @@ beforeEach(() => {
 	git(board, ['init', '-q', '-b', 'main']);
 	writeProject(board);
 	commit(board, 'init.txt', 'init');
-	git(board, ['branch', 'epiq/state']);
+	git(board, ['branch', 'ome/state']);
 
 	upstream = makeTempDir();
 	git(upstream, ['init', '-q', '-b', 'main']);
@@ -391,14 +391,14 @@ describe('a listed repo nobody has synced', () => {
 	});
 });
 
-describe('a connected repo that is an epiq board', () => {
+describe('a connected repo that is an ome board', () => {
 	it('lends its work, never its event log', async () => {
-		fs.mkdirSync(path.join(upstream, '.epiq'));
+		fs.mkdirSync(path.join(upstream, '.ome'));
 		fs.writeFileSync(
-			path.join(upstream, '.epiq', 'project.json'),
+			path.join(upstream, '.ome', 'project.json'),
 			JSON.stringify({projectId: 'theirs', stateBranch: 'their/log'}),
 		);
-		git(upstream, ['add', '.epiq']);
+		git(upstream, ['add', '.ome']);
 		commit(upstream, 'work.txt', 'AAAAAAA their work');
 		git(upstream, ['checkout', '-q', '--orphan', 'their/log']);
 		commit(upstream, 'event.json', 'AAAAAAA an event about it');
@@ -561,7 +561,7 @@ describe('a remove that lands while a pass is waiting', () => {
 	});
 });
 
-describe('a link planted where epiq writes', () => {
+describe('a link planted where ome writes', () => {
 	it('is never used as the clone', async () => {
 		commit(upstream, 'up.txt', 'AAAAAAA upstream');
 		connectRepoEvent(board, url);
@@ -629,7 +629,7 @@ describe('a clone that no longer matches the list', () => {
 		value(await fetchCommitRepos({repoRoot: board}));
 
 		const clonePath = getRepoClonePath(PROJECT_ID, repoIdOf(url));
-		const marker = path.join(clonePath, 'epiq-test-marker');
+		const marker = path.join(clonePath, 'ome-test-marker');
 		fs.writeFileSync(marker, '');
 
 		disconnectRepoEvent(board, url);

@@ -10,7 +10,7 @@ import {
 	getGitDir,
 	getInProgressGitOperation,
 } from '../git/git-utils.js';
-import {syncEpiqWithRemote} from '../git/sync.js';
+import {syncOMEWithRemote} from '../git/sync.js';
 import {acquireSyncLock, SYNC_LOCK_FILE} from '../git/sync-lock.js';
 import {isFail} from '../lib/model/result-types.js';
 import {
@@ -24,7 +24,7 @@ import {
 useTempHome();
 
 const OWN_EVENT_FILE = 'u1.alice.jsonl';
-const STATE_BRANCH = 'epiq/state';
+const STATE_BRANCH = 'ome/state';
 
 /** The state worktree, bootstrapped by a first sync the way a board's is. */
 const bootstrapped = async (): Promise<{
@@ -33,7 +33,7 @@ const bootstrapped = async (): Promise<{
 }> => {
 	const {repoRoot} = await setupRepo();
 
-	const boot = await syncEpiqWithRemote({
+	const boot = await syncOMEWithRemote({
 		cwd: repoRoot,
 		ownEventFileName: OWN_EVENT_FILE,
 	});
@@ -96,7 +96,7 @@ const holdLock = async (
 	if (isFail(gitDir)) throw new Error(gitDir.message);
 
 	fs.writeFileSync(
-		path.join(gitDir.value, 'epiq-sync.lock'),
+		path.join(gitDir.value, 'ome-sync.lock'),
 		JSON.stringify(holder),
 	);
 };
@@ -125,7 +125,7 @@ describe('a rebase left in the state worktree', () => {
 			operation: 'sync',
 		});
 
-		const result = await syncEpiqWithRemote({
+		const result = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName: OWN_EVENT_FILE,
 		});
@@ -148,7 +148,7 @@ describe('a rebase left in the state worktree', () => {
 			operation: 'sync',
 		});
 
-		const result = await syncEpiqWithRemote({
+		const result = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName: OWN_EVENT_FILE,
 		});
@@ -170,7 +170,7 @@ describe('a rebase left in the state worktree', () => {
 			operation: 'sync',
 		});
 
-		const result = await syncEpiqWithRemote({
+		const result = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName: OWN_EVENT_FILE,
 		});
@@ -189,9 +189,9 @@ describe('a rebase left in the state worktree', () => {
 
 		const gitDir = await getGitDir(stateBranchRoot);
 		if (isFail(gitDir)) throw new Error(gitDir.message);
-		fs.writeFileSync(path.join(gitDir.value, 'epiq-sync.lock'), '');
+		fs.writeFileSync(path.join(gitDir.value, 'ome-sync.lock'), '');
 
-		const result = await syncEpiqWithRemote({
+		const result = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName: OWN_EVENT_FILE,
 		});
@@ -207,7 +207,7 @@ describe('a rebase left in the state worktree', () => {
 		const {repoRoot, stateBranchRoot} = await bootstrapped();
 		await leaveRebaseInProgress(stateBranchRoot);
 
-		const result = await syncEpiqWithRemote({
+		const result = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName: OWN_EVENT_FILE,
 		});
@@ -217,7 +217,7 @@ describe('a rebase left in the state worktree', () => {
 	});
 });
 
-// Sync never starts a merge, so one here came from outside epiq — somebody's
+// Sync never starts a merge, so one here came from outside ome — somebody's
 // hand on a worktree they were not meant to open. Not this process's to unwind.
 describe('a merge in the state worktree', () => {
 	it('is refused, and the refusal says where it is', async () => {
@@ -236,7 +236,7 @@ describe('a merge in the state worktree', () => {
 			head.value.stdout.trim(),
 		);
 
-		const result = await syncEpiqWithRemote({
+		const result = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName: OWN_EVENT_FILE,
 		});
@@ -286,7 +286,7 @@ describe('lock files a killed git left behind', () => {
 		expect(cleared.value).toEqual([]);
 	});
 
-	// epiq's own lock lives here and ends in `.lock` like git's; sweeping it
+	// ome's own lock lives here and ends in `.lock` like git's; sweeping it
 	// would leave a running sync unclaimed.
 	it('never takes the sync lock the caller is holding', async () => {
 		const {stateBranchRoot} = await bootstrapped();
@@ -338,7 +338,7 @@ describe('lock files a killed git left behind', () => {
 			else if (held) droppedWhileRunning = true;
 		}, 2);
 
-		const result = await syncEpiqWithRemote({
+		const result = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName: OWN_EVENT_FILE,
 		});
@@ -382,7 +382,7 @@ describe('lock files a killed git left behind', () => {
 		if (isFail(gitDir)) throw new Error(gitDir.message);
 		fs.writeFileSync(path.join(gitDir.value, 'index.lock'), '');
 
-		const result = await syncEpiqWithRemote({
+		const result = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName: OWN_EVENT_FILE,
 		});
@@ -430,7 +430,7 @@ describe('a ref lock in the common git directory', () => {
 			eventLine('01H00000000000000000000009'),
 		);
 
-		const result = await syncEpiqWithRemote({
+		const result = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName: OWN_EVENT_FILE,
 		});
@@ -440,7 +440,7 @@ describe('a ref lock in the common git directory', () => {
 		expect(fs.existsSync(refLock)).toBe(false);
 	});
 
-	// The common directory is the user's as much as epiq's, and a lock on their
+	// The common directory is the user's as much as ome's, and a lock on their
 	// branch is their commit in progress.
 	it('is never cleared for a branch that belongs to somebody else', async () => {
 		const {repoRoot, stateBranchRoot} = await bootstrapped();
@@ -454,7 +454,7 @@ describe('a ref lock in the common git directory', () => {
 			eventLine('01H0000000000000000000000A'),
 		);
 
-		const result = await syncEpiqWithRemote({
+		const result = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName: OWN_EVENT_FILE,
 		});

@@ -268,7 +268,7 @@ const validateOpenProjectCommand: Validator = ({modifier, inputString}) => {
 	return invalid({
 		message: choices.length
 			? hintDefault('number from the list, or a path')
-			: hintDefault('path to an epiq project'),
+			: hintDefault('path to an ome project'),
 		completionWordList: choices,
 	});
 };
@@ -364,7 +364,7 @@ const validateConfigCommand: Validator = ({modifier, inputString}) => {
 					message:
 						hint ||
 						hintAlert('Enter a user name. Saved in ') +
-							chalk.bgBlack('~/.epiq-global/config.json'),
+							chalk.bgBlack('~/.ome-global/config.json'),
 					completionWordList: wordList,
 				});
 			}
@@ -472,7 +472,7 @@ const validateConfigCommand: Validator = ({modifier, inputString}) => {
 						prefix: 'one of: ',
 						wordList: [...logLevels],
 						inputString: logLevel,
-						postfix: ' persisted in ~/.epiq-global/config.json',
+						postfix: ' persisted in ~/.ome-global/config.json',
 						minLengthForHints: 0,
 					}),
 					completionWordList: [...logLevels] as string[],

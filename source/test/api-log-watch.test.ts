@@ -8,29 +8,29 @@ import {succeeded} from '../lib/model/result-types.js';
 // A TUI or an agent's MCP appends to the worktree this GUI serves. With
 // autosync off, this watch is the only thing that tells the clients.
 
-const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-log-watch-'));
+const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-log-watch-'));
 const projectId = path.basename(repoRoot);
-fs.mkdirSync(path.join(repoRoot, '.epiq'));
+fs.mkdirSync(path.join(repoRoot, '.ome'));
 fs.writeFileSync(
-	path.join(repoRoot, '.epiq', 'project.json'),
+	path.join(repoRoot, '.ome', 'project.json'),
 	JSON.stringify({
 		projectId,
-		stateBranch: 'epiq/state',
+		stateBranch: 'ome/state',
 		createdAt: new Date().toISOString(),
 	}),
 );
-const eventsDir = path.join(getWorktreesRoot(), projectId, '.epiq', 'events');
+const eventsDir = path.join(getWorktreesRoot(), projectId, '.ome', 'events');
 
 const getGuiStateMock = vi.fn();
 const broadcastMock = vi.fn();
 let timeMode = 'live';
 let syncLocked = false;
 
-vi.mock('../mcp/epiq-api.js', () => ({
+vi.mock('../mcp/ome-api.js', () => ({
 	getGuiState: (...args: unknown[]) => getGuiStateMock(...args),
 }));
 
-vi.mock('../mcp/epiq-time-travel.js', () => ({
+vi.mock('../mcp/ome-time-travel.js', () => ({
 	getTimeTravelStatus: () => ({mode: timeMode}),
 	runExclusive: (fn: () => Promise<unknown>) => fn(),
 }));

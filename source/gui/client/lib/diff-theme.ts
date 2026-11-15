@@ -6,7 +6,7 @@ import {COMMENT_YELLOW} from './issue-stats.style';
 
 const BASE_THEME = 'github-dark';
 
-export const EPIQ_DIFF_THEME = 'epiq-dark';
+export const OME_DIFF_THEME = 'ome-dark';
 
 // The Stats tab's comment share wears the same value, so the bar and the file
 // agree about which half is prose.
@@ -27,16 +27,16 @@ let registered = false;
  * Idempotent; must run before the first diff renders, since the highlighter
  * resolves the theme by name.
  */
-export const registerEpiqDiffTheme = (): void => {
+export const registerOMEDiffTheme = (): void => {
 	if (registered) return;
 	registered = true;
 
-	registerCustomTheme(EPIQ_DIFF_THEME, async () => {
+	registerCustomTheme(OME_DIFF_THEME, async () => {
 		const base = await resolveTheme(BASE_THEME);
 
 		return {
 			...base,
-			name: EPIQ_DIFF_THEME,
+			name: OME_DIFF_THEME,
 			settings: base.settings.map(setting =>
 				isCommentScope(setting.scope)
 					? {
@@ -54,4 +54,4 @@ export const registerEpiqDiffTheme = (): void => {
 	});
 };
 
-registerEpiqDiffTheme();
+registerOMEDiffTheme();

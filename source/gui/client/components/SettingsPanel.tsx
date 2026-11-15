@@ -39,7 +39,7 @@ const CARD_PADDING = 16;
 const INNER = CARD_RADIUS - 1;
 
 const SLIDE = `
-	@keyframes epiqSettingsSlide {
+	@keyframes omeSettingsSlide {
 		from { transform: translateX(100%); }
 		to { transform: translateX(0); }
 	}
@@ -284,7 +284,7 @@ export const SettingsPanel = ({
 				color: GUI_THEME.primary,
 				fontFamily: SANS_FONT,
 				fontSize: TEXT.prose,
-				animation: 'epiqSettingsSlide 180ms ease-out',
+				animation: 'omeSettingsSlide 180ms ease-out',
 			}}
 		>
 			<style>{SLIDE}</style>

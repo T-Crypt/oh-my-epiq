@@ -30,7 +30,7 @@ describe('inCommitWindow', () => {
 
 describe('bodyRefs', () => {
 	it('reads a trailer, in any case', () => {
-		expect(bodyRefs('Pin the tag.\n\nepiq-ref: b8pytcm\n')).toEqual([
+		expect(bodyRefs('Pin the tag.\n\nome-ref: b8pytcm\n')).toEqual([
 			'B8PYTCM',
 		]);
 	});
@@ -41,12 +41,12 @@ describe('bodyRefs', () => {
 		const body = [
 			'* B8PYTCM pin the tag',
 			'',
-			'Epiq-Ref: B8PYTCM',
+			'OME-Ref: B8PYTCM',
 			'',
 			'* tidy the changelog',
 			'',
-			'  Epiq-Ref: W1TCS14',
-			'Epiq-Ref: B8PYTCM',
+			'  OME-Ref: W1TCS14',
+			'OME-Ref: B8PYTCM',
 			'',
 			'Co-authored-by: Someone <someone@example.com>',
 		].join('\n');
@@ -55,7 +55,7 @@ describe('bodyRefs', () => {
 	});
 
 	it('reads several refs listed on one line', () => {
-		expect(bodyRefs('Epiq-Ref: B8PYTCM, w1tcs14 VW1Z3QE')).toEqual([
+		expect(bodyRefs('OME-Ref: B8PYTCM, w1tcs14 VW1Z3QE')).toEqual([
 			'B8PYTCM',
 			'W1TCS14',
 			'VW1Z3QE',
@@ -63,16 +63,16 @@ describe('bodyRefs', () => {
 	});
 
 	it('keeps the refs on a line that also holds something else', () => {
-		expect(bodyRefs('Epiq-Ref: B8PYTCM, refused by review')).toEqual([
+		expect(bodyRefs('OME-Ref: B8PYTCM, refused by review')).toEqual([
 			'B8PYTCM',
 		]);
 	});
 
 	it('ignores a mention that is not a line of its own, or not a ref', () => {
-		expect(bodyRefs('Carried over from Epiq-Ref: B8PYTCM last week.')).toEqual(
+		expect(bodyRefs('Carried over from OME-Ref: B8PYTCM last week.')).toEqual(
 			[],
 		);
-		expect(bodyRefs('Epiq-Ref: B8PYTC')).toEqual([]);
-		expect(bodyRefs('Epiq-Ref: B8PYTCMX')).toEqual([]);
+		expect(bodyRefs('OME-Ref: B8PYTC')).toEqual([]);
+		expect(bodyRefs('OME-Ref: B8PYTCMX')).toEqual([]);
 	});
 });

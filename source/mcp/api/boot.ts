@@ -16,8 +16,8 @@ import {
 	logSignature,
 } from '../../lib/event/log-signature.js';
 import {
-	getEpiqDirPath,
-	resolveClosestEpiqProjectRoot,
+	getOMEDirPath,
+	resolveClosestOMEProjectRoot,
 } from '../../lib/storage/paths.js';
 import {loadMergedEventsWithUnreadable} from '../../lib/board/board-log.js';
 import {
@@ -28,7 +28,7 @@ import {
 } from '../../lib/model/result-types.js';
 import {getSafeState, isStateInitialized} from '../../lib/state/state.js';
 import {logger} from '../../logger.js';
-import {getTimeTravelStatus} from '../epiq-time-travel.js';
+import {getTimeTravelStatus} from '../ome-time-travel.js';
 
 export type ToolInput = {
 	repoRoot?: string;
@@ -45,10 +45,10 @@ export type Actor = {
 };
 
 export const resolveRepoRoot = (repoRoot?: string): Result<string> => {
-	const result = resolveClosestEpiqProjectRoot(repoRoot ?? process.cwd());
+	const result = resolveClosestOMEProjectRoot(repoRoot ?? process.cwd());
 	if (isFail(result)) return failed(result.message);
 
-	return succeeded('Resolved Epiq repo root', result.value);
+	return succeeded('Resolved OME repo root', result.value);
 };
 
 // The state branch and worktree, once seen in place: checking costs two
@@ -78,7 +78,7 @@ export const boot = async (
 		ensuredBranch !== null &&
 		ensuredBranch.repoRoot === repoRootResult.value &&
 		ensuredBranch.stateBranchRoot === stateBranchRootResult.value &&
-		fs.existsSync(getEpiqDirPath(stateBranchRootResult.value));
+		fs.existsSync(getOMEDirPath(stateBranchRootResult.value));
 
 	if (!inPlace) {
 		// A never-synced clone has no local state branch. Not the sync's full bootstrap,
@@ -146,7 +146,7 @@ export const boot = async (
 		isStateInitialized() &&
 		getTimeTravelStatus().mode === 'live'
 	) {
-		return succeeded('Booted Epiq state, unchanged', booted);
+		return succeeded('Booted OME state, unchanged', booted);
 	}
 
 	const eventsResult = loadMergedEventsWithUnreadable(
@@ -163,7 +163,7 @@ export const boot = async (
 	// Recorded after the boot, so a failed one is retried; writes then advance it.
 	accountFor(stateBranchRootResult.value, signature);
 
-	return succeeded('Booted Epiq state', booted);
+	return succeeded('Booted OME state', booted);
 };
 
 export const getActor = (): Result<Actor> => {
@@ -188,7 +188,7 @@ export const getStateResult = () => {
 	return stateResult;
 };
 
-/** Boots without touching the network, as every MCP tool must; syncing is `epiq_sync`'s job. */
+/** Boots without touching the network, as every MCP tool must; syncing is `ome_sync`'s job. */
 export const bootLocal = (repoRoot?: string) => boot(repoRoot, {pull: false});
 
 /**

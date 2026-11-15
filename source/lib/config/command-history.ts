@@ -5,7 +5,7 @@ import {failed, isFail, Result, succeeded} from '../model/result-types.js';
 import {readProjectId} from '../project-setup/project-setup.js';
 import {COMMAND_HISTORY_HORIZON} from '../state/cmd.state.js';
 import {privateTempDir} from '../storage/private-temp-dir.js';
-import {resolveClosestEpiqProjectRoot} from '../storage/paths.js';
+import {resolveClosestOMEProjectRoot} from '../storage/paths.js';
 
 /**
  * The command line's history, per project, under a private temp dir so a
@@ -41,7 +41,7 @@ export const getCommandHistoryPath = (): Result<string> => {
 
 const currentProjectRoot = (): string | null => {
 	try {
-		const rootResult = resolveClosestEpiqProjectRoot(process.cwd());
+		const rootResult = resolveClosestOMEProjectRoot(process.cwd());
 
 		return isFail(rootResult) ? null : rootResult.value;
 	} catch {
@@ -178,7 +178,7 @@ export const writeCommandHistory = ({
 		.sort((a, b) => b.lastUsedAt - a.lastUsedAt)
 		.slice(0, MAX_COMMAND_HISTORY_PROJECTS);
 
-	// Written through a rename: every epiq on the machine shares this one file,
+	// Written through a rename: every ome on the machine shares this one file,
 	// and a reader must never catch a half-written one.
 	const pendingPath = `${filePath}.${process.pid}.tmp`;
 

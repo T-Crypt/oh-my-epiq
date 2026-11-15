@@ -47,14 +47,14 @@ const add = (board: string, name: string, count: number, startAt: number) =>
 
 describe('processes connecting repos to one board at once', () => {
 	it('keep every connect', async () => {
-		const board = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-concurrent-'));
+		const board = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-concurrent-'));
 		dirs.push(board);
-		fs.mkdirSync(path.join(board, '.epiq'));
+		fs.mkdirSync(path.join(board, '.ome'));
 		fs.writeFileSync(
-			path.join(board, '.epiq', 'project.json'),
+			path.join(board, '.ome', 'project.json'),
 			JSON.stringify({
 				projectId: 'concurrent-board',
-				stateBranch: 'epiq/state',
+				stateBranch: 'ome/state',
 				createdAt: '2020-01-01T00:00:00.000Z',
 			}),
 		);

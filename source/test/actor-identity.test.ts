@@ -26,7 +26,7 @@ const ROOT = 'identity-root';
 
 let root = '';
 
-const eventsDir = () => path.join(root, '.epiq', 'events');
+const eventsDir = () => path.join(root, '.ome', 'events');
 
 const writeLog = (fileName: string, ids: string[]) => {
 	fs.mkdirSync(eventsDir(), {recursive: true});
@@ -51,7 +51,7 @@ const rank = () => {
 };
 
 beforeEach(() => {
-	root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-identity-'));
+	root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-identity-'));
 	initWorkspaceState(nodes.workspace(ROOT, 'Identity Root', rank()));
 });
 

@@ -255,7 +255,7 @@ test('the scope row folds into a select on a narrow window', async ({
 	).toBeVisible();
 	// The wordmark, which is the one thing in the topbar that does nothing: the
 	// switcher beside it would answer the click with a list of its own.
-	await page.getByText(':epiq', {exact: true}).click();
+	await page.getByText(':ome', {exact: true}).click();
 	await expect(
 		page.getByRole('option', {name: 'Day', exact: true}),
 	).toHaveCount(0);

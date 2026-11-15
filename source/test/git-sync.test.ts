@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {describe, expect, it, onTestFinished, vi} from 'vitest';
 import {execGit} from '../git/git-utils.js';
-import {syncEpiqWithRemote} from '../git/sync.js';
+import {syncOMEWithRemote} from '../git/sync.js';
 import {isFail} from '../lib/model/result-types.js';
 import {getRelativeEventFilePath} from '../git/git-storage.js';
 import {
@@ -24,7 +24,7 @@ const git = async (args: string[], cwd: string) => {
 };
 
 const sync = async (cwd: string) => {
-	const result = await syncEpiqWithRemote({
+	const result = await syncOMEWithRemote({
 		cwd,
 		ownEventFileName: OWN_EVENT_FILE,
 	});
@@ -37,7 +37,7 @@ describe('sync', () => {
 		const {repoRoot} = await setupRepo();
 		const ownEventFileName = 'u1.alice.jsonl';
 
-		const bootResult = await syncEpiqWithRemote({
+		const bootResult = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName,
 		});
@@ -57,7 +57,7 @@ describe('sync', () => {
 			eventLine('01H00000000000000000000001'),
 		);
 
-		const syncResult = await syncEpiqWithRemote({
+		const syncResult = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName,
 		});
@@ -67,7 +67,7 @@ describe('sync', () => {
 		expect(syncResult.value.offline).toBe(true);
 		expect(syncResult.message).toBe('Committed locally, no remote');
 
-		const again = await syncEpiqWithRemote({cwd: repoRoot, ownEventFileName});
+		const again = await syncOMEWithRemote({cwd: repoRoot, ownEventFileName});
 		if (isFail(again)) throw new Error(again.message);
 
 		expect(again.value.createdCommit).toBe(false);
@@ -89,7 +89,7 @@ describe('sync', () => {
 		});
 		if (isFail(detachResult)) throw new Error(detachResult.message);
 
-		const syncResult = await syncEpiqWithRemote({
+		const syncResult = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName: 'u1.alice.jsonl',
 		});
@@ -101,7 +101,7 @@ describe('sync', () => {
 		const {repoRoot} = await setupRepo();
 		const ownEventFileName = 'u1.alice.jsonl';
 
-		const bootResult = await syncEpiqWithRemote({
+		const bootResult = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName,
 		});
@@ -115,13 +115,13 @@ describe('sync', () => {
 			eventLine('01H00000000000000000000001'),
 		);
 
-		const firstSync = await syncEpiqWithRemote({
+		const firstSync = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName,
 		});
 		if (isFail(firstSync)) throw new Error(firstSync.message);
 
-		const secondSync = await syncEpiqWithRemote({
+		const secondSync = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName,
 		});
@@ -140,7 +140,7 @@ describe('unpushed commits', () => {
 		const {repoRoot} = await setupRepo();
 		const ownEventFileName = 'u1.alice.jsonl';
 
-		const bootResult = await syncEpiqWithRemote({
+		const bootResult = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName,
 		});
@@ -168,7 +168,7 @@ describe('unpushed commits', () => {
 		if (isFail(headResult)) throw new Error(headResult.message);
 		const head = headResult.value.stdout.trim();
 
-		const syncResult = await syncEpiqWithRemote({
+		const syncResult = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName,
 		});
@@ -179,7 +179,7 @@ describe('unpushed commits', () => {
 		expect(syncResult.value.pushed).toBe(true);
 
 		const remoteRefResult = await execGit({
-			args: ['ls-remote', 'origin', 'refs/heads/epiq/state'],
+			args: ['ls-remote', 'origin', 'refs/heads/ome/state'],
 			cwd: stateBranchRoot,
 		});
 		if (isFail(remoteRefResult)) throw new Error(remoteRefResult.message);
@@ -197,7 +197,7 @@ describe('unpushed commits', () => {
 		});
 		if (isFail(removeResult)) throw new Error(removeResult.message);
 
-		const bootResult = await syncEpiqWithRemote({
+		const bootResult = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName,
 		});
@@ -209,7 +209,7 @@ describe('unpushed commits', () => {
 			getEventsFile({root: stateBranchRoot, fileName: ownEventFileName}),
 			eventLine('01H00000000000000000000001'),
 		);
-		const localResult = await syncEpiqWithRemote({
+		const localResult = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName,
 		});
@@ -222,7 +222,7 @@ describe('unpushed commits', () => {
 		});
 		if (isFail(addResult)) throw new Error(addResult.message);
 
-		const syncResult = await syncEpiqWithRemote({
+		const syncResult = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName,
 		});
@@ -238,7 +238,7 @@ describe('unpushed commits', () => {
 		if (isFail(headResult)) throw new Error(headResult.message);
 
 		const remoteRefResult = await execGit({
-			args: ['ls-remote', 'origin', 'refs/heads/epiq/state'],
+			args: ['ls-remote', 'origin', 'refs/heads/ome/state'],
 			cwd: stateBranchRoot,
 		});
 		if (isFail(remoteRefResult)) throw new Error(remoteRefResult.message);
@@ -280,7 +280,7 @@ describe('unpushed commits', () => {
 		onTestFinished(() => clock.mockRestore());
 
 		for (const _ of [1, 2]) {
-			const refused = await syncEpiqWithRemote({
+			const refused = await syncOMEWithRemote({
 				cwd: repoRoot,
 				ownEventFileName: OWN_EVENT_FILE,
 			});
@@ -303,7 +303,7 @@ describe('unpushed commits', () => {
 			fileName: OWN_EVENT_FILE,
 		});
 		fs.appendFileSync(eventsFile, eventLine('01H00000000000000000000002'));
-		const write = await syncEpiqWithRemote({
+		const write = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName: OWN_EVENT_FILE,
 		});
@@ -319,11 +319,11 @@ describe('unpushed commits', () => {
 		const {remoteRoot, repoRoot} = await setupRepo();
 		await sync(repoRoot);
 
-		await git(['update-ref', '-d', 'refs/heads/epiq/state'], remoteRoot);
+		await git(['update-ref', '-d', 'refs/heads/ome/state'], remoteRoot);
 		await git(['fetch', '--prune', 'origin'], repoRoot);
 
 		expect((await sync(repoRoot)).pushed).toBe(false);
-		expect(await git(['for-each-ref', 'refs/heads/epiq'], remoteRoot)).toBe('');
+		expect(await git(['for-each-ref', 'refs/heads/ome'], remoteRoot)).toBe('');
 	});
 });
 
@@ -334,7 +334,7 @@ describe('sync commit scope', () => {
 		const {repoRoot} = await setupRepo();
 		const ownEventFileName = 'u1.alice.jsonl';
 
-		const bootResult = await syncEpiqWithRemote({
+		const bootResult = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName,
 		});
@@ -354,7 +354,7 @@ describe('sync commit scope', () => {
 		});
 		if (isFail(stageResult)) throw new Error(stageResult.message);
 
-		const syncResult = await syncEpiqWithRemote({
+		const syncResult = await syncOMEWithRemote({
 			cwd: repoRoot,
 			ownEventFileName,
 		});

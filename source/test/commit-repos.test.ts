@@ -80,14 +80,14 @@ const initRepo = (dir: string) => {
 let PROJECT: {projectId: string; stateBranch: string; createdAt: string};
 
 const writeProject = (root: string, extra: Record<string, unknown> = {}) => {
-	fs.mkdirSync(path.join(root, '.epiq'), {recursive: true});
+	fs.mkdirSync(path.join(root, '.ome'), {recursive: true});
 	const text = JSON.stringify({...PROJECT, ...extra}, null, 2) + '\n';
-	fs.writeFileSync(path.join(root, '.epiq', 'project.json'), text);
+	fs.writeFileSync(path.join(root, '.ome', 'project.json'), text);
 	return text;
 };
 
 const projectText = (root: string) =>
-	fs.readFileSync(path.join(root, '.epiq', 'project.json'), 'utf8');
+	fs.readFileSync(path.join(root, '.ome', 'project.json'), 'utf8');
 
 let board: string;
 let upstream: string;
@@ -111,7 +111,7 @@ beforeEach(() => {
 	board = initRepo(makeTempDir());
 	PROJECT = {
 		projectId: path.basename(board),
-		stateBranch: 'epiq/state',
+		stateBranch: 'ome/state',
 		createdAt: '2020-01-01T00:00:00.000Z',
 	};
 	writeProject(board);

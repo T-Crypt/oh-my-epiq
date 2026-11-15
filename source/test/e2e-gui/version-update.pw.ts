@@ -1,17 +1,17 @@
 import {expect, test} from './fixtures.js';
-import {EPIQ_VERSION} from '../../version.js';
+import {OME_VERSION} from '../../version.js';
 
 const LATEST = '99.0.0';
 
 // The server never asks npm in the suite; this stands in for its answer.
 const fakeUpdate = {
-	current: EPIQ_VERSION,
+	current: OME_VERSION,
 	latest: LATEST,
 	updateAvailable: true,
 	currentPublishedAt: '2026-10-01T10:00:00Z',
 	commands: {
 		script: 'curl -fsSL https://example.test/install.sh | sh',
-		npm: 'npm install --global epiq@latest',
+		npm: 'npm install --global ome@latest',
 	},
 	releases: [
 		{
@@ -23,7 +23,7 @@ const fakeUpdate = {
 	],
 };
 
-test('a newer epiq shows in the header and opens what changed', async ({
+test('a newer ome shows in the header and opens what changed', async ({
 	page,
 	appUrl,
 	pageErrors,
@@ -43,11 +43,11 @@ test('a newer epiq shows in the header and opens what changed', async ({
 	await page.goto(appUrl);
 
 	const badge = page.getByTestId('version-update');
-	await expect(badge).toHaveText(`v${EPIQ_VERSION}`);
+	await expect(badge).toHaveText(`v${OME_VERSION}`);
 
 	await badge.click();
 	const popover = page.getByTestId('version-popover');
-	await expect(popover).toContainText(`Epiq ${LATEST} is available`);
+	await expect(popover).toContainText(`OME ${LATEST} is available`);
 	await expect(popover).toContainText('A shiny new thing');
 	await expect(page.getByTestId('version-current-age')).toContainText(
 		'Released',
@@ -75,7 +75,7 @@ test('with nothing newer, the header shows the plain version', async ({
 }) => {
 	await page.goto(appUrl);
 
-	await expect(page.getByTestId('version')).toHaveText(`v${EPIQ_VERSION}`);
+	await expect(page.getByTestId('version')).toHaveText(`v${OME_VERSION}`);
 	await expect(page.getByTestId('version-update')).toHaveCount(0);
 	expect(pageErrors).toEqual([]);
 });

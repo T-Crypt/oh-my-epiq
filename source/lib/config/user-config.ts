@@ -7,7 +7,7 @@ import {failed, isFail, Result, succeeded} from '../model/result-types.js';
 import {SettingsState} from '../state/settings.state.js';
 import {fileManager} from '../storage/file-manager.js';
 
-export const SYSTEM_USER: EpiqConfig = {
+export const SYSTEM_USER: OMEConfig = {
 	logLevel: 'info',
 	userId: '',
 	userName: '',
@@ -15,7 +15,7 @@ export const SYSTEM_USER: EpiqConfig = {
 	autoSync: false,
 };
 
-const EpiqConfigSchema = z
+const OMEConfigSchema = z
 	.object({
 		logLevel: z.enum(['info', 'error', 'debug']),
 		preferredEditor: z.string().optional(),
@@ -32,25 +32,25 @@ const EpiqConfigSchema = z
 	})
 	.partial();
 
-export type EpiqConfig = z.infer<typeof EpiqConfigSchema>;
+export type OMEConfig = z.infer<typeof OMEConfigSchema>;
 
 const CONFIG_FILE_NAME = 'config.json';
 
-export const getEpiqHomePath = getGlobalConfigDir;
+export const getOMEHomePath = getGlobalConfigDir;
 
-export const getEpiqConfigPath = (): string =>
-	path.join(getEpiqHomePath(), CONFIG_FILE_NAME);
+export const getOMEConfigPath = (): string =>
+	path.join(getOMEHomePath(), CONFIG_FILE_NAME);
 
-const ensureEpiqHomeExists = (): Result<null> => {
+const ensureOMEHomeExists = (): Result<null> => {
 	try {
-		fileManager.mkDir(getEpiqHomePath());
+		fileManager.mkDir(getOMEHomePath());
 		return succeeded(`Ensured ~/${GLOBAL_CONFIG_DIR_NAME} exists`, null);
 	} catch {
 		return failed(`Unable to create ~/${GLOBAL_CONFIG_DIR_NAME}`);
 	}
 };
 
-const safeParseConfig = (raw: string): Result<EpiqConfig> => {
+const safeParseConfig = (raw: string): Result<OMEConfig> => {
 	let parsed: unknown;
 
 	try {
@@ -59,7 +59,7 @@ const safeParseConfig = (raw: string): Result<EpiqConfig> => {
 		return failed(`Invalid ~/${GLOBAL_CONFIG_DIR_NAME}/config.json JSON`);
 	}
 
-	const result = EpiqConfigSchema.safeParse(parsed ?? {});
+	const result = OMEConfigSchema.safeParse(parsed ?? {});
 
 	if (!result.success) {
 		return failed(
@@ -72,11 +72,11 @@ const safeParseConfig = (raw: string): Result<EpiqConfig> => {
 	return succeeded('Parsed config', result.data);
 };
 
-export const readEpiqConfig = (): Result<EpiqConfig> => {
-	const ensureResult = ensureEpiqHomeExists();
+export const readOMEConfig = (): Result<OMEConfig> => {
+	const ensureResult = ensureOMEHomeExists();
 	if (isFail(ensureResult)) return failed(ensureResult.message);
 
-	const configPath = getEpiqConfigPath();
+	const configPath = getOMEConfigPath();
 	const raw = fileManager.readFile(configPath);
 
 	if (raw == null || raw.trim() === '') {
@@ -93,11 +93,11 @@ export const readEpiqConfig = (): Result<EpiqConfig> => {
 	return safeParseConfig(raw);
 };
 
-export const writeEpiqConfig = (config: EpiqConfig): Result<null> => {
-	const ensureResult = ensureEpiqHomeExists();
+export const writeOMEConfig = (config: OMEConfig): Result<null> => {
+	const ensureResult = ensureOMEHomeExists();
 	if (isFail(ensureResult)) return failed(ensureResult.message);
 
-	const result = EpiqConfigSchema.safeParse(config);
+	const result = OMEConfigSchema.safeParse(config);
 
 	if (!result.success) {
 		return failed(
@@ -107,7 +107,7 @@ export const writeEpiqConfig = (config: EpiqConfig): Result<null> => {
 		);
 	}
 
-	const configPath = getEpiqConfigPath();
+	const configPath = getOMEConfigPath();
 
 	try {
 		fileManager.writeToFile(
@@ -120,22 +120,22 @@ export const writeEpiqConfig = (config: EpiqConfig): Result<null> => {
 	}
 };
 
-export const setConfig = (partialConfig: Partial<EpiqConfig>) => {
-	const existingResult = readEpiqConfig();
+export const setConfig = (partialConfig: Partial<OMEConfig>) => {
+	const existingResult = readOMEConfig();
 	if (isFail(existingResult)) return failed('Failed to read existing config');
 
-	const nextConfig: EpiqConfig = {
+	const nextConfig: OMEConfig = {
 		...existingResult.value,
 		...partialConfig,
 	};
 
-	return writeEpiqConfig(nextConfig);
+	return writeOMEConfig(nextConfig);
 };
 
 export const loadSettingsFromConfig = (): Result<SettingsState> => {
-	const configPath = getEpiqConfigPath();
+	const configPath = getOMEConfigPath();
 
-	const ensureResult = ensureEpiqHomeExists();
+	const ensureResult = ensureOMEHomeExists();
 	if (isFail(ensureResult)) {
 		return failed(`Unable to create ~/${GLOBAL_CONFIG_DIR_NAME}`);
 	}
@@ -143,7 +143,7 @@ export const loadSettingsFromConfig = (): Result<SettingsState> => {
 	const exists = fileManager.readFile(configPath) !== null;
 
 	if (!exists) {
-		const createResult = writeEpiqConfig(SYSTEM_USER);
+		const createResult = writeOMEConfig(SYSTEM_USER);
 		if (isFail(createResult)) {
 			throw new Error(
 				`Unable to create ~/${GLOBAL_CONFIG_DIR_NAME}/config.json`,
@@ -151,7 +151,7 @@ export const loadSettingsFromConfig = (): Result<SettingsState> => {
 		}
 	}
 
-	const result = readEpiqConfig();
+	const result = readOMEConfig();
 	if (isFail(result)) {
 		throw new Error(result.message || 'Unable to load settings');
 	}
@@ -181,7 +181,7 @@ export const loadSettingsFromConfig = (): Result<SettingsState> => {
 		);
 	}
 
-	process.env['EPIQ_LOG_LEVEL'] = logLevel;
+	process.env['OME_LOG_LEVEL'] = logLevel;
 
 	return succeeded('successfully loaded settings', {
 		// Not a config value. Config knows nothing about git, so this is cleared

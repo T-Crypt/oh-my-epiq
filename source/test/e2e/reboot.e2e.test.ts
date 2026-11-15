@@ -55,7 +55,7 @@ describe('TUI reboot / event-log replay e2e', () => {
 		'replays the persisted event log after a full app reboot and can append onto it',
 		async () => {
 			// Shared by both processes, so the second replays exactly what the first wrote.
-			const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-e2e-reboot-'));
+			const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-e2e-reboot-'));
 
 			try {
 				// --- First process: create a project and a couple of issues. ---

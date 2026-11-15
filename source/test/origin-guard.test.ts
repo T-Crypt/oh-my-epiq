@@ -15,7 +15,7 @@ describe('isForeignOrigin', () => {
 	it.each([
 		'http://127.0.0.1:3710',
 		'http://localhost:3710',
-		'http://epiq.localhost:3710',
+		'http://ome.localhost:3710',
 		'http://[::1]:3710',
 	])('accepts our own origin %s', origin => {
 		expect(isForeignOrigin(origin, PORT)).toBe(false);
@@ -29,7 +29,7 @@ describe('isForeignOrigin', () => {
 		'http://127.0.0.1:8080',
 		// A hostname that merely ends in one of ours.
 		'http://notlocalhost:3710',
-		'http://evil.epiq.localhost:3710',
+		'http://evil.ome.localhost:3710',
 		// https on our port is still not a page this server served.
 		'https://127.0.0.1:3710',
 		// A sandboxed iframe or a file:// page.
@@ -78,7 +78,7 @@ describe('refuseCrossSiteRequest', () => {
 
 	it('allows the GUI page’s own writes', () => {
 		expect(
-			refuse('POST', 'http://epiq.localhost:3710', 'application/json'),
+			refuse('POST', 'http://ome.localhost:3710', 'application/json'),
 		).toBeNull();
 		expect(refuse('DELETE', 'http://127.0.0.1:3710')).toBeNull();
 	});

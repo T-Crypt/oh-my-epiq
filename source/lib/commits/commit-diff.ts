@@ -233,7 +233,7 @@ const getChangedFileBlobs = async (
 			...(paths && paths.length > 0 ? ['--', ...paths] : []),
 		],
 	});
-	// git's own words, with every option epiq runs it under, are for the log;
+	// git's own words, with every option ome runs it under, are for the log;
 	// the reader gets the outcome.
 	if (isFail(diffResult)) {
 		logger.info(`[commits] diff ${from} ${to}: ${diffResult.message}`);

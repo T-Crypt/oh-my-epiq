@@ -24,7 +24,7 @@ export type DiffCommentMeta = {
 	issueRef?: string;
 };
 
-const DIFF_COMMENT_MARKER = /<!--\s*epiq-diff-comment:(.+?)-->\n?/;
+const DIFF_COMMENT_MARKER = /<!--\s*ome-diff-comment:(.+?)-->\n?/;
 
 export const stripDiffCommentMarker = (body: string): string =>
 	body.replace(DIFF_COMMENT_MARKER, '');
@@ -32,7 +32,7 @@ export const stripDiffCommentMarker = (body: string): string =>
 // `>` is escaped so a note containing `-->` can't end the marker; JSON.parse
 // restores it.
 export const encodeDiffCommentMarker = (meta: DiffCommentMeta): string =>
-	`<!-- epiq-diff-comment:${JSON.stringify(meta).replaceAll(
+	`<!-- ome-diff-comment:${JSON.stringify(meta).replaceAll(
 		'>',
 		'\\u003e',
 	)} -->`;

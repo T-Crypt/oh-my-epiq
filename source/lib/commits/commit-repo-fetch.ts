@@ -29,7 +29,7 @@ import {
 	writeRepoEvent,
 } from './commit-repos.js';
 
-// epiq's own bare clones of the other repos: made and fetched on sync only,
+// ome's own bare clones of the other repos: made and fetched on sync only,
 // never on boot or on a read. Everything after the clone is a read.
 
 /** A transfer whose size nobody knows in advance; long, but not forever. */
@@ -47,7 +47,7 @@ const placeRemovalMark = (clonePath: string) => {
 	} catch (error) {
 		if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
 		if (isLink(removalMark(clonePath))) {
-			throw new Error('The removal mark is a link, which epiq will not use');
+			throw new Error('The removal mark is a link, which ome will not use');
 		}
 	}
 };
@@ -67,7 +67,7 @@ export type RepoFetchStatus = {
 	branches: RepoBranches | null;
 	/** The date history starts at, or null for all of it. */
 	since: string | null;
-	/** The clone's own epiq state branch, if its project.json names one. */
+	/** The clone's own ome state branch, if its project.json names one. */
 	stateBranch: string | null;
 	/** When the clone was last started over and the new one landed. */
 	restartedAt: number | null;
@@ -275,7 +275,7 @@ const snapshotOf = (clonePath: string): CloneSnapshot => {
 
 // Restore writes land here first: at the clone's top, where git reads no
 // stray file, never beside a ref, where one would be read as a branch.
-const RESTORE_TEMP = 'epiq-restore-';
+const RESTORE_TEMP = 'ome-restore-';
 
 /** A file replaced whole or not at all: a process stopped here leaves either. */
 const replaceFile = (clonePath: string, relative: string, content: Buffer) => {
@@ -373,9 +373,9 @@ const gitReason = (message: string): string => {
 // More than any project.json; a bigger one is no board's.
 const PROJECT_FILE_MAX_BYTES = 64 * 1024;
 
-/** The state branch the clone's project.json names, when it is an epiq board. */
+/** The state branch the clone's project.json names, when it is an ome board. */
 const stateBranchOf = async (clonePath: string): Promise<string | null> => {
-	const object = 'HEAD:.epiq/project.json';
+	const object = 'HEAD:.ome/project.json';
 	const size = await localGit({
 		cwd: clonePath,
 		args: ['cat-file', '-s', object],
@@ -599,7 +599,7 @@ const cloneRepo = async (
 	}
 	if (isLink(clonePath)) {
 		fs.rmSync(pending, {recursive: true, force: true});
-		return failed('The clone path is a link, which epiq will not use');
+		return failed('The clone path is a link, which ome will not use');
 	}
 
 	fs.renameSync(pending, clonePath);
@@ -667,7 +667,7 @@ const followDefaultBranch = async (
 };
 
 /**
- * Git lock files left in a clone; epiq's git only runs under the clone's
+ * Git lock files left in a clone; ome's git only runs under the clone's
  * lock, so any found here are stale.
  */
 const clearStaleGitLocks = (clonePath: string) => {
@@ -900,7 +900,7 @@ const originOf = async (
 };
 
 /**
- * `EPIQ_GLOBAL_DIR` can point anywhere, a repository included; there the
+ * `OME_GLOBAL_DIR` can point anywhere, a repository included; there the
  * clones would show as untracked files, one `git add -A` from being committed.
  */
 const ignoreClonesDir = (dir: string) => {
@@ -1104,7 +1104,7 @@ const fetchOne = async (
 	}
 
 	if (isLink(clonePath)) {
-		return outcome(false, 'The clone path is a link, which epiq will not use');
+		return outcome(false, 'The clone path is a link, which ome will not use');
 	}
 
 	const lock = await takeCloneLock(
@@ -1459,7 +1459,7 @@ export const removeRepoClone = (input: {
 
 	// The id itself, so nothing outside the clones dir can be named.
 	if (!CLONE_DIR_NAME.test(`${input.repoId}.git`)) {
-		return failed('Not a clone epiq made');
+		return failed('Not a clone ome made');
 	}
 
 	const clonePath = getRepoClonePath(

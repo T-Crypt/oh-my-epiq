@@ -1,4 +1,4 @@
-// Whether a newer epiq is out, asked of the server once a socket is up. The
+// Whether a newer ome is out, asked of the server once a socket is up. The
 // server holds its answer for a day, so asking again costs nothing.
 
 import {useCallback, useEffect, useRef, useState} from 'react';

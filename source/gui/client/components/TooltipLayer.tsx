@@ -15,7 +15,7 @@ import {TICKET_REF_ATTRIBUTE} from './TicketPreviewLayer';
 // animation: it exists to cut latency.
 
 // Where the title is parked: `title` must leave to suppress the native bubble.
-const STASH = 'epiqTip';
+const STASH = 'omeTip';
 
 type Shown = {label: string; trigger: HTMLElement};
 
@@ -23,7 +23,7 @@ type Shown = {label: string; trigger: HTMLElement};
 const triggerFor = (target: EventTarget | null): HTMLElement | null => {
 	if (!(target instanceof Element)) return null;
 
-	const owner = target.closest<HTMLElement>(`[title], [data-${'epiq-tip'}]`);
+	const owner = target.closest<HTMLElement>(`[title], [data-${'ome-tip'}]`);
 
 	// A ticket ref has its own preview card instead.
 	const refOwner = target.closest(`[${TICKET_REF_ATTRIBUTE}]`);

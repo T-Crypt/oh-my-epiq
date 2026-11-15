@@ -17,7 +17,7 @@ afterEach(() => {
 });
 
 const tempDir = (): string => {
-	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-guard-'));
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-guard-'));
 	created.push(dir);
 	return dir;
 };

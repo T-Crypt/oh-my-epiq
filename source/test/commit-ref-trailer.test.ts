@@ -45,17 +45,17 @@ beforeEach(() => {
 
 	board = makeTempDir();
 	childProcess.execFileSync('git', ['init', '-q', '-b', 'main'], {cwd: board});
-	fs.mkdirSync(path.join(board, '.epiq'), {recursive: true});
+	fs.mkdirSync(path.join(board, '.ome'), {recursive: true});
 	fs.writeFileSync(
-		path.join(board, '.epiq', 'project.json'),
+		path.join(board, '.ome', 'project.json'),
 		JSON.stringify({
 			projectId: path.basename(board),
-			stateBranch: 'epiq/state',
+			stateBranch: 'ome/state',
 			createdAt: '2020-01-01T00:00:00.000Z',
 		}) + '\n',
 	);
 	commit(board, 'Ada', ['init']);
-	childProcess.execFileSync('git', ['branch', 'epiq/state'], {cwd: board});
+	childProcess.execFileSync('git', ['branch', 'ome/state'], {cwd: board});
 });
 
 afterEach(() => {
@@ -66,8 +66,8 @@ describe("the board's own repo", () => {
 	// A field opening with the letter a marker is spelled with must not be
 	// taken for one: an author "Erik", a subject starting "B" or "E".
 	it('reads fields that start like a marker, and the refs in bodies', async () => {
-		commit(board, 'Erik', ['pin the tag', 'Epiq-Ref: B8PYTCM']);
-		commit(board, 'Ada', ['Bump the floor', 'Epiq-Ref: W1TCS14, B8PYTCM']);
+		commit(board, 'Erik', ['pin the tag', 'OME-Ref: B8PYTCM']);
+		commit(board, 'Ada', ['Bump the floor', 'OME-Ref: W1TCS14, B8PYTCM']);
 		commit(board, 'Bea', ['Enable the timer']);
 
 		const timeline = value(await getCommitTimeline({repoRoot: board}));
@@ -105,7 +105,7 @@ describe("the board's own repo", () => {
 	// A goal's list: one commit naming two of its tickets is one row.
 	it("lists several tickets' commits once each, naming the tickets", async () => {
 		commit(board, 'Erik', ['B8PYTCM pin the tag']);
-		commit(board, 'Ada', ['W1TCS14 bump the floor', 'Epiq-Ref: B8PYTCM']);
+		commit(board, 'Ada', ['W1TCS14 bump the floor', 'OME-Ref: B8PYTCM']);
 		commit(board, 'Bea', ['QQQQQQQ elsewhere']);
 
 		const listed = async (refs: string[]) =>
@@ -130,7 +130,7 @@ describe("the board's own repo", () => {
 		commit(board, 'Ada', ['b8pytcm lowercase subject']);
 		commit(board, 'Ada', ['B8PYTCM next to it']);
 		commit(board, 'Bea', ['QQQQQQQ someone else']);
-		commit(board, 'Erik', ['two at once', 'Epiq-Ref: W1TCS14, B8PYTCM']);
+		commit(board, 'Erik', ['two at once', 'OME-Ref: W1TCS14, B8PYTCM']);
 		commit(board, 'Erik', ['W1TCS14 after it']);
 		commit(board, 'Erik', ['ZZZZZZZ no goal ticket']);
 
@@ -173,7 +173,7 @@ describe('a ref set past the search limit', () => {
 		commit(board, 'Ada', ['B8PYTCM start the parser']);
 		commit(board, 'Ada', ['b8pytcm keep going']);
 		commit(board, 'Bea', ['unrelated work']);
-		commit(board, 'Bea', ['wire it up', 'Epiq-Ref: W1TCS14, B8PYTCM']);
+		commit(board, 'Bea', ['wire it up', 'OME-Ref: W1TCS14, B8PYTCM']);
 		commit(board, 'Erik', ['W1TCS14X looks like a ref but is not']);
 		commit(board, 'Erik', ['W1TCS14 the last of it']);
 
@@ -220,7 +220,7 @@ describe("tickets' diff totals", () => {
 	it('match the full scan, from only the commits that name a ticket', async () => {
 		commitFile(['B8PYTCM start'], 'a.txt', 12);
 		commitFile(['unrelated change'], 'b.txt', 40);
-		commitFile(['wire it up', 'Epiq-Ref: W1TCS14, B8PYTCM'], 'a.txt', 5);
+		commitFile(['wire it up', 'OME-Ref: W1TCS14, B8PYTCM'], 'a.txt', 5);
 		commitFile(['w1tcs14 lower-case lead'], 'c.txt', 3);
 		commitFile(['W1TCS14X not a ref'], 'd.txt', 9);
 

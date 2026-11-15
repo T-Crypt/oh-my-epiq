@@ -10,16 +10,16 @@ import {HANDOFF_PATH, type Handoff} from './handoff.js';
 // a real pty, which Playwright's loader cannot host.
 
 // No git scan cache: tests commit and then read straight back.
-process.env['EPIQ_CACHE_MS'] = '0';
+process.env['OME_CACHE_MS'] = '0';
 // The tests connect repos from local paths; a real server refuses them.
-process.env['EPIQ_ALLOW_LOCAL_REPOS'] = '1';
+process.env['OME_ALLOW_LOCAL_REPOS'] = '1';
 // The suite never asks npm or GitHub what is new; a test that wants an update
 // stands in for the server's answer.
-process.env['EPIQ_NO_UPDATE_CHECK'] = '1';
+process.env['OME_NO_UPDATE_CHECK'] = '1';
 
 const servers: Array<{close: () => void}> = [];
 
-// The server reports epiq.localhost; the loopback address is what a browser can
+// The server reports ome.localhost; the loopback address is what a browser can
 // be relied on to resolve.
 const serve = async (repoRoot: string): Promise<string> => {
 	const result = await startGuiServer({repoRoot, boardId: ''});
@@ -37,7 +37,7 @@ const serve = async (repoRoot: string): Promise<string> => {
 
 const main = async () => {
 	const repoRoot = await seedProject();
-	const bareRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-gui-bare-'));
+	const bareRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-gui-bare-'));
 
 	const handoff: Handoff = {
 		baseUrl: await serve(repoRoot),
@@ -45,7 +45,7 @@ const main = async () => {
 		bareUrl: await serve(bareRepoRoot),
 		bareRepoRoot,
 		// Set by `seedProject`, which points it at a temp directory of its own.
-		globalDir: process.env['EPIQ_GLOBAL_DIR']!,
+		globalDir: process.env['OME_GLOBAL_DIR']!,
 	};
 
 	// Boots the repo now: the first test's 10s timeout is too short under full load.

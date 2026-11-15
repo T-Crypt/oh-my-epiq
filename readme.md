@@ -1,12 +1,12 @@
-# Epiq - issue tracking as code
+# OME - issue tracking as code
 
-Epiq is a self-hosted issue tracker persisting state as an immutable event log in your repository, versioned and synchronized via Git.
+OME is a self-hosted issue tracker persisting state as an immutable event log in your repository, versioned and synchronized via Git.
 
-Epiq offers issue tracking as an integrated part of the development environment with workflow replay, inline code-diffs, filtering, and a tight code integration.
+OME offers issue tracking as an integrated part of the development environment with workflow replay, inline code-diffs, filtering, and a tight code integration.
 
-**[Docs, blog, etc. →](https://ljtn.github.io/epiq/)**
+**[Docs, blog, etc. →](https://ljtn.github.io/ome/)**
 
-![The Epiq GUI: the event log, the board and a ticket's code diff, under the time travel timeline](https://raw.githubusercontent.com/ljtn/epiq/main/source/assets/time-travel.jpeg)
+![The OME GUI: the event log, the board and a ticket's code diff, under the time travel timeline](https://raw.githubusercontent.com/ljtn/epiq/main/source/assets/time-travel.jpeg)
 
 ## Audit the workflow
 
@@ -14,24 +14,24 @@ Because state is an event log, you can replay the board to find out what happene
 
 ## Code, linked to tickets
 
-Commits are linked to a ticket with an `Epiq-Ref:` line in its body, naming the ticket's ref:
+Commits are linked to a ticket with an `OME-Ref:` line in its body, naming the ticket's ref:
 
 ```
-git commit -m "fix the parser" -m "Epiq-Ref: 1YRTG8T"
+git commit -m "fix the parser" -m "OME-Ref: 1YRTG8T"
 ```
 ![A ticket's Code tab, showing the diff of a linked commit](https://raw.githubusercontent.com/ljtn/epiq/main/source/assets/code-diff.jpeg)
 
 ### Commits from other repos
 
-A board can read commits from other repositories too. Connecting is a board-wide action: every contributor's epiq downloads the repo on their next sync.
+A board can read commits from other repositories too. Connecting is a board-wide action: every contributor's ome downloads the repo on their next sync.
 
 ## Terminal + Browser
 
-Epiq originated from the command line and offers a first-class terminal experience, but also features a browser interface.
+OME originated from the command line and offers a first-class terminal experience, but also features a browser interface.
 
-![The Epiq terminal UI: the same board rendered in a terminal, with the command palette along the bottom](https://raw.githubusercontent.com/ljtn/epiq/main/source/assets/tui.jpeg)
+![The OME terminal UI: the same board rendered in a terminal, with the command palette along the bottom](https://raw.githubusercontent.com/ljtn/epiq/main/source/assets/tui.jpeg)
 
-## What Epiq brings
+## What OME brings
 
 Fundamental design choices gives a system with:
 
@@ -55,18 +55,18 @@ Binary:
 curl -fsSL https://raw.githubusercontent.com/ljtn/epiq/main/install.sh | sh
 ```
 
-Installs to `~/.local/bin` by default. Override with `EPIQ_INSTALL_DIR` (or `XDG_BIN_HOME`); pin a version with `EPIQ_VERSION=v1.0.0`.
+Installs to `~/.local/bin` by default. Override with `OME_INSTALL_DIR` (or `XDG_BIN_HOME`); pin a version with `OME_VERSION=v1.0.0`.
 
 ### Via npm
 
 ```bash
-npm install --global epiq
+npm install --global ome
 ```
 
 ### Verify
 
 ```bash
-epiq --version
+ome --version
 ```
 
 ---
@@ -84,7 +84,7 @@ git init
 2. Run:
 
 ```bash
-epiq
+ome
 ```
 
 If it is your first run, this opens the interactive setup wizard that sets you up in about 30 seconds.
@@ -94,27 +94,27 @@ That’s it!
 Once your project is set up, you can also launch the browser user interface with:
 
 ```bash
-epiq gui
+ome gui
 ```
 
 On a machine with no display, or with `--no-open`, it serves without opening a browser; open the URL it prints.
 
 > Setup wizard creates:
-> User config persisted in `~/.epiq-global/config.json`.
+> User config persisted in `~/.ome-global/config.json`.
 
 > Initialization creates:
 >
-> - Project definition in `./.epiq/project.json`
-> - Authoritative Git state at `~/.epiq-global/worktrees/<id>`
-> - Updates your `.gitignore` to ignore local-only `.epiq/log/`
->   Epiq manages a dedicated Git state branch and worktree automatically as the source of truth for synchronization.
-> - A local debug log at `.epiq/log/epiq.log` — check it first if sync, boot, or a Git operation is misbehaving.
+> - Project definition in `./.ome/project.json`
+> - Authoritative Git state at `~/.ome-global/worktrees/<id>`
+> - Updates your `.gitignore` to ignore local-only `.ome/log/`
+>   OME manages a dedicated Git state branch and worktree automatically as the source of truth for synchronization.
+> - A local debug log at `.ome/log/ome.log` — check it first if sync, boot, or a Git operation is misbehaving.
 
 ---
 
 ## MCP & Agent Compatibility
 
-Epiq provides a MCP (Model Context Protocol) server for agents to interact with, making it easy to plug into modern agent frameworks. The server is exposed by the `epiq-mcp` binary that ships with the package.
+OME provides a MCP (Model Context Protocol) server for agents to interact with, making it easy to plug into modern agent frameworks. The server is exposed by the `ome-mcp` binary that ships with the package.
 
 ### Claude Code
 
@@ -122,17 +122,17 @@ The reliable way to register the server is with the `claude mcp add` command —
 
 ```bash
 # Available everywhere (recommended)
-claude mcp add --scope user epiq -- npx -y --package=epiq epiq-mcp
+claude mcp add --scope user ome -- npx -y --package=ome ome-mcp
 
 # Or only in the current project
-claude mcp add epiq -- npx -y --package=epiq epiq-mcp
+claude mcp add ome -- npx -y --package=ome ome-mcp
 ```
 
-Verify the connection with `claude mcp list` (it should report `epiq … ✔ Connected`). MCP servers are loaded at startup, so **restart Claude Code** after adding the server before its tools become available.
+Verify the connection with `claude mcp list` (it should report `ome … ✔ Connected`). MCP servers are loaded at startup, so **restart Claude Code** after adding the server before its tools become available.
 
 ### Skills
 
-Find skill at `.claude/skills/epiq/SKILL.md` that documents a recommended workflow for working the Epiq board. `epiq_skill_install` writes the same file into any repository that lacks it, so a project set up from an agent gets the rules too — after `epiq_project_init`, since init refuses a repository with uncommitted files; it leaves an identical copy alone and refuses to overwrite a differing one unless told to with `force`.
+Find skill at `.claude/skills/ome/SKILL.md` that documents a recommended workflow for working the OME board. `ome_skill_install` writes the same file into any repository that lacks it, so a project set up from an agent gets the rules too — after `ome_project_init`, since init refuses a repository with uncommitted files; it leaves an identical copy alone and refuses to overwrite a differing one unless told to with `force`.
 
 ### Agent identity
 
@@ -142,7 +142,7 @@ That agent then shows up in the contributor list, assigns itself rather than you
 
 ### Board and lane conventions
 
-A board's or a lane's description holds its conventions: "tests before review", "one ticket per PR". The MCP hands them to agents where they apply. Assuming an identity returns the board rules, getting or moving a ticket returns its lane's, and creating one returns both. Agents are told to follow them unless they conflict with their user's instructions. Write them with `epiq_board_description_edit` and `epiq_swimlane_description_edit`, in the board's or the lane's panel in the GUI, or with `edit description` on a selected lane or board in the TUI.
+A board's or a lane's description holds its conventions: "tests before review", "one ticket per PR". The MCP hands them to agents where they apply. Assuming an identity returns the board rules, getting or moving a ticket returns its lane's, and creating one returns both. Agents are told to follow them unless they conflict with their user's instructions. Write them with `ome_board_description_edit` and `ome_swimlane_description_edit`, in the board's or the lane's panel in the GUI, or with `edit description` on a selected lane or board in the TUI.
 
 ### Other MCP clients
 
@@ -151,30 +151,30 @@ For clients that are configured by hand, add the following to the client's MCP c
 ```json
 {
 	"mcpServers": {
-		"epiq": {
+		"ome": {
 			"command": "npx",
-			"args": ["-y", "-p", "epiq", "epiq-mcp"]
+			"args": ["-y", "-p", "ome", "ome-mcp"]
 		}
 	}
 }
 ```
 
-Once registered, agents can interact with your local Epiq instance through the MCP.
+Once registered, agents can interact with your local OME instance through the MCP.
 
 ### Sandboxed or network-restricted environments
 
-`npx -y -p epiq epiq-mcp` resolves the package against the npm registry **every time it starts**, even if it's already cached locally. In agent sandboxes with restricted network access, this can make the MCP server appear to hang. If you're running Epiq's MCP server in such an environment, install it globally once and point your MCP config at the resolved executable directly, bypassing `npx` (and the registry lookup) entirely on every subsequent start:
+`npx -y -p ome ome-mcp` resolves the package against the npm registry **every time it starts**, even if it's already cached locally. In agent sandboxes with restricted network access, this can make the MCP server appear to hang. If you're running OME's MCP server in such an environment, install it globally once and point your MCP config at the resolved executable directly, bypassing `npx` (and the registry lookup) entirely on every subsequent start:
 
 ```bash
-npm install --global epiq
-which epiq-mcp   # use this absolute path in your MCP config
+npm install --global ome
+which ome-mcp   # use this absolute path in your MCP config
 ```
 
 ```json
 {
 	"mcpServers": {
-		"epiq": {
-			"command": "/absolute/path/to/epiq-mcp"
+		"ome": {
+			"command": "/absolute/path/to/ome-mcp"
 		}
 	}
 }
@@ -184,13 +184,13 @@ which epiq-mcp   # use this absolute path in your MCP config
 
 ---
 
-## How Epiq is synchronized
+## How OME is synchronized
 
-Epiq uses Git in the background - no manual Git commands are required. Running `:sync` synchronizes changes between your local state (persisted at `~/.epiq-global/worktrees/<id>/`) and the remote state. By utilizing Git worktrees, synchronization stays isolated from your regular development workflow. Project tracking metadata is stored in `.epiq/project.json`.
+OME uses Git in the background - no manual Git commands are required. Running `:sync` synchronizes changes between your local state (persisted at `~/.ome-global/worktrees/<id>/`) and the remote state. By utilizing Git worktrees, synchronization stays isolated from your regular development workflow. Project tracking metadata is stored in `.ome/project.json`.
 
 ## Conflict Avoidance & Data Integrity
 
-Epiq is designed to provide robustness in a distributed, Git-backed environment where multiple users may update state concurrently. Instead of mutating shared files, Epiq uses an event-sourced model to prevent merge conflicts and make concurrent changes predictable.
+OME is designed to provide robustness in a distributed, Git-backed environment where multiple users may update state concurrently. Instead of mutating shared files, OME uses an event-sourced model to prevent merge conflicts and make concurrent changes predictable.
 
 ### Event-sourced state
 
@@ -212,7 +212,7 @@ This approach:
 
 ### Conflict handling model
 
-Epiq resolves concurrent changes at the event level:
+OME resolves concurrent changes at the event level:
 
 - Events are designed to be **idempotent** where possible
 - Later events take precedence when conflicts occur
@@ -221,7 +221,7 @@ Epiq resolves concurrent changes at the event level:
 
 ### Local-first with eventual consistency
 
-Epiq follows a **local-first** model:
+OME follows a **local-first** model:
 
 - All operations apply instantly on the local machine
 - Synchronization happens explicitly (`:sync`) or automatically
@@ -232,4 +232,4 @@ Epiq follows a **local-first** model:
 ---
 
 
-[![GitHub Sponsors](https://img.shields.io/badge/Sponsor-Epiq-pink?logo=github)](https://github.com/sponsors/ljtn)
+[![GitHub Sponsors](https://img.shields.io/badge/Sponsor-OME-pink?logo=github)](https://github.com/sponsors/ljtn)

@@ -186,11 +186,11 @@ export type GuiMessage =
 	// figures is a walk over the repository's git history.
 	| {type: 'me:stats:get'}
 	// This machine's own preferences, not the board's: they live in
-	// `~/.epiq/config.json` and reach no other clone. Which is why neither is a
+	// `~/.ome/config.json` and reach no other clone. Which is why neither is a
 	// mutating message — there is no event to refuse while history is being
 	// read.
 	| {type: 'settings:get'}
-	// Whether a newer epiq is out, and what it brings. Asked once per socket;
+	// Whether a newer ome is out, and what it brings. Asked once per socket;
 	// the server caches the answer for a day.
 	| {type: 'version:get'}
 	| {

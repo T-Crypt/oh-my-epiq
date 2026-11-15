@@ -352,7 +352,7 @@ const runSync = async (
 	claim: LockClaim,
 ): Promise<Result<SyncSummary>> => {
 	// Abort-guards
-	logger.debug('[sync] syncEpiqWithRemote:start', {
+	logger.debug('[sync] syncOMEWithRemote:start', {
 		cwd,
 		ownEventFileName,
 	});
@@ -599,7 +599,7 @@ const runSync = async (
 			: 'Already synced',
 	);
 
-	logger.debug('[sync] syncEpiqWithRemote:done');
+	logger.debug('[sync] syncOMEWithRemote:done');
 
 	return succeeded('Synced event logs with state branch', {
 		repoRoot,
@@ -639,7 +639,7 @@ export const withEventLogsIntact = async <T>(
 };
 
 /** Only one process may drive the state worktree at a time. */
-export const syncEpiqWithRemote = async (
+export const syncOMEWithRemote = async (
 	args: SyncArgs,
 ): Promise<Result<SyncSummary>> => {
 	const cwd = args.cwd ?? process.cwd();

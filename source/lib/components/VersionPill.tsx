@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import {Text} from 'ink';
 import React, {useEffect, useState} from 'react';
-import {EPIQ_VERSION} from '../../version.js';
+import {OME_VERSION} from '../../version.js';
 import {theme} from '../theme/themes.js';
 import {getVersionStatus, VersionStatus} from '../version/version-check.js';
 
@@ -22,7 +22,7 @@ const renderVersionDiff = (current: string, latest: string) => {
 
 export function VersionPill() {
 	const [versionStatus, setVersionStatus] = useState<VersionStatus>({
-		current: EPIQ_VERSION,
+		current: OME_VERSION,
 		latest: null,
 		updateAvailable: false,
 	});
@@ -30,7 +30,7 @@ export function VersionPill() {
 	useEffect(() => {
 		let mounted = true;
 
-		void getVersionStatus(EPIQ_VERSION).then(status => {
+		void getVersionStatus(OME_VERSION).then(status => {
 			if (mounted) {
 				setVersionStatus(status);
 			}
@@ -44,16 +44,16 @@ export function VersionPill() {
 	if (!versionStatus.updateAvailable || !versionStatus.latest) {
 		return (
 			<Text dimColor color={theme.secondary2}>
-				{EPIQ_VERSION + ' '}
+				{OME_VERSION + ' '}
 			</Text>
 		);
 	}
 
 	return (
 		<Text>
-			{chalk.hex(theme.secondary2).dim(EPIQ_VERSION)}
+			{chalk.hex(theme.secondary2).dim(OME_VERSION)}
 			{chalk.hex(theme.accent).dim(' ↗ ')}
-			{renderVersionDiff(EPIQ_VERSION, versionStatus.latest)}
+			{renderVersionDiff(OME_VERSION, versionStatus.latest)}
 		</Text>
 	);
 }

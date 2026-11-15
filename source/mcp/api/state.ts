@@ -25,7 +25,7 @@ import {getAttachmentFileName} from '../../lib/media/media-store.js';
 import {logger} from '../../logger.js';
 import {ApiState, ApiSwimlane} from '../api-state.model.js';
 import {descriptionOf} from './descriptions.js';
-import {getTimeTravelStatus} from '../epiq-time-travel.js';
+import {getTimeTravelStatus} from '../ome-time-travel.js';
 import {
 	ToolInput,
 	bootLocal,
@@ -40,7 +40,7 @@ import {apiBoardGoals, apiGoals, goalFields} from './goals.js';
 import {rulesOf} from './lane-rules.js';
 import {isDoneLane, isNamedDone} from '../../lib/utils/lane-rules.js';
 import {getAttachmentMaxKb} from './attachments.js';
-import {syncEpiqWithRemote} from '../../git/sync.js';
+import {syncOMEWithRemote} from '../../git/sync.js';
 import {getPersistFileName} from '../../lib/board/board-log.js';
 import {
 	setSynced,
@@ -48,14 +48,14 @@ import {
 	setSyncing,
 } from '../../lib/state/sync-state.js';
 
-export const getEpiqState = async (input: ToolInput = {}) => {
+export const getOMEState = async (input: ToolInput = {}) => {
 	const bootResult = await bootLocal(input.repoRoot);
 	if (isFail(bootResult)) return bootResult;
 
 	const stateResult = getStateResult();
 	if (isFail(stateResult)) return stateResult;
 
-	return succeeded('Retrieved Epiq state', {
+	return succeeded('Retrieved OME state', {
 		root: bootResult.value.repoRoot,
 		stateBranchRoot: bootResult.value.stateBranchRoot,
 		nodes: stateResult.value.nodes,
@@ -192,7 +192,7 @@ export const deriveGuiState = (): Result<ApiState> => {
 		}));
 	}
 
-	return succeeded('Retrieved Epiq GUI state', {
+	return succeeded('Retrieved OME GUI state', {
 		boards: boards
 			.sort((a, b) => a.rank.localeCompare(b.rank))
 			.map(b => ({
@@ -307,7 +307,7 @@ export const sync = async (input: SyncInput = {}) => {
 	const actor = getActor();
 	if (isFail(actor)) return actor;
 
-	const result = await syncEpiqWithRemote({
+	const result = await syncOMEWithRemote({
 		cwd: repoRootResult.value,
 		ownEventFileName: getPersistFileName(actor.value),
 	});

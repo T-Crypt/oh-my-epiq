@@ -17,13 +17,13 @@ const REMOTE = 'https://example.com/team/thing.git';
 let saved: string | undefined;
 
 beforeEach(() => {
-	saved = process.env['EPIQ_ALLOW_LOCAL_REPOS'];
-	delete process.env['EPIQ_ALLOW_LOCAL_REPOS'];
+	saved = process.env['OME_ALLOW_LOCAL_REPOS'];
+	delete process.env['OME_ALLOW_LOCAL_REPOS'];
 });
 
 afterEach(() => {
-	if (saved === undefined) delete process.env['EPIQ_ALLOW_LOCAL_REPOS'];
-	else process.env['EPIQ_ALLOW_LOCAL_REPOS'] = saved;
+	if (saved === undefined) delete process.env['OME_ALLOW_LOCAL_REPOS'];
+	else process.env['OME_ALLOW_LOCAL_REPOS'] = saved;
 });
 
 describe('a local repo', () => {
@@ -34,7 +34,7 @@ describe('a local repo', () => {
 		);
 		expect(isAllowedRepoUrl(REMOTE)).toBe(true);
 
-		process.env['EPIQ_ALLOW_LOCAL_REPOS'] = '1';
+		process.env['OME_ALLOW_LOCAL_REPOS'] = '1';
 		expect(isAllowedRepoUrl(LOCAL)).toBe(true);
 		expect(repoUrlProblem(LOCAL, false)).not.toBeNull();
 	});

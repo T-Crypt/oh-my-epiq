@@ -8,7 +8,7 @@ import {readOwnRepo} from '../lib/commits/commits.js';
 const dirs: string[] = [];
 
 const makeRepo = (name: string): string => {
-	const dir = fs.mkdtempSync(path.join(os.tmpdir(), `epiq-own-${name}-`));
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), `ome-own-${name}-`));
 	dirs.push(dir);
 	execFileSync('git', ['init', '-q'], {cwd: dir});
 

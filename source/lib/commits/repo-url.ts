@@ -19,7 +19,7 @@ export const REPO_URL_FORMS = 'Use https://, ssh://, git:// or user@host:path.';
  */
 export const localReposAllowed = (): boolean =>
 	(globalThis as {process?: {env?: Record<string, string | undefined>}}).process
-		?.env?.['EPIQ_ALLOW_LOCAL_REPOS'] === '1';
+		?.env?.['OME_ALLOW_LOCAL_REPOS'] === '1';
 
 /**
  * Why a URL may not be registered, or null. It comes from a committed file:
@@ -53,7 +53,7 @@ export const repoUrlProblem = (
 	if (/%/.test(authorityOf(url))) return 'percent-encodes its host';
 
 	if (!SCHEMES.has(parsed.protocol)) {
-		return 'uses a transport epiq does not clone over';
+		return 'uses a transport ome does not clone over';
 	}
 	if (parsed.password) return 'carries a password — use a credential helper';
 	// Over ssh the user is the login; anywhere else it is only a way to make

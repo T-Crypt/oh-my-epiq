@@ -218,7 +218,7 @@ const buildComponents = (
 	),
 });
 
-const TABLE_CLASS = 'epiq-md-table';
+const TABLE_CLASS = 'ome-md-table';
 // Fainter than the app's hover: a table is read, not clicked.
 const TABLE_HOVER = 'rgba(255, 255, 255, 0.025)';
 // Enough columns for any table typed by hand.

@@ -9,12 +9,12 @@ import {logger} from '../logger.js';
 
 /**
  * An advisory cross-process lock over the state branch worktree, so one process
- * never aborts another's live rebase. Binds epiq processes only, and assumes a
+ * never aborts another's live rebase. Binds ome processes only, and assumes a
  * local filesystem; a lock from another host is never broken on liveness.
  */
 
 /** Shared by every build: never rename it, and sweeps must leave it alone. */
-export const SYNC_LOCK_FILE = 'epiq-sync.lock';
+export const SYNC_LOCK_FILE = 'ome-sync.lock';
 
 /** Backstop for a recycled pid; generous, since breaking a live lock is worse. */
 const STALE_AFTER_MS = 10 * 60 * 1000;
@@ -271,7 +271,7 @@ export const acquireSyncLock = async ({
 	operation: string;
 }): Promise<Result<LockOutcome>> => {
 	// The gitdir, never the worktree tree: nothing here may ever become
-	// committable, and `.epiq/` is staged by glob.
+	// committable, and `.ome/` is staged by glob.
 	const gitDirResult = await getGitDir(worktreeRoot);
 	if (isFail(gitDirResult)) return failed(gitDirResult.message);
 

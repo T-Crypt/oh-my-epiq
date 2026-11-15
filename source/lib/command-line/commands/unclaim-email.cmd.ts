@@ -7,7 +7,7 @@ import {failed, isFail, succeeded} from '../../model/result-types.js';
 import {getCmdState} from '../../state/cmd.state.js';
 import {getSettingsState} from '../../state/settings.state.js';
 import {getSafeState} from '../../state/state.js';
-import {resolveClosestEpiqProjectRoot} from '../../storage/paths.js';
+import {resolveClosestOMEProjectRoot} from '../../storage/paths.js';
 
 /** Gives back an address you hold; the claim's record stays in the log. */
 export const unclaimEmailCommand = () => {
@@ -35,7 +35,7 @@ export const unclaimEmailCommand = () => {
 		return failed(`You have not claimed ${answer}. Yours: ${held.join(', ')}.`);
 	}
 
-	const repoRootResult = resolveClosestEpiqProjectRoot(process.cwd());
+	const repoRootResult = resolveClosestOMEProjectRoot(process.cwd());
 	if (isFail(repoRootResult)) return repoRootResult;
 
 	const stateBranchRootResult = getStateBranchRoot({

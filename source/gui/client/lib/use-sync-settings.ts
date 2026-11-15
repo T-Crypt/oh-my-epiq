@@ -1,4 +1,4 @@
-// This machine's auto sync preference, from `~/.epiq/config.json`: not board
+// This machine's auto sync preference, from `~/.ome/config.json`: not board
 // state, so no mutation gate or broadcast.
 
 import {useCallback, useEffect, useState} from 'react';

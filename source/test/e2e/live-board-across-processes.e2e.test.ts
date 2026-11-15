@@ -8,7 +8,7 @@ import {getStateBranchRoot} from '../../git/git-storage.js';
 import {getGitDir} from '../../git/git-utils.js';
 import {SYNC_LOCK_FILE} from '../../git/sync-lock.js';
 import {isFail} from '../../lib/model/result-types.js';
-import {checkoutStateAt, returnToLive} from '../../mcp/epiq-time-travel.js';
+import {checkoutStateAt, returnToLive} from '../../mcp/ome-time-travel.js';
 import {commonSteps} from './e2e-common-steps.js';
 import {
 	commandLineIsIdle,

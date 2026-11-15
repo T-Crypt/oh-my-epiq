@@ -39,12 +39,12 @@ const git = (cwd: string, args: string[]) =>
 describe('a start-over the shutdown cut short', () => {
 	it('is not counted toward the backoff', async () => {
 		const board = makeTempDir();
-		fs.mkdirSync(path.join(board, '.epiq'));
+		fs.mkdirSync(path.join(board, '.ome'));
 		fs.writeFileSync(
-			path.join(board, '.epiq', 'project.json'),
+			path.join(board, '.ome', 'project.json'),
 			JSON.stringify({
 				projectId: 'shutdown-board',
-				stateBranch: 'epiq/state',
+				stateBranch: 'ome/state',
 				createdAt: '2020-01-01T00:00:00.000Z',
 			}),
 		);

@@ -4,7 +4,7 @@ import path from 'node:path';
 import {afterEach, describe, expect, it} from 'vitest';
 import {
 	NO_PROJECT_MESSAGE,
-	resolveClosestEpiqProjectRoot,
+	resolveClosestOMEProjectRoot,
 } from '../lib/storage/paths.js';
 import {isFail} from '../lib/model/result-types.js';
 
@@ -17,11 +17,11 @@ afterEach(() => {
 	if (dir) fs.rmSync(dir, {recursive: true, force: true});
 });
 
-describe('resolveClosestEpiqProjectRoot', () => {
+describe('resolveClosestOMEProjectRoot', () => {
 	it('fails with the message the init screen is keyed on', () => {
-		dir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-no-project-'));
+		dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-no-project-'));
 
-		const result = resolveClosestEpiqProjectRoot(dir);
+		const result = resolveClosestOMEProjectRoot(dir);
 
 		expect(isFail(result)).toBe(true);
 		expect(result.message).toBe(NO_PROJECT_MESSAGE);

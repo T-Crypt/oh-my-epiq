@@ -19,7 +19,7 @@ type Tui = ReturnType<typeof setupTui>;
 
 // Its own HOME, so parallel files don't race on one global config.json; the
 // isolated HOME needs its own git identity.
-const E2E_HOME = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-e2e-home-'));
+const E2E_HOME = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-e2e-home-'));
 
 // A non-interactive `$EDITOR` stand-in, so `edit description` doesn't block.
 const fakeEditor = path.resolve(
@@ -31,9 +31,9 @@ const EDITED_DESCRIPTION = 'Implemented during the e2e flow';
 const ENV = {
 	HOME: E2E_HOME,
 	EDITOR: fakeEditor,
-	GIT_AUTHOR_NAME: 'Epiq E2E',
+	GIT_AUTHOR_NAME: 'OME E2E',
 	GIT_AUTHOR_EMAIL: 'e2e@example.com',
-	GIT_COMMITTER_NAME: 'Epiq E2E',
+	GIT_COMMITTER_NAME: 'OME E2E',
 	GIT_COMMITTER_EMAIL: 'e2e@example.com',
 };
 

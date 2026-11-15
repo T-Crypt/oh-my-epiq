@@ -9,7 +9,7 @@
 // `module` or `require`.
 /* global module */
 const SEA_BUNDLE_URL = /data:application\/javascript;base64,[A-Za-z0-9+/=]+/g;
-const SEA_BUNDLE_NAME = 'epiq-sea';
+const SEA_BUNDLE_NAME = 'ome-sea';
 
 function prepareStackTrace(error, callSites) {
 	let header;

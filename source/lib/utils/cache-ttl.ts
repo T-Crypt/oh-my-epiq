@@ -1,7 +1,7 @@
 // How long a read-through scan of git history may be reused; nothing
-// invalidates it on commit. `EPIQ_CACHE_MS` overrides, and 0 disables.
+// invalidates it on commit. `OME_CACHE_MS` overrides, and 0 disables.
 
-const OVERRIDE_ENV = 'EPIQ_CACHE_MS';
+const OVERRIDE_ENV = 'OME_CACHE_MS';
 
 export const scanCacheMs = (defaultMs: number): number => {
 	const raw = process.env[OVERRIDE_ENV];

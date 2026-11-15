@@ -29,7 +29,7 @@ const reactBuildsLoadedBy = async (
 	bin: string,
 	args: string[],
 ): Promise<string[]> => {
-	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-e2e-react-'));
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-e2e-react-'));
 	const probePath = path.join(dir, 'probe.cjs');
 	const logPath = path.join(dir, 'loaded.txt');
 	fs.writeFileSync(probePath, probe);
@@ -38,7 +38,7 @@ const reactBuildsLoadedBy = async (
 	const env: NodeJS.ProcessEnv = {
 		...process.env,
 		REACT_BUILD_LOG: logPath,
-		EPIQ_GLOBAL_DIR: path.join(dir, 'global'),
+		OME_GLOBAL_DIR: path.join(dir, 'global'),
 	};
 	delete env['NODE_ENV'];
 
@@ -68,8 +68,8 @@ const reactBuildsLoadedBy = async (
 
 describe('the npm bins run React on its production build', () => {
 	it.each([
-		['epiq', 'dist/index.js', ['--version']],
-		['epiq-mcp', 'dist/mcp.js', []],
+		['ome', 'dist/index.js', ['--version']],
+		['ome-mcp', 'dist/mcp.js', []],
 	])('%s', async (_name, bin, args) => {
 		const loaded = await reactBuildsLoadedBy(bin, args);
 

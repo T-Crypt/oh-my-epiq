@@ -3,13 +3,13 @@ node_modules
 
 .vscode/tasks.json
 .archive
-epiq-*.tgz
+ome-*.tgz
 .DS_Store
 coverage
 
-# [epiq]: local hydrated state is never committed
-.epiq/events/
-.epiq/log/
+# [ome]: local hydrated state is never committed
+.ome/events/
+.ome/log/
 .DS_Store
 
 # playwright
@@ -17,3 +17,10 @@ test-results
 playwright-report
 blob-report
 .playwright
+
+# [ome]: local hydrated state is never committed
+.ome/project.json
+
+# [ome]: operator-only docs and agent worktrees, local and never committed
+docs/
+.claude/worktrees/

@@ -326,9 +326,9 @@ test('claiming an address makes its commits read as you, and unlinking undoes it
 
 	// Before: the log calls the commit by the name git signed it with.
 	await page.getByTestId('log-toggle').click();
-	await expect(page.locator('.epiq-log-actor').first()).toBeVisible();
+	await expect(page.locator('.ome-log-actor').first()).toBeVisible();
 	await expect(
-		page.locator('.epiq-log-actor', {hasText: 'e2e'}),
+		page.locator('.ome-log-actor', {hasText: 'e2e'}),
 	).not.toHaveCount(0);
 
 	let panel = await openPanel(page);
@@ -346,9 +346,9 @@ test('claiming an address makes its commits read as you, and unlinking undoes it
 
 	// No reload: claiming refetches the commit track itself.
 	await expect(
-		page.locator('.epiq-log-actor', {hasText: BOARD_NAME.split('/')[1]!}),
+		page.locator('.ome-log-actor', {hasText: BOARD_NAME.split('/')[1]!}),
 	).not.toHaveCount(0);
-	await expect(page.locator('.epiq-log-actor', {hasText: 'e2e'})).toHaveCount(
+	await expect(page.locator('.ome-log-actor', {hasText: 'e2e'})).toHaveCount(
 		0,
 	);
 
@@ -360,7 +360,7 @@ test('claiming an address makes its commits read as you, and unlinking undoes it
 		.click();
 
 	await expect(
-		page.locator('.epiq-log-actor', {hasText: 'e2e'}),
+		page.locator('.ome-log-actor', {hasText: 'e2e'}),
 	).not.toHaveCount(0);
 
 	expect(pageErrors).toEqual([]);

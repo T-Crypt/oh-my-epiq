@@ -8,7 +8,7 @@ import {expect, test} from './fixtures.js';
 // Without an origin that sync fails instantly, so the fixture never exercises
 // the commit/rebase/push the real app runs after every move.
 const givenARemote = (repoRoot: string) => {
-	const bare = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-remote-'));
+	const bare = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-remote-'));
 	execSync(`git init --bare -b main "${bare}"`, {stdio: 'ignore'});
 	execSync(`git -C "${repoRoot}" remote add origin "${bare}"`, {
 		stdio: 'ignore',

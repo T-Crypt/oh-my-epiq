@@ -492,8 +492,8 @@ describe('decodeReconstructedEvents', () => {
 
 describe('loadMergedEvents with a corrupt line on disk', () => {
 	const seedLog = (lines: string[]): string => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-corrupt-'));
-		const eventsDir = path.join(root, '.epiq', 'events');
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-corrupt-'));
+		const eventsDir = path.join(root, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 		fs.writeFileSync(
 			path.join(eventsDir, '01ARZ3NDEKTSV4RRFFQ69G5FAV.alice.jsonl'),
@@ -574,8 +574,8 @@ describe('loadMergedEvents while another process moves a file', () => {
 	});
 
 	const seed = (): {root: string; alice: string; bob: string} => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-vanish-'));
-		const eventsDir = path.join(root, '.epiq', 'events');
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-vanish-'));
+		const eventsDir = path.join(root, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 
 		const alice = path.join(
@@ -634,8 +634,8 @@ describe('loadMergedEvents while another process moves a file', () => {
 
 describe('loadMergedEvents with foreign events on disk', () => {
 	it('loads a log containing unknown actions without failing', () => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-load-'));
-		const eventsDir = path.join(root, '.epiq', 'events');
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-load-'));
+		const eventsDir = path.join(root, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 
 		const lines = [
@@ -682,8 +682,8 @@ describe('loadMergedEvents with foreign events on disk', () => {
 	// File names lowercase the id for filesystem safety, but a ULID must come
 	// back canonical or the same person appears twice.
 	it('restores canonical ULID casing for the actor id parsed from the file name', () => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-case-'));
-		const eventsDir = path.join(root, '.epiq', 'events');
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-case-'));
+		const eventsDir = path.join(root, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 
 		fs.writeFileSync(
@@ -705,8 +705,8 @@ describe('loadMergedEvents with foreign events on disk', () => {
 	});
 
 	it('leaves a non-ULID actor id untouched', () => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-case2-'));
-		const eventsDir = path.join(root, '.epiq', 'events');
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-case2-'));
+		const eventsDir = path.join(root, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 
 		fs.writeFileSync(
@@ -730,8 +730,8 @@ describe('loadMergedEvents with foreign events on disk', () => {
 	// Dots survive sanitizing, so a name segment may contain them. Splitting on
 	// every dot truncated the name and collapsed distinct people onto one value.
 	it('keeps a dotted user name intact when parsed from the file name', () => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-dot-'));
-		const eventsDir = path.join(root, '.epiq', 'events');
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-dot-'));
+		const eventsDir = path.join(root, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 
 		fs.writeFileSync(
@@ -759,8 +759,8 @@ describe('loadMergedEvents with foreign events on disk', () => {
 
 	// Only the first dot is a boundary: the id segment never contains one.
 	it('keeps every dot of a multi-dot user name', () => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-dots-'));
-		const eventsDir = path.join(root, '.epiq', 'events');
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-dots-'));
+		const eventsDir = path.join(root, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 
 		fs.writeFileSync(
@@ -789,8 +789,8 @@ describe('loadMergedEvents with foreign events on disk', () => {
 	// The shape every log has carried since ZFZFW9D: the id alone. It still
 	// attributes, and offers no name for the registry fallback to pick up.
 	it('attributes a name-less file name and offers no name for it', () => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-nodot-'));
-		const eventsDir = path.join(root, '.epiq', 'events');
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-nodot-'));
+		const eventsDir = path.join(root, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 
 		fs.writeFileSync(
@@ -814,8 +814,8 @@ describe('loadMergedEvents with foreign events on disk', () => {
 
 	// Must fail as a Result, never throw.
 	it('fails on a file name with an empty user name segment', () => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-empty-'));
-		const eventsDir = path.join(root, '.epiq', 'events');
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-empty-'));
+		const eventsDir = path.join(root, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 
 		fs.writeFileSync(
@@ -845,7 +845,7 @@ describe('loadMergedEvents with a newer schema version on disk', () => {
 	});
 
 	const write = (root: string, fileName: string, lines: unknown[]) => {
-		const eventsDir = path.join(root, '.epiq', 'events');
+		const eventsDir = path.join(root, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 		fs.writeFileSync(
 			path.join(eventsDir, fileName),
@@ -854,7 +854,7 @@ describe('loadMergedEvents with a newer schema version on disk', () => {
 	};
 
 	it('skips an unreadable line instead of failing the whole file', () => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-schema-'));
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-schema-'));
 
 		write(root, '01H0000000000000000000000F.alice.jsonl', [
 			workspace('01H0000000000000000000000A', null),
@@ -884,7 +884,7 @@ describe('loadMergedEvents with a newer schema version on disk', () => {
 
 	// One teammate upgrading must not brick everyone still on the old build.
 	it('keeps another actor loadable when one actor is entirely on a newer version', () => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-schema2-'));
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-schema2-'));
 
 		write(root, '01H0000000000000000000000F.alice.jsonl', [
 			workspace('01H0000000000000000000000A', null),
@@ -908,7 +908,7 @@ describe('loadMergedEvents with a newer schema version on disk', () => {
 
 	// Read-side only: the newer events must survive to apply after an upgrade.
 	it('leaves the skipped lines untouched on disk', () => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-schema3-'));
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-schema3-'));
 		const fileName = '01H0000000000000000000000F.alice.jsonl';
 
 		write(root, fileName, [
@@ -920,7 +920,7 @@ describe('loadMergedEvents with a newer schema version on disk', () => {
 			},
 		]);
 
-		const filePath = path.join(root, '.epiq', 'events', fileName);
+		const filePath = path.join(root, '.ome', 'events', fileName);
 		const before = fs.readFileSync(filePath, 'utf8');
 
 		expect(isFail(loadMergedEvents(root))).toBe(false);
@@ -931,7 +931,7 @@ describe('loadMergedEvents with a newer schema version on disk', () => {
 
 	// Time travel shares the load path, so a scrub must degrade the same way.
 	it('degrades the same way on a historical read', () => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-schema4-'));
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-schema4-'));
 
 		write(root, '01H0000000000000000000000F.alice.jsonl', [
 			workspace('01H0000000000000000000000A', null),
@@ -982,8 +982,8 @@ describe('ancestry through an unreadable event', () => {
 	];
 
 	const loadIds = (lines: unknown[]): string[] => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-ancestry-'));
-		const eventsDir = path.join(root, '.epiq', 'events');
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-ancestry-'));
+		const eventsDir = path.join(root, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 		fs.writeFileSync(
 			path.join(eventsDir, '01H0000000000000000000000F.alice.jsonl'),
@@ -1012,8 +1012,8 @@ describe('edge ref across an unreadable event', () => {
 	// Anchoring to the last *readable* event would fork a sibling branch, baked
 	// into id[1] and unfixable by upgrading later.
 	it('anchors a new event to the true latest event, not the latest readable one', () => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-edge-'));
-		const eventsDir = path.join(root, '.epiq', 'events');
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-edge-'));
+		const eventsDir = path.join(root, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 
 		const readable = '01H0000000000000000000000A';
@@ -1059,7 +1059,7 @@ describe('edge ref across an unreadable event', () => {
 
 describe('locking what this build cannot read', () => {
 	const write = (root: string, lines: unknown[]) => {
-		const eventsDir = path.join(root, '.epiq', 'events');
+		const eventsDir = path.join(root, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 		fs.writeFileSync(
 			path.join(eventsDir, '01H0000000000000000000000F.alice.jsonl'),
@@ -1081,7 +1081,7 @@ describe('locking what this build cannot read', () => {
 	];
 
 	it('reports the target node of an unreadable event so the lock can be scoped', () => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-lock-'));
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-lock-'));
 
 		write(root, [
 			...base,
@@ -1109,7 +1109,7 @@ describe('locking what this build cannot read', () => {
 	});
 
 	it('reports a null target when the payload carries no node id', () => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-lock2-'));
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-lock2-'));
 
 		write(root, [
 			...base,
@@ -1131,7 +1131,7 @@ describe('locking what this build cannot read', () => {
 	});
 
 	it('reports an unsupported schema version with its target', () => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-lock3-'));
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-lock3-'));
 
 		write(root, [
 			...base,
@@ -1156,7 +1156,7 @@ describe('locking what this build cannot read', () => {
 	});
 
 	it('reports nothing when every event is readable', () => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-lock4-'));
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-lock4-'));
 		write(root, base);
 
 		const result = loadMergedEventsWithUnreadable(root);
@@ -1171,8 +1171,8 @@ describe('locking what this build cannot read', () => {
 // Actors come off the file name, which no schema version can make unreadable.
 describe('loadEventActors', () => {
 	it('reports the author of an event this build cannot decode', () => {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'epiq-actors-'));
-		const eventsDir = path.join(root, '.epiq', 'events');
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ome-actors-'));
+		const eventsDir = path.join(root, '.ome', 'events');
 		fs.mkdirSync(eventsDir, {recursive: true});
 
 		fs.writeFileSync(

@@ -10,5 +10,5 @@ ENV IS_CI=true
 COPY package*.json ./
 RUN npm ci
 
-RUN git config --global user.name "Epiq E2E"
+RUN git config --global user.name "OME E2E"
 RUN git config --global user.email "e2e@example.com"

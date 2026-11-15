@@ -8,7 +8,7 @@ import {failed, Result, succeeded} from '../model/result-types.js';
  * The mode is enforced on an existing directory too, and a symlink is refused.
  */
 export const privateTempDir = (...segments: string[]): Result<string> => {
-	const dir = path.join(os.tmpdir(), 'epiq', ...segments);
+	const dir = path.join(os.tmpdir(), 'ome', ...segments);
 
 	try {
 		if (existsSync(dir) && lstatSync(dir).isSymbolicLink()) {

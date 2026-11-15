@@ -15,7 +15,7 @@ export type Release = {
 	sections: ReleaseSection[];
 };
 
-/** What the GUI shows of a newer epiq: the releases since this one, newest first. */
+/** What the GUI shows of a newer ome: the releases since this one, newest first. */
 export type UpdateInfo = VersionStatus & {
 	releases: Release[];
 	// When the running version was published, where its release was found.

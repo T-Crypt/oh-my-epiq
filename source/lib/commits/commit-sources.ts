@@ -15,7 +15,7 @@ import {
 } from './commit-repos.js';
 
 /**
- * Somewhere commits are read from: the board's own repo in place, or epiq's
+ * Somewhere commits are read from: the board's own repo in place, or ome's
  * clone of a registered repo.
  */
 export type CommitSource = {

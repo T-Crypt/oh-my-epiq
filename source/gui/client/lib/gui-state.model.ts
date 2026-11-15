@@ -193,7 +193,7 @@ export type GuiCommitEntry = {
 	/** Who the author is on this board; resolved on the server from the event log. */
 	authorIdentity?: GuiCommitAuthor;
 	subject: string;
-	/** Refs named by `Epiq-Ref:` lines in the body. */
+	/** Refs named by `OME-Ref:` lines in the body. */
 	refs?: string[];
 	linesChanged: number;
 	insertions: number;
