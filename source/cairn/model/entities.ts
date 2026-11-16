@@ -46,6 +46,12 @@ export interface WorkItem {
 	acceptanceCriteria: Ulid[];
 	blockedBy: Ulid[];
 	parentId?: Ulid;
+	repository?: string;
+	handedOff?: boolean;
+	verification?: Verification;
+	verificationId?: Ulid;
+	verificationIds?: Ulid[];
+	verifications?: Verification[];
 	createdAt: Timestamp;
 	updatedAt: Timestamp;
 	draftExemption?: boolean;

@@ -12,6 +12,8 @@ export interface ReadinessInput {
 	allWorkItems: WorkItem[];
 	allEdges: Edge[];
 	allVerifications: Verification[];
+	resolvedReferences?: Set<string>;
+	accessibleRepos?: Set<string>;
 }
 
 export function readiness(input: ReadinessInput): ReadinessResult {
@@ -79,6 +81,30 @@ export function readiness(input: ReadinessInput): ReadinessResult {
 	// 6. lease policy: if claimed/in_progress must have leaseId
 	if ((workItem.status === 'claimed' || workItem.status === 'in_progress') && !workItem.leaseId) {
 		reasons.push('missing lease');
+	}
+
+	// 4. referenced files/decisions/constraints resolve (constrained_by targets)
+	if (input.resolvedReferences) {
+		const constrained = allEdges.filter(
+			e => e.type === 'constrained_by' && e.from.id === workItem.id,
+		);
+		for (const c of constrained) {
+			if (!input.resolvedReferences.has(c.to.id)) {
+				reasons.push(`unresolved reference ${c.to.id}`);
+			}
+		}
+	}
+
+	// 5. repository access/fetchability
+	if (input.accessibleRepos && workItem.repository) {
+		if (!input.accessibleRepos.has(workItem.repository)) {
+			reasons.push(`repository not accessible: ${workItem.repository}`);
+		}
+	}
+
+	// handed off work items are not ready
+	if (workItem.handedOff) {
+		reasons.push('work item handed off');
 	}
 
 	return {ready: reasons.length === 0, reasons};

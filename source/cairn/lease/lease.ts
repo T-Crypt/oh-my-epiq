@@ -209,7 +209,11 @@ export function heartbeat(state: LeaseState, req: HeartbeatRequest): {state: Lea
 	return {state: s, result: {kind: 'ok', lease}};
 }
 
-export function expireStaleLeases(state: LeaseState, now: string): LeaseState {
+export function expireStaleLeases(
+	state: LeaseState,
+	now: string,
+	readinessCheck?: (workItem: WorkItem) => boolean,
+): LeaseState {
 	const s = clone(state);
 	s.leases = s.leases.map(l => {
 		if (l.state === 'active' && nowMs(l.expiresAt) <= nowMs(now)) {
@@ -217,13 +221,19 @@ export function expireStaleLeases(state: LeaseState, now: string): LeaseState {
 		}
 		return l;
 	});
-	// recovery: work items with expired leases return to ready
+	// recovery: work items with expired leases return to ready (if readiness allows)
 	for (const l of s.leases) {
 		if (l.state === 'expired') {
 			const wi = s.workItems.find(w => w.id === l.workItemId && w.leaseId === l.id);
 			if (wi) {
 				wi.leaseId = undefined;
-				if (wi.status === 'claimed' || wi.status === 'in_progress') wi.status = 'ready';
+				if (wi.status === 'claimed' || wi.status === 'in_progress') {
+					if (!readinessCheck || readinessCheck(wi)) {
+						wi.status = 'ready';
+					} else {
+						wi.status = 'in_progress';
+					}
+				}
 				wi.updatedAt = now;
 			}
 		}

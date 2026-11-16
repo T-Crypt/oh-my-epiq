@@ -179,9 +179,9 @@ function buildSections(input: CapsuleInput): {sections: Section[]; verdictByCrit
 		{name: '1. Header', lines: h, essential: h.map(() => true)},
 		{name: '2. Intent', lines: intent, essential: intent.map(() => true)},
 		{name: '3. Constraints', lines: constraints, essential: constraints.map((_, i) => {
-			// blocking constraints essential
 			const c = sortedConstraints[i];
-			return c ? c.criticality === 'blocking' : false;
+			if (!c) return false;
+			return c.criticality === 'blocking' || c.origin === 'user' || c.origin === 'security_policy';
 		})},
 		{name: '4. Criteria', lines: criteriaLines, essential: criteriaLines.map(() => true)},
 		{name: '5. Dependencies', lines: deps, essential: deps.map(l => l.startsWith('blocked-by'))},
@@ -306,7 +306,10 @@ export function assembleCapsule(input: CapsuleInput): CapsuleResult {
 	});
 	if (advisoryIdx.length > 0) {
 		// remove advisory lines
-		consSection.lines = consSection.lines.filter(l => !l.includes('[advisory]'));
+		consSection.lines = consSection.lines.filter(l => {
+		if (!l.includes('[advisory]')) return true;
+		return /\[advisory\]\s+(user|security_policy):/.test(l);
+	});
 		omitted.push('advisory constraints');
 		text = renderSections(current);
 		if (sizeOf(text) <= input.tokenBudget) return {text, bytes: sizeOf(text), omitted};
