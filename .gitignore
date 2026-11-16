@@ -22,3 +22,7 @@ test-results
 playwright-report
 blob-report
 .playwright
+
+# [cairn]: throwaway spike artifacts
+research/prototypes/*/generated-events.jsonl
+research/prototypes/*/projection.db

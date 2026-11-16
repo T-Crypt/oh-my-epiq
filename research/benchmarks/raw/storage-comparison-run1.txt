@@ -1,0 +1,25 @@
+Storage comparison spike (400k events)
+Node v26.8.2
+Events generated: 400000
+Lines parsed: 400000
+Unique ids: 400000
+
+Log replay:
+  parse ms:  511.04  PASS
+  sort ms:   258.18  PASS
+  total ms:  769.22  PASS
+  peak RSS:  538.1 MB
+  RSS now:   581.6 MB
+
+Projection build:
+  build ms:  1043.86
+  db size:  40.46 MB
+
+Projection queries:
+  (i)  short-ref suffix lookup: 5.80 ms, 1 rows  PASS
+  (ii) qualifier filter ready+tag: 11.74 ms, 1904 rows  PASS
+  (iii) readiness (deps all done): 85.20 ms, 11428 rows  PASS
+  (iv) ledger lookup one wi: 0.14 ms, 1 rows  PASS
+
+Bar: read < 2000 ms at 400k events.
+{"node":"v26.8.2","events":400000,"linesParsed":400000,"uniqueIds":400000,"parseMs":511.04,"sortMs":258.18,"totalMs":769.22,"peakRssMb":538.1,"buildMs":1043.86,"dbSizeMb":40.46,"q1SuffixMs":5.8,"q1Rows":1,"q2QualifierMs":11.74,"q2Rows":1904,"q3ReadinessMs":85.2,"q3Rows":11428,"q4LedgerMs":0.14,"q4Rows":1}
