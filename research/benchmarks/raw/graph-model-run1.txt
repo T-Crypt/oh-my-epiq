@@ -1,0 +1,23 @@
+cycle: 01000000000000000000002244 -> 01000000000000000000000367 -> 01000000000000000000002244
+cycle: 01000000000000000000002698 -> 01000000000000000000000489 -> 01000000000000000000001336 -> 01000000000000000000002698
+cycle: 01000000000000000000002893 -> 01000000000000000000000620 -> 01000000000000000000001533 -> 01000000000000000000000170 -> 01000000000000000000001489 -> 01000000000000000000002701 -> 01000000000000000000002893
+Graph model spike
+Node v26.8.2
+Items: 10000
+Edges total: 38520 (accepted 38520 rejected 5541)
+
+Cycle detection (per edge):
+  edges measured: 39985
+  avg ms/edge:   0.1988  PASS (target < 1 ms)
+  max ms/edge:   5.2181
+
+Readiness sweep (full set):
+  2.91 ms  PASS (target < 500 ms)
+  ready items: 464 / 10000
+
+Memory:
+  RSS:        152.32421875 MB -> 152.3 MB
+  heap used:  56.6 MB
+
+Overall: PASS
+{"node":"v26.8.2","items":10000,"edgesTotal":38520,"edgesAccepted":38520,"edgesRejected":5541,"cycleDetectionEdgesMeasured":39985,"cycleDetectionAvgMs":0.1988,"cycleDetectionMaxMs":5.2181,"cycleDetectionTargetMs":1,"cycleDetectionPass":true,"readinessSweepMs":2.91,"readinessTargetMs":500,"readinessPass":true,"readyCount":464,"rssMb":152.3,"heapUsedMb":56.6}

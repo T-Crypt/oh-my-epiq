@@ -1,0 +1,52 @@
+=== Test B: concurrency (100 simultaneous claims) ===
+  winners: 1, conflicts: 99
+  PASS: exactly one claim wins
+  PASS: 99 claims get structured conflicts
+  PASS: all 99 conflicts name the winning holder (holder-0)
+  PASS: conflict carries fencing token
+  PASS: conflict carries expiry
+
+=== Test C: stale-owner rejection ===
+  A claims: {"ok":true,"leaseId":"L00000002","fencingToken":1,"expiresAt":1010}
+  PASS: A claims successfully
+  B claims after expiry: {"ok":true,"leaseId":"L00000003","fencingToken":2,"expiresAt":1070}
+  PASS: B claims after A expired
+  A late write: {"ok":false,"rejected":"stale_token","currentHolder":"holder-B","currentToken":2,"currentLeaseId":"L00000003"}
+  PASS: A late write rejected
+  PASS: rejection reason is stale_token
+  PASS: rejection names current holder B
+
+=== Test D: idempotency ===
+  first: {"ok":true,"leaseId":"L00000004","fencingToken":1,"expiresAt":1794864863570}
+  retry: {"ok":true,"leaseId":"L00000004","fencingToken":1,"expiresAt":1794864863570}
+  PASS: retry returns identical result
+  PASS: retry wrote nothing (log length unchanged)
+  PASS: only one lease created
+
+=== Test E: recovery ===
+  claim: {"ok":true,"leaseId":"L00000005","fencingToken":1,"expiresAt":5010}
+  after sweep, lease state: expired workitem status: ready
+  PASS: lease marked expired
+  PASS: work item returns to ready
+  rebuilt lease state: expired workitem status: ready
+  PASS: rebuilt: lease expired
+  PASS: rebuilt: work item ready
+  PASS: rebuilt: fencing token preserved
+
+=== Test F: shared lease policy ===
+  shared claim 1: {"ok":true,"leaseId":"L00000006","fencingToken":1,"expiresAt":1794864863570}
+  shared claim 2: {"ok":true,"leaseId":"L00000007","fencingToken":2,"expiresAt":1794864863570}
+  PASS: shared policy allows multiple claims
+
+=== Benchmark: 10,000 claim/release cycles ===
+  cycles: 10000
+  total:  162.29 ms
+  ms/cycle: 0.0162
+  cycles/sec: 61618
+
+=== SUMMARY ===
+Node: v26.8.2
+Platform: linux x64 12th Gen Intel(R) Core(TM) i9-12900HK
+Tests passed: 19 failed: 0
+Overall: PASS
+{"node":"v26.8.2","platform":"linux","arch":"x64","pass":19,"fail":0,"msPerCycle":0.0162,"totalMs":162.29}

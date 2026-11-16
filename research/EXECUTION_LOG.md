@@ -130,3 +130,47 @@ Next concrete actions: Phase 3 spikes — graph readiness, lease
 manager, execution ledger, capsule assembly, evidence freshness,
 storage comparison against the 400k/2s bar; operator gates on name
 lock and xd:// device location.
+
+### Phase 3 (same session, 14:28 onward)
+
+- Storage comparison spike: 400k events, log replay 554 ms (parse 393 +
+  sort 205), projection build 808 ms, DB 40.5 MB, peak RSS 538 MB.
+  Queries: suffix lookup 6.2 ms, qualifier filter 11.7 ms, readiness
+  87.6 ms, ledger lookup 0.14 ms. All pass the 2s bar. Hybrid ADR
+  holds. Dolt not benchmarked (not installed).
+- Graph model spike: cycle detection 0.197 ms/edge (target <1, PASS),
+  readiness sweep 3.4 ms/10k (target <500, PASS), 153 MB RSS. Design
+  holds at scale.
+- Lease manager spike: 1 win / 99 conflicts, stale-owner rejection
+  works, idempotency and recovery pass (19/19 assertions), benchmark
+  0.015 ms/cycle. Design holds.
+- Reports: STORAGE_COMPARISON.md, GRAPH_MODEL.md, LEASE_MANAGER.md.
+  Raw runs in research/benchmarks/raw/.
+
+### Phase 4 (same session, 14:33 onward)
+
+- Core domain model under source/cairn/ (7 modules, 13 tests):
+  entities (20), edges (13 typed), validity, cycle detection,
+  readiness, lease manager. tsc clean.
+- Execution ledger + validity + reuse + evidence + verification +
+  completion gate + context capsule (6 modules, 20 tests). tsc clean.
+- Migration logic (3 modules, 7 tests): mapping, fidelity limits,
+  preflight checks. tsc clean.
+- Handoff protocol + session continuity (2 modules, 9 tests). tsc clean.
+- Total cairn tests: 45, all passing. tsc --noEmit clean.
+- Remaining Phase 4 item: compact CLI/MCP with short refs and
+  qualifier filters (requires storage integration — deferred).
+- Phase 5 partially done: handoff protocol implemented. Full agent
+  integration (MCP surface, workflows) deferred to next session.
+
+Not verified yet: compact CLI/MCP surface, agent integration MCP
+surface, migration end-to-end against real OME state, capsule
+continuation corpus, Phase 3 remaining spikes (execution ledger,
+context capsule, evidence freshness as throwaway prototypes —
+implemented as production code instead, which is stronger).
+
+Next concrete actions: implement compact CLI/MCP (requires SQLite
+projection integration), agent integration workflows, migration
+end-to-end test against a real board, capsule continuation corpus.
+Operator gates still open: name lock (Cairn working name) and xd://
+device location.
