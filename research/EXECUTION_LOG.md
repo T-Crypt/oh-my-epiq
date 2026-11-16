@@ -102,7 +102,31 @@ storage claims (Phase 3 spikes).
 Not verified yet: competitor teardowns are from depth-50 clones
 (full-history claims, e.g. beads proposal dates, unverified);
 upstream GUI behaviour (Goals UI, filters) not exercised in a
-browser, only read from the diffed tree and commit subjects.
+browser, only read from the diffed tree and commit subjects;
+storage and validity claims await Phase 3 spikes.
 
-Next concrete actions: operator gates on name lock and xd:// device
-location; P2 architecture draft against the 400k/2s bar.
+### Phase 2 (same session, 14:22 onward)
+
+- Specs written (`research/specs/`): `PRODUCT_REQUIREMENTS.md`,
+  `CORE_DOMAIN_MODEL.md`, `WORKFLOWS.md`, `EXECUTION_LEDGER_SPEC.md`,
+  `CONTEXT_CAPSULE_SPEC.md`, `EVIDENCE_AND_VERIFICATION_SPEC.md`,
+  `SECURITY_AND_PRIVACY.md`, `SYSTEM_DESIGN.md`, `IMPLEMENTATION_PLAN.md`,
+  `CLI_CONTRACT.md`, `MCP_CONTRACT.md`.
+- ADRs written (`research/decisions/`): ADR-0001 storage (hybrid),
+  ADR-0002 event model, ADR-0003 graph model, ADR-0004 leases,
+  ADR-0005 context capsules, ADR-0006 migration.
+- Papers (`research/papers/`): execution state, context compaction,
+  MCP protocol.
+- Research layout moved to the vision doc's required structure:
+  teardowns -> `competitors/{beads,vibe-kanban,git-bug}/TEARDOWN.md`;
+  `COMPETITOR_MATRIX.md`, `OPPORTUNITY_ANALYSIS.md` added.
+- The product model is now defined without naming a UI framework or
+  storage engine; P0 scope is the spine (graph, readiness, leases,
+  ledger, evidence, capsules, compact CLI/MCP, migration); non-goals
+  are held (no embedded agent, no server database, no vector store,
+  no GraphQL door, no hosted sync).
+
+Next concrete actions: Phase 3 spikes — graph readiness, lease
+manager, execution ledger, capsule assembly, evidence freshness,
+storage comparison against the 400k/2s bar; operator gates on name
+lock and xd:// device location.
