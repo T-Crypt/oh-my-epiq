@@ -239,7 +239,7 @@ export function assembleCapsule(input: CapsuleInput): CapsuleResult {
 	}
 
 	// Start with full
-	let current = sections.map(s => ({...s, lines: [...s.lines], essential: s.essential ? [...s.essential] : undefined}));
+	const current = sections.map(s => ({...s, lines: [...s.lines], essential: s.essential ? [...s.essential] : undefined}));
 	let text = renderSections(current);
 	if (sizeOf(text) <= input.tokenBudget) {
 		return {text, bytes: sizeOf(text), omitted};
